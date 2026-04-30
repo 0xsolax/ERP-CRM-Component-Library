@@ -18,6 +18,7 @@
 - [COMPONENTS 组件快照层](../COMPONENTS/README.md)
 - [组件快照模板](../COMPONENTS/_TEMPLATE/README.md)
 - [COMPONENT_auth-permission](../COMPONENTS/auth-permission/README.md)
+- [COMPONENT_base-data](../COMPONENTS/base-data/README.md)
 
 ## 来源项目
 
@@ -30,6 +31,7 @@
 ## 第一批组件卡
 
 - [COMP_登录认证与权限](COMP_登录认证与权限.md)
+- [COMP_基础数据](COMP_基础数据.md)
 - [COMP_客户管理](COMP_客户管理.md)
 - [COMP_报价管理](COMP_报价管理.md)
 - [COMP_订单管理](COMP_订单管理.md)

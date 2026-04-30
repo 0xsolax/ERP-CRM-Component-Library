@@ -46,7 +46,7 @@ COMPONENTS/<component-name>/
 ## 第一批组件计划
 
 - [auth-permission](auth-permission/README.md) - `reference`，已抽取登录、JWT、Token、用户、角色、菜单、权限和前端守卫快照
-- `base-data`
+- [base-data](base-data/README.md) - `reference`，已抽取基础数据树、数据行、字段管理、nodeKey、权限码、SQL 和前端字段维护快照
 - `file-oss`
 - `product-material`
 - `customer-management`

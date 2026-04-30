@@ -1,0 +1,73 @@
+name: base-data
+display_name: 基础数据与字段分类
+status: reference
+type: foundation
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/project-scaffold
+    - RAW/PROJECTs/zhongsheng-backend
+    - RAW/PROJECTs/qmy-admin
+  wiki_pages:
+    - wiki/COMP_基础数据.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+  optional:
+    - auth-permission
+entrypoints:
+  backend:
+    controllers:
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/base/controller/BaseDataController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/base/controller/BaseDataController.java
+    services:
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/base/service/BaseDataService.java
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/base/service/impl/BaseDataServiceImpl.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/base/service/BaseDataService.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/base/service/impl/BaseDataServiceImpl.java
+    dto:
+      - backend/project-scaffold/project-api/src/main/java/com/qmy/project/api/dto/base
+      - backend/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/base
+    seed:
+      - backend/project-scaffold/project-application/src/main/java/com/qmy/project/config/BaseTreeNodeDataInitializer.java
+      - backend/zhongsheng-backend/zhongsheng-application/src/main/java/com/qmy/zhongsheng/config/BaseTreeNodeDataInitializer.java
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/zs/base-info/base-data.ts
+    views:
+      - frontend/qmy-admin/src/views/zs/base-info/field
+    components:
+      - frontend/qmy-admin/src/components/zs-label-select
+      - frontend/qmy-admin/src/views/zs/base-info/field/components
+    router:
+      - frontend/qmy-admin/src/views/zs/router/async-modules/base-info.ts
+  db:
+    schema:
+      - db/project-scaffold/init-base-data.sql
+      - db/zhongsheng-backend/init-base-data.sql
+    seed:
+      - BaseTreeNodeSeedEnum
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 组件当前为 reference，适合作为新项目基础数据方案参考。
+  - 中圣版包含业务种子和权限注解，project-scaffold 版更适合作为通用基座参考。
+  - qmy-admin 路由权限存在占位权限码，接入时必须替换为 base:data:* 或目标项目权限码。

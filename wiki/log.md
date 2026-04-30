@@ -14,3 +14,5 @@
 - `SOL-42` 快照已排除源 `.git/`、`.DS_Store`、构建产物、环境配置文件，并在快照副本中移除硬编码调试超管 token 分支。
 - 启动并完成 Multica `SOL-43` 本地组件抽取：生成 `COMPONENTS/auth-permission`，覆盖 `project-scaffold` 登录/JWT、`zhongsheng-backend` RBAC 权限、`qmy-admin` 前端登录/路由/按钮权限证据。
 - `SOL-43` 快照未复制源环境配置、调试 token 与硬编码初始化管理员密码；组件状态标记为 `reference`。
+- 启动并完成 Multica `SOL-44` 本地组件抽取：生成 `COMPONENTS/base-data`，覆盖 `project-scaffold` 通用基础数据、`zhongsheng-backend` 中圣基础数据、`qmy-admin` 字段管理页面和可编辑下拉组件证据。
+- `SOL-44` 快照保留 `base_tree_node`、`base_data`、`nodeKey`、`biz_type`、权限码和字段管理契约；组件状态标记为 `reference`。

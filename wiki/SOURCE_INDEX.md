@@ -39,6 +39,14 @@
 - `RAW/PROJECTs/project-scaffold/docs/sql/init-system-file.sql`
 - `RAW/PROJECTs/project-scaffold/docs/sql/init-tenant.sql`
 
+#### 基础数据组件关键路径
+
+- `RAW/PROJECTs/project-scaffold/project-api/src/main/java/com/qmy/project/api/dto/base`
+- `RAW/PROJECTs/project-scaffold/project-application/src/main/java/com/qmy/project/config/BaseTreeNodeDataInitializer.java`
+- `RAW/PROJECTs/project-scaffold/project-common/src/main/java/com/qmy/project/common/enums/BaseTreeBizTypeEnum.java`
+- `RAW/PROJECTs/project-scaffold/project-common/src/main/java/com/qmy/project/common/enums/BaseTreeNodeSeedEnum.java`
+- `RAW/PROJECTs/project-scaffold/project-core/src/main/java/com/qmy/project/core/base`
+
 ### 中盛业务实现
 
 - `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`
@@ -48,6 +56,16 @@
 - `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto`
 - `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core`
 - `RAW/PROJECTs/zhongsheng-backend/docs/sql`
+
+#### 中盛基础数据关键路径
+
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/base`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-application/src/main/java/com/qmy/zhongsheng/config/BaseTreeNodeDataInitializer.java`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/enums/BaseTreeBizTypeEnum.java`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/enums/BaseTreeNodeSeedEnum.java`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/constants/ApiPermissionConstants.java`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/base`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-base-data.sql`
 
 ### 调研资料
 
