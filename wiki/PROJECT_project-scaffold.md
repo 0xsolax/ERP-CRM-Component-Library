@@ -13,6 +13,14 @@
 - `RAW/PROJECTs/project-scaffold/project-infrastructure`
 - `RAW/PROJECTs/project-scaffold/docs/sql`
 
+## 基座快照
+
+- [BASE/project-scaffold](../BASE/project-scaffold/README.md)
+- [来源映射](../BASE/project-scaffold/SOURCE_MAP.md)
+- [基座规范](../BASE/project-scaffold/docs/spec/BASE_SPEC.md)
+- [接口契约](../BASE/project-scaffold/docs/contracts/API_CONTRACT.md)
+- [验收清单](../BASE/project-scaffold/docs/acceptance/ACCEPTANCE.md)
+
 ## 已确认能力
 
 - 账号密码登录。
@@ -41,4 +49,3 @@ README 明确后端按 `controller -> service -> manager -> dao` 组织；对外
 
 - 该项目是通用脚手架，不包含完整客户、报价、订单、采购、仓储业务闭环。
 - 新项目若采用该基座，需要再装配具体业务模块。
-

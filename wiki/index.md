@@ -11,6 +11,13 @@
 - [业务组件卡模板](TEMPLATE_业务组件卡.md)
 - [来源 manifest](source_manifest.tsv)
 
+## 快照资产入口
+
+- [BASE 基座快照层](../BASE/README.md)
+- [BASE_project-scaffold 基座快照](../BASE/project-scaffold/README.md)
+- [COMPONENTS 组件快照层](../COMPONENTS/README.md)
+- [组件快照模板](../COMPONENTS/_TEMPLATE/README.md)
+
 ## 来源项目
 
 - [PROJECT_qmy-admin](PROJECT_qmy-admin.md)
@@ -38,4 +45,3 @@
 2. 对照组件卡确认前端、接口、数据表、权限、验收项。
 3. 从来源项目定位可参考实现。
 4. 按目标项目技术栈改造，而不是直接复制到生产。
-
