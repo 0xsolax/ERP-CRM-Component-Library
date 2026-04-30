@@ -18,3 +18,5 @@
 - `SOL-44` 快照保留 `base_tree_node`、`base_data`、`nodeKey`、`biz_type`、权限码和字段管理契约；组件状态标记为 `reference`。
 - 启动并完成 Multica `SOL-45` 本地组件抽取：生成 `COMPONENTS/file-oss`，覆盖 `zhongsheng-backend` OSS STS、`system_file` 文件记录、`qmy-admin` 上传组件和 `zhongsheng-AI` legacy 上传控制器对比。
 - `SOL-45` 快照明确推荐 STS 临时凭证直传 OSS + `system_file` 文件记录，旧后端中转上传仅作为迁移参考；组件状态标记为 `reference`。
+- 启动并完成 Multica `SOL-46` 本地组件抽取：生成 `COMPONENTS/product-material`，覆盖产品主档、产品 BOM、伞架、面料、材料、包材、工序、SQL、前端维护页、路由权限和契约文档。
+- `SOL-46` 快照明确产品主档成本与报价时点快照的边界，并标注 `/fabric/deteil`、`/packaging/typeList`、`/box-price/list` 等待验证接口事实；组件状态标记为 `reference`。

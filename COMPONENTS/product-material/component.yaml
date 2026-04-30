@@ -1,0 +1,94 @@
+name: product-material
+display_name: 产品物料与 BOM
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/product
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/process
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/product
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/material
+    - RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/process
+    - RAW/PROJECTs/zhongsheng-backend/docs/sql
+    - RAW/PROJECTs/qmy-admin/src/views/zs/base-info/product
+    - RAW/PROJECTs/qmy-admin/src/views/zs/base-info/process
+    - RAW/PROJECTs/qmy-admin/src/views/zs/material
+    - RAW/PROJECTs/qmy-admin/src/api/zs/product
+    - RAW/PROJECTs/qmy-admin/src/api/zs/material
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_产品物料基础数据.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - base-data
+    - file-oss
+  optional:
+    - auth-permission
+entrypoints:
+  backend:
+    controllers:
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/product/controller/ProductController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/controller/FabricController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/controller/MaterialController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/controller/PackagingController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/controller/UmbrellaFrameController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/process/controller/ProcessController.java
+    services:
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/product/service
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/service
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/process/service
+    dto:
+      - backend/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/product
+      - backend/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/material
+      - backend/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/process
+    constants:
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/constants/ApiPermissionConstants.java
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/error
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/zs/product/index.ts
+      - frontend/qmy-admin/src/api/zs/material
+      - frontend/qmy-admin/src/api/zs/base-info/process.ts
+    views:
+      - frontend/qmy-admin/src/views/zs/base-info/product
+      - frontend/qmy-admin/src/views/zs/base-info/process
+      - frontend/qmy-admin/src/views/zs/material
+    router:
+      - frontend/qmy-admin/src/views/zs/router/async-modules/base-info.ts
+      - frontend/qmy-admin/src/views/zs/router/async-modules/material.ts
+  db:
+    schema:
+      - db/zhongsheng-backend/init-product.sql
+      - db/zhongsheng-backend/init-material.sql
+      - db/zhongsheng-backend/init-fabric.sql
+      - db/zhongsheng-backend/init-packaging.sql
+      - db/zhongsheng-backend/init-process.sql
+      - db/zhongsheng-backend/init-umbrella-frame.sql
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 组件当前为 reference，适合作为产品物料与 BOM 方案参考。
+  - 产品、材料、伞架图片依赖 file-oss；字段分类依赖 base-data。
+  - 来源前端的 sys:role:list 路由占位权限已在快照路由中替换为产品、材料、工序权限。
+  - 来源存在 /fabric/deteil、/packaging/typeList、/box-price/list 等待统一的接口事实。

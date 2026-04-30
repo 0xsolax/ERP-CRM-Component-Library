@@ -20,6 +20,7 @@
 - [COMPONENT_auth-permission](../COMPONENTS/auth-permission/README.md)
 - [COMPONENT_base-data](../COMPONENTS/base-data/README.md)
 - [COMPONENT_file-oss](../COMPONENTS/file-oss/README.md)
+- [COMPONENT_product-material](../COMPONENTS/product-material/README.md)
 
 ## 来源项目
 

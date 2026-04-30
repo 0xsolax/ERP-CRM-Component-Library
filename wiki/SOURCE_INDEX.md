@@ -67,6 +67,27 @@
 - `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/base`
 - `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-base-data.sql`
 
+#### 产品物料组件关键路径
+
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/product`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/material`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/process`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/product`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/process`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-product.sql`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-material.sql`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-fabric.sql`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-packaging.sql`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-process.sql`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql/init-umbrella-frame.sql`
+- `RAW/PROJECTs/qmy-admin/src/views/zs/base-info/product`
+- `RAW/PROJECTs/qmy-admin/src/views/zs/base-info/process`
+- `RAW/PROJECTs/qmy-admin/src/views/zs/material`
+- `RAW/PROJECTs/qmy-admin/src/api/zs/product`
+- `RAW/PROJECTs/qmy-admin/src/api/zs/material`
+- `RAW/PROJECTs/qmy-admin/src/api/zs/base-info/process.ts`
+
 ### 调研资料
 
 - `RAW/docs/zhongsheng/第一次调研（2026.02.11）/第一次会议.md`
