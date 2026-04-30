@@ -1,0 +1,225 @@
+{
+  "main": {
+    "id": "46b943c386317361",
+    "type": "split",
+    "children": [
+      {
+        "id": "2d1ff4e9c4e8703c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2d95c45b6a923ed6",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "wiki/PROJECT_zhongsheng调研资料.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "PROJECT_zhongsheng调研资料"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "d438b435f3a6a44b",
+    "type": "split",
+    "children": [
+      {
+        "id": "8d29fcef94209123",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d7c0955ba53fe40c",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "d3b2158779d300c9",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "8ffc9fd2f07e75bc",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "c59b61db549762cc",
+    "type": "split",
+    "children": [
+      {
+        "id": "42afe2f1fdda9426",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "5be6e34f05fc0549",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "wiki/PROJECT_zhongsheng调研资料.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "PROJECT_zhongsheng调研资料 的反向链接列表"
+            }
+          },
+          {
+            "id": "060e6f81376e7d41",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "wiki/PROJECT_zhongsheng调研资料.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "PROJECT_zhongsheng调研资料 的出链列表"
+            }
+          },
+          {
+            "id": "006f982f22509613",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "0d1e00812fb03a1f",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "318285d9c62e3f20",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "wiki/PROJECT_zhongsheng调研资料.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "PROJECT_zhongsheng调研资料 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "2d95c45b6a923ed6",
+  "lastOpenFiles": [
+    "COMPONENTS/_TEMPLATE/docs/acceptance/ACCEPTANCE.md",
+    "COMPONENTS/_TEMPLATE/docs/contracts/PERMISSION_CONTRACT.md",
+    "COMPONENTS/_TEMPLATE/docs/contracts/DATA_CONTRACT.md",
+    "COMPONENTS/_TEMPLATE/docs/contracts/API_CONTRACT.md",
+    "COMPONENTS/_TEMPLATE/docs/spec/COMPONENT_SPEC.md",
+    "COMPONENTS/_TEMPLATE/docs/source/README.md",
+    "COMPONENTS/_TEMPLATE/db/README.md",
+    "COMPONENTS/_TEMPLATE/frontend/README.md",
+    "COMPONENTS/_TEMPLATE/backend/README.md",
+    "COMPONENTS/_TEMPLATE/SOURCE_MAP.md",
+    "COMPONENTS/_TEMPLATE/component.yaml",
+    "COMPONENTS/_TEMPLATE/README.md",
+    "COMPONENTS/README.md",
+    "BASE/README.md",
+    "COMPONENTS/_TEMPLATE/docs/spec",
+    "COMPONENTS/_TEMPLATE/docs/source",
+    "COMPONENTS/_TEMPLATE/docs/contracts",
+    "COMPONENTS/_TEMPLATE/docs/acceptance",
+    "COMPONENTS/_TEMPLATE/frontend",
+    "COMPONENTS/_TEMPLATE/docs",
+    "COMPONENTS/_TEMPLATE/db",
+    "COMPONENTS/_TEMPLATE/backend",
+    "COMPONENTS/_TEMPLATE",
+    "pdoc/rule/RULE_Git协作规范_v1.md",
+    "pdoc/rule/RULE_GUIDE文档管理补丁_v1.md",
+    "pdoc/rule/RULE_代码质量与交付规范_v1.md",
+    "pdoc/rule/RULE_文档管理规范_v1.md",
+    "pdoc/rule/RULE_任务执行与复核规范_v1.md",
+    "pdoc/rule/RULE_测试流程规范_v1.md",
+    "wiki/PROJECT_zhongsheng-backend.md",
+    "wiki/PROJECT_zhongsheng-AI.md",
+    "wiki/PROJECT_qmy-admin.md",
+    "wiki/PROJECT_project-scaffold.md",
+    "wiki/COMP_登录认证与权限.md",
+    "wiki/COMP_仓储发货.md",
+    "wiki/COMP_客户管理.md"
+  ]
+}

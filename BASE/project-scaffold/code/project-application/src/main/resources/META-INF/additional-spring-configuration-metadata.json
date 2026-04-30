@@ -1,0 +1,64 @@
+{
+  "properties": [
+    {
+      "name": "auth.jwt.issuer",
+      "type": "java.lang.String",
+      "description": "JWT issuer."
+    },
+    {
+      "name": "auth.jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT signing secret."
+    },
+    {
+      "name": "auth.jwt.access-token-expire-seconds",
+      "type": "java.lang.Long",
+      "description": "JWT access token expiration in seconds."
+    },
+    {
+      "name": "auth.jwt.header-name",
+      "type": "java.lang.String",
+      "description": "Request header name used to carry the raw access token."
+    },
+    {
+      "name": "auth.scan.feishu.app-id",
+      "type": "java.lang.String",
+      "description": "Feishu app id."
+    },
+    {
+      "name": "auth.scan.feishu.app-secret",
+      "type": "java.lang.String",
+      "description": "Feishu app secret."
+    },
+    {
+      "name": "auth.scan.feishu.redirect-uri",
+      "type": "java.lang.String",
+      "description": "Fallback redirect_uri when Origin header is missing or unusable; must match Feishu app redirect URL."
+    },
+    {
+      "name": "auth.scan.dingtalk.app-id",
+      "type": "java.lang.String",
+      "description": "DingTalk app id."
+    },
+    {
+      "name": "auth.scan.dingtalk.app-secret",
+      "type": "java.lang.String",
+      "description": "DingTalk app secret."
+    },
+    {
+      "name": "auth.scan.wecom.corp-id",
+      "type": "java.lang.String",
+      "description": "WeCom corp id."
+    },
+    {
+      "name": "auth.scan.wecom.agent-id",
+      "type": "java.lang.String",
+      "description": "WeCom agent id."
+    },
+    {
+      "name": "auth.scan.wecom.app-secret",
+      "type": "java.lang.String",
+      "description": "WeCom app secret."
+    }
+  ]
+}

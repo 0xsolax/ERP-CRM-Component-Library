@@ -1,0 +1,56 @@
+name: project-scaffold
+display_name: ERP/CRM Spring Boot backend scaffold
+status: reference
+type: backend-base
+snapshot_date: 2026-04-30
+source:
+  raw_path: RAW/PROJECTs/project-scaffold
+  copied_to: BASE/project-scaffold/code
+  source_docs:
+    - BASE/project-scaffold/docs/source/README.source.md
+    - BASE/project-scaffold/docs/source/sql
+    - BASE/project-scaffold/docs/source/skills/project-scaffold-coding
+runtime:
+  language: Java
+  jdk: "21"
+  framework: Spring Boot
+  database: MySQL
+  persistence: MyBatis-Plus
+modules:
+  - project-api
+  - project-application
+  - project-common
+  - project-core
+  - project-infrastructure
+  - project-test
+capabilities:
+  - auth-password-login
+  - auth-scan-login-strategy
+  - jwt-token-session
+  - tenant-config
+  - base-data-tree
+  - oss-sts
+  - system-file
+  - external-tenant-sync
+  - feishu-alert
+sanitization:
+  excluded:
+    - nested .git
+    - .DS_Store
+    - target
+    - node_modules
+    - build
+    - dist
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+  changed_in_snapshot:
+    - Removed hardcoded debug super token branch from AuthTokenInterceptor.
+next_use:
+  recommended_for:
+    - New ERP/CRM backend project bootstrap.
+    - Backend base for business component assembly.
+  requires_before_production:
+    - Replace JWT secret.
+    - Add production auth for external sync endpoints.
+    - Configure datasource and tenant_config per environment.

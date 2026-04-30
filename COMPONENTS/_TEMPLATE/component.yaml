@@ -1,0 +1,44 @@
+name: component-name
+display_name: 组件中文名称
+status: draft
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/example
+  wiki_pages:
+    - wiki/COMP_示例.md
+dependencies:
+  required: []
+  optional: []
+entrypoints:
+  backend:
+    controllers: []
+    services: []
+    dto: []
+  frontend:
+    views: []
+    api: []
+    router: []
+  db:
+    schema: []
+    seed: []
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - .env
+    - '*secret*'
+notes:
+  - 所有字段都应在正式组件中改为真实值。
+

@@ -1,0 +1,2 @@
+# Windows PowerShell 5.1 对无 BOM 的 .ps1 易按系统代码页误解析；仓库中脚本以 UTF-8（含 BOM）提交。
+docs/sh/windows/*.ps1 text

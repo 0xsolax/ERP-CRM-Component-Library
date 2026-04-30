@@ -1,0 +1,4 @@
+interface:
+  display_name: "Project Scaffold 编码规范"
+  short_description: "Spring Boot 多模块脚手架编码与架构规范"
+  default_prompt: "Use $project-scaffold-coding to write code following the project coding standards."
