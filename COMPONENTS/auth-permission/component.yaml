@@ -1,0 +1,68 @@
+name: auth-permission
+display_name: 登录认证与权限
+status: reference
+type: foundation
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - BASE/project-scaffold
+    - RAW/PROJECTs/zhongsheng-backend
+    - RAW/PROJECTs/qmy-admin
+  wiki_pages:
+    - wiki/COMP_登录认证与权限.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+  optional:
+    - file-oss
+entrypoints:
+  backend:
+    controllers:
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/auth/controller/UserAuthController.java
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/user/controller/SysUserController.java
+      - backend/zhongsheng-rbac/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/user/controller/RoleController.java
+      - backend/zhongsheng-rbac/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/menu/controller/SystemMenuController.java
+    services:
+      - backend/project-scaffold/project-core/src/main/java/com/qmy/project/core/auth/service/AuthService.java
+      - backend/zhongsheng-rbac/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/user/service/UserPermissionService.java
+    dto:
+      - backend/project-scaffold/project-api/src/main/java/com/qmy/project/api/dto
+      - backend/zhongsheng-rbac/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto
+  frontend:
+    views:
+      - frontend/qmy-admin/src/views/*/login
+      - frontend/qmy-admin/src/views/*/system/role
+      - frontend/qmy-admin/src/views/*/system/menu
+    api:
+      - frontend/qmy-admin/src/api/*/auth
+    router:
+      - frontend/qmy-admin/src/views/*/permission.ts
+      - frontend/qmy-admin/src/views/*/router
+      - frontend/qmy-admin/src/views/*/store/modules/permission
+  db:
+    schema:
+      - db/project-scaffold/init-auth.sql
+      - db/zhongsheng-backend/init-auth.sql
+      - db/zhongsheng-backend/init-system-menu.sql
+    seed: []
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - hardcoded debug token
+notes:
+  - 组件当前为 reference，登录/JWT 可优先复用，RBAC 需要按目标项目整合。
+  - qmy-admin 中存在多套业务线前端，接入时只能选择一套作为目标，不应全部直接复制。

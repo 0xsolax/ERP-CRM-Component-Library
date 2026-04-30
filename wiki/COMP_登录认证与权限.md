@@ -9,6 +9,15 @@
 | 适用项目 | 多数 ERP/CRM 后台 |
 | 来源路径 | `RAW/PROJECTs/project-scaffold/README.md`、`RAW/PROJECTs/zhongsheng-backend/README.md`、`RAW/PROJECTs/qmy-admin/src/api/*/auth`、`RAW/PROJECTs/qmy-admin/src/views/*/permission.ts` |
 
+## 组件快照
+
+- [COMPONENTS/auth-permission](../COMPONENTS/auth-permission/README.md)
+- [来源映射](../COMPONENTS/auth-permission/SOURCE_MAP.md)
+- [组件规范](../COMPONENTS/auth-permission/docs/spec/COMPONENT_SPEC.md)
+- [API 契约](../COMPONENTS/auth-permission/docs/contracts/API_CONTRACT.md)
+- [权限契约](../COMPONENTS/auth-permission/docs/contracts/PERMISSION_CONTRACT.md)
+- [验收清单](../COMPONENTS/auth-permission/docs/acceptance/ACCEPTANCE.md)
+
 ## 业务目标
 
 提供后台登录、扫码登录扩展、JWT 会话、当前用户信息、菜单权限、角色权限和路由守卫能力，作为新项目的基础入口。
@@ -67,4 +76,4 @@
 
 - `qmy-admin` 前端存在多租户接口前缀，接入新后端时要统一路径。
 - 调试 token、默认 JWT secret、扫码平台密钥必须在生产前替换。
-
+- 当前快照状态为 `reference`：登录/JWT 可优先复用，RBAC 需要按目标项目整合包名、权限码和菜单数据。

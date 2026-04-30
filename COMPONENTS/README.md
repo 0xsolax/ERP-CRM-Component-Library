@@ -45,7 +45,7 @@ COMPONENTS/<component-name>/
 
 ## 第一批组件计划
 
-- `auth-permission`
+- [auth-permission](auth-permission/README.md) - `reference`，已抽取登录、JWT、Token、用户、角色、菜单、权限和前端守卫快照
 - `base-data`
 - `file-oss`
 - `product-material`
@@ -62,4 +62,3 @@ COMPONENTS/<component-name>/
 3. 对照 `docs/contracts/` 确认接口、数据和权限。
 4. 复制或改造 `backend/`、`frontend/`、`db/`。
 5. 按 `docs/acceptance/ACCEPTANCE.md` 验收。
-

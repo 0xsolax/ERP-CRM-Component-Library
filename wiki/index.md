@@ -17,6 +17,7 @@
 - [BASE_project-scaffold 基座快照](../BASE/project-scaffold/README.md)
 - [COMPONENTS 组件快照层](../COMPONENTS/README.md)
 - [组件快照模板](../COMPONENTS/_TEMPLATE/README.md)
+- [COMPONENT_auth-permission](../COMPONENTS/auth-permission/README.md)
 
 ## 来源项目
 
