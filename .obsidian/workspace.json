@@ -185,18 +185,19 @@
   },
   "active": "2d95c45b6a923ed6",
   "lastOpenFiles": [
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/data/log/log_info.log",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/data/log/log_error.log",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/data/log",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/data",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-test/target/maven-archiver/pom.properties",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-test/target/zhongsheng-test-1.0.0-SNAPSHOT.jar",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-test/target/maven-archiver",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-test/target",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/target/zhongsheng-application-1.0.0-SNAPSHOT.jar.original",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/target/zhongsheng-application-1.0.0-SNAPSHOT.jar",
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-application/target/maven-archiver/pom.properties",
     "COMPONENTS/customer-management/docs/acceptance/REVIEW_EVIDENCE.md",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/api/sed/sales/customer.ts",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/api/sed/sales",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/api/sed",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/constant/yitang/warehouse.ts",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/views/admin/sales/warehouse-history/index.vue",
-    "COMPONENTS/customer-management/frontend/qmy-admin/src/views/admin/sales/warehouse-history",
     "RAW/PROJECTs/qmy-zhongsheng-ai/pdoc/report/REPORT_0430_SOL55前置验证与接口漂移清单.md",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/js/virtual_svg-icons-register-7d451b99.js.gz",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/js/menu-44190f6f.js.gz",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/js/add-cb957a4b.js",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/js/menu-44190f6f.js",
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/png/cloud-98e7ac66.png",
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/png/404-538aa4d7.png",
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/dist/static/gif/401-a61ddb94.gif",
@@ -229,7 +230,6 @@
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/@babel/helper-compilation-targets/node_modules/semver/README.md",
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/entities/readme.md",
     "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/@vue/babel-preset-app/node_modules/semver/README.md",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/css-loader/node_modules/semver/README.md",
-    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/@vue/cli-shared-utils/node_modules/semver/README.md"
+    "RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/node_modules/css-loader/node_modules/semver/README.md"
   ]
 }
