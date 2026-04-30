@@ -21,4 +21,3 @@ CREATE TABLE IF NOT EXISTS `fabric`
   KEY `idx_fabric_model_id` (`model_id`),
   KEY `idx_fabric_width_id` (`width_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='面料表';
-

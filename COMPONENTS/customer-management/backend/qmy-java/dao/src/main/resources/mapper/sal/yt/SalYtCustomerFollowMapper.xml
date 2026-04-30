@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtCustomerFollowMapper">
+
+    <!-- 基础字段列表 -->
+    <sql id="Base_Column_List">
+        id, customer_id, theme, contact_person, description, next_visit_date,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据客户ID查询跟进记录列表 -->
+    <select id="selectByCustomerId" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerFollow">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sal_yt_customer_follow
+        WHERE customer_id = #{customerId}
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+    <select id="selectByCustomerIdFinally" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerFollow">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sal_yt_customer_follow
+        WHERE customer_id = #{customerId}
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+        limit 1
+    </select>
+
+</mapper>

@@ -59,7 +59,9 @@
 
 ## 权限边界
 
-- 上传接口必须要求登录。
+- `GET /oss/getOssToken` 已绑定 `file:oss:token` 方法级权限。
+- `POST /storage/saveSysStorage` 已绑定 `file:oss:save` 方法级权限。
+- 上传接口必须要求登录，并确认方法级安全在目标应用中启用。
 - 获取 STS token 的接口不应匿名开放。
 - OSS 长期 AccessKey 不得暴露给前端。
 - STS Policy 应限制租户、路径前缀、操作类型和有效期。
@@ -90,4 +92,5 @@
 
 - 旧 `UploadController` 直接使用后端长期凭据中转上传；新版更适合使用 STS 和文件记录。
 - 业务表保存 URL 还是文件 ID 需要项目统一，否则后续迁移 OSS 域名会有成本。
+- 文件记录复用必须限定 `main_type/sub_type/master_id/url` 业务域，不能只按 URL 全局去重。
 - 当前快照未覆盖私有文件签名下载和 OSS 对象删除，需要后续按业务补齐。

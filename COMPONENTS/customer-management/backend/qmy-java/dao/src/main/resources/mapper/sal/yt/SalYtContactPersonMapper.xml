@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtContactPersonMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtContactPerson" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="supplier_id" property="supplierId"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="position" property="position"/>
+        <result column="birthday" property="birthday"/>
+        <result column="gender" property="gender"/>
+        <result column="remark" property="remark"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, customer_id, supplier_id, name, email, position, birthday, gender, remark, 
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sal_yt_contact_person
+        where customer_id = #{customerId} and is_deleted = 0
+    </select>
+
+    <update id="deleteByCustomerId" parameterType="java.lang.Long">
+        update sal_yt_contact_person
+        set is_deleted = 1
+        where customer_id = #{customerId}
+    </update>
+    
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into sal_yt_contact_person
+        (customer_id, supplier_id, name, email, position, birthday, gender, remark, create_user, create_time, update_user, update_time, tenant_id, is_deleted)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.customerId}, #{item.supplierId}, #{item.name}, #{item.email}, #{item.position}, #{item.birthday}, #{item.gender}, #{item.remark}, #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, 0)
+        </foreach>
+    </insert>
+    
+    <select id="selectBySupplierId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        *
+        from sal_yt_contact_person
+        where supplier_id = #{supplierId} and is_deleted = 0
+    </select>
+    
+    <update id="deleteBySupplierId" parameterType="java.lang.Long">
+        update sal_yt_contact_person
+        set is_deleted = 1
+        where supplier_id = #{supplierId}
+    </update>
+
+    <!-- 根据姓名查询是否存在（排除指定的联系人ID） -->
+    <select id="countByNameExcludeContactId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sal_yt_contact_person
+        WHERE name = #{name}
+        AND is_deleted = 0
+        <if test="excludeContactId != null">
+            AND id != #{excludeContactId}
+        </if>
+    </select>
+
+    <!-- 根据邮箱查询是否存在（排除指定的联系人ID） -->
+    <select id="countByEmailExcludeContactId" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM sal_yt_contact_person
+        WHERE email = #{email}
+        AND is_deleted = 0
+        <if test="excludeContactId != null">
+            AND id != #{excludeContactId}
+        </if>
+    </select>
+</mapper>

@@ -27,6 +27,7 @@ public class OssController {
     private final OssService ossService;
 
     @GetMapping("/getOssToken")
+    @PreAuthorize("@ss.hasPermission('file:oss:token')")
     @Operation(summary = "获取OSS STS临时凭证")
     public ResultInfo<OssStsTokenVO> getOssToken() {
         return ResultInfo.success(ossService.getOssToken());

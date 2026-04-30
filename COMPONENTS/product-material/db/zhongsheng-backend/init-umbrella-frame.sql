@@ -54,4 +54,3 @@ CREATE TABLE IF NOT EXISTS `umbrella_frame_material`
   KEY `idx_umbrella_frame_material_umbrella_frame_id` (`umbrella_frame_id`),
   KEY `idx_umbrella_frame_material_material_type` (`material_category_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='伞架材料绑定表';
-

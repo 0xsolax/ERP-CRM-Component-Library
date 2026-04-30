@@ -76,9 +76,9 @@ public class FabricController {
         return ResultInfo.success(fabricService.listForSelect(query));
     }
 
-    @PostMapping("/deteil")
+    @PostMapping({"/deteil", "/detail"})
     @PreAuthorize("@ss.hasPermission(@ss.perm('FABRIC_DETAIL'))")
-    @Operation(summary = "查询面料详情", description = "根据 id 查询")
+    @Operation(summary = "查询面料详情", description = "根据 id 查询；保留 /deteil 兼容来源路径，并提供 /detail 标准路径")
     public ResultInfo<FabricVO> getDetail(@RequestBody IdRequestParam param) {
         return ResultInfo.success(fabricService.getDetail(param.getId()));
     }

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtCustomerAddressMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtCustomerAddress" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="consignee" property="consignee"/>
+        <result column="phone" property="phone"/>
+        <result column="country_region" property="countryRegion"/>
+        <result column="country_region_id" property="countryRegionId"/>
+        <result column="region_id" property="regionId"/>
+        <result column="province" property="province"/>
+        <result column="city" property="city"/>
+        <result column="county" property="county"/>
+        <result column="detail" property="detail"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, customer_id, consignee, phone, country_region,country_region_id, region_id, province,
+        city, county, detail, create_user, create_time, update_user, update_time, 
+        tenant_id, is_deleted
+    </sql>
+
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        ,(select order_default_remark from sal_yt_customer where id = #{customerId}) as orderDefaultRemark
+        from sal_yt_customer_address
+        where customer_id = #{customerId} and is_deleted = 0
+    </select>
+    <select id="selectByCustomerIdExcludeDefault" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+            ,(select order_default_remark from sal_yt_customer where id = #{customerId}) as orderDefaultRemark
+        from sal_yt_customer_address
+        where customer_id = #{customerId} and is_deleted = 0 and country_region_id !=-1
+    </select>
+
+    <update id="deleteByCustomerId" parameterType="java.lang.Long">
+        update sal_yt_customer_address
+        set is_deleted = 1
+        where customer_id = #{customerId}
+    </update>
+    
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into sal_yt_customer_address
+        (customer_id, consignee, phone, country_region,country_region_id, region_id, province, city, county, detail, create_user, create_time, update_user, update_time, tenant_id, is_deleted)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.customerId}, #{item.consignee}, #{item.phone}, #{item.countryRegion}, #{item.countryRegionId}, #{item.regionId}, #{item.province}, #{item.city}, #{item.county}, #{item.detail}, #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, 0)
+        </foreach>
+    </insert>
+</mapper>

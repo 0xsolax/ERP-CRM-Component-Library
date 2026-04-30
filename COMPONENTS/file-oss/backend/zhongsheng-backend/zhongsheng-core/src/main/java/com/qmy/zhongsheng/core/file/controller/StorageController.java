@@ -36,6 +36,7 @@ public class StorageController {
      * @return 包含 id 和 url 的结果
      */
     @PostMapping("/saveSysStorage")
+    @PreAuthorize("@ss.hasPermission('file:oss:save')")
     @Operation(summary = "保存文件", description = "返回文件表 id 和 url，可用于进一步文件的保存")
     public ResultInfo<StorageSaveVO> saveSysStorage(@RequestBody @Validated StorageDTO storageDTO) {
         Long id = systemFileManager.save(

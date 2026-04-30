@@ -4,12 +4,12 @@
 
 | 权限码 | 适用接口 | 说明 |
 | :--- | :--- | :--- |
-| `file:oss:token` | `GET /oss/getOssToken` | 获取 STS 临时凭证 |
-| `file:oss:save` | `POST /storage/saveSysStorage` | 保存文件记录 |
+| `file:oss:token` | `GET /oss/getOssToken` | 获取 STS 临时凭证，Controller 使用 `@PreAuthorize` 绑定 |
+| `file:oss:save` | `POST /storage/saveSysStorage` | 保存文件记录，Controller 使用 `@PreAuthorize` 绑定 |
 | `file:oss:view` | 文件列表或业务文件查询 | 查询文件记录 |
 | `file:oss:remove` | 文件删除或解绑 | 删除文件记录或 OSS 对象 |
 
-来源 `zhongsheng-backend` 当前主要依赖登录拦截器保护接口，未在 `OssController` 和 `StorageController` 上完整定义方法级权限。新项目接入时建议补齐方法级权限或网关权限。
+当前快照已在 `OssController` 和 `StorageController` 上定义方法级权限。新项目接入时仍需确认 `auth-permission` 的 `@EnableMethodSecurity`、`SpElPermissionService` 与登录态拦截器已纳入同一应用上下文。
 
 ## 安全边界
 

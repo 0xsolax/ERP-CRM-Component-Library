@@ -36,23 +36,6 @@ export const deletePackaging = (data: any) => {
   })
 }
 
-// 包材类型列表
-export const getPackagingTypeList = (data: any) => {
-  return axios.request<IResponseModel<any>>({
-    url: '/packaging/typeList',
-    method: 'post',
-    data
-  })
-}
-
-// 获取纸箱单价列表
-export const getBoxPriceList = () => {
-  return axios.request<IResponseModel<any>>({
-    url: '/box-price/list',
-    method: 'get'
-  })
-}
-
 // 批量保存纸箱单价
 export const saveOrUpdateDefaultPaperBox = (data: any) => {
   return axios.request<IResponseModel<any>>({

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtCustomerStoreMapper">
+    
+    <select id="selectProductList" resultType="java.util.Map">
+        SELECT 
+            p.id,
+            p.code,
+            p.name,
+            p.category_id as categoryId,
+            p.category_name as categoryName,
+            p.specification_id as specificationId,
+            p.specification_name as specificationName,
+            p.unit,
+            p.price,
+            p.status,
+            p.create_time as createTime,
+            p.update_time as updateTime,
+            IFNULL((SELECT 1 FROM sal_yt_customer_store cs 
+                    WHERE cs.product_id = p.id 
+                    AND cs.specification_id = p.specification_id 
+                    AND cs.is_deleted = 0 
+                    LIMIT 1), 0) as isStoreEnabled
+        FROM pro_yt_product p
+        WHERE p.is_deleted = 0
+        <if test="params.productCode != null and params.productCode != ''">
+            AND p.code LIKE CONCAT('%', #{params.productCode}, '%')
+        </if>
+        <if test="params.categoryId != null">
+            AND p.category_id = #{params.categoryId}
+        </if>
+        <if test="params.id != null and params.id != ''">
+            AND p.id = #{params.id}
+        </if>
+        ORDER BY p.create_time DESC
+    </select>
+    
+    <select id="selectStoreExists" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM sal_yt_customer_store
+        WHERE product_id = #{productId}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+    
+    <select id="selectByCustomerIdAndProductId" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerStore">
+        SELECT * FROM sal_yt_customer_store
+        WHERE product_id = #{productId}
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+    
+    <select id="selectBySpecificationAndCustomer" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerStore">
+        SELECT * FROM sal_yt_customer_store
+        WHERE product_id = #{productId}
+        AND specification_id = #{id}
+        AND customer_id = #{customerId}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+    
+    <!-- 根据客户ID和规格ID查询独立仓数据 -->
+    <select id="selectByCustomerIdAndSpecificationId" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerStore">
+        SELECT * FROM sal_yt_customer_store
+        WHERE customer_id = #{customerId}
+        AND specification_id = #{specificationId}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+    
+    <!-- 更新独立仓状态 -->
+    <update id="updateStatus">
+        UPDATE sal_yt_customer_store
+        SET status = #{status}
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+    
+    <!-- 查询客户独立仓预警数量 -->
+    <select id="selectWarningCountByCustomerId" resultType="java.lang.Integer">
+        SELECT COUNT(DISTINCT product_id) FROM sal_yt_customer_store
+        WHERE customer_id = #{customerId}
+        AND is_deleted = 0
+        AND warning_number >= store_number
+        AND warning_number > 0
+    </select>
+    
+    <!-- 查询客户独立仓产品预警数量 -->
+    <select id="selectWarningCountByCustomerIdAndProductId" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM sal_yt_customer_store
+        WHERE customer_id = #{customerId}
+        AND product_id = #{productId}
+        AND is_deleted = 0
+        AND warning_number => store_number
+        AND warning_number > 0
+    </select>
+    <select id="selectLocationById" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerStore"
+            parameterType="java.lang.Long">
+        select sycs.location_id,syl.name as location_name
+        from sal_yt_customer_store as sycs
+                 left join sto_yt_location as syl on syl.id = sycs.location_id
+        where sycs.id = #{specificationId} and  sycs.is_deleted=0
+    </select>
+
+    <select id="selectById" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerStore">
+        SELECT sycs.*,
+               (select name from sto_yt_location where id = sycs.location_id ) as locationName,
+               (select code from pro_yt_product where id = sycs.product_id ) as productCode
+           from  sal_yt_customer_store as sycs
+        WHERE sycs.id = #{id}
+          AND sycs.is_deleted = 0
+
+    </select>
+</mapper>

@@ -1,5 +1,6 @@
 package com.qmy.zhongsheng.core.file.manager.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.qmy.zhongsheng.common.utils.BeanUtils;
 import com.qmy.zhongsheng.common.utils.StrUtils;
@@ -15,9 +16,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.qmy.zhongsheng.common.utils.ValidityUtils.isNotBlank;
 import static com.qmy.zhongsheng.common.utils.ValidityUtils.nonNull;
@@ -50,10 +48,10 @@ public class SystemFileManagerImpl implements SystemFileManager {
         if (existingFileId != null) {
             SystemFileDO row = systemFileDAO.selectById(existingFileId);
             if (row != null) {
-                if (url.equals(row.getUrl())) {
+                if (url.equals(row.getUrl()) && isNotBlank(row.getEndpoint()) && isNotBlank(row.getFileKey())) {
                     return existingFileId;
                 }
-                row.setName(fileNameHintFromUrl(url));
+                fillAvatarFileFields(row, url);
                 systemFileDAO.updateById(row);
                 return existingFileId;
             }
@@ -61,9 +59,16 @@ public class SystemFileManagerImpl implements SystemFileManager {
         SystemFileDO insert = new SystemFileDO();
         insert.setMainType(SystemFileMainTypeEnum.USER.getCode());
         insert.setSubType(SystemFileSubTypeEnum.USER_AVATAR.getCode());
-        insert.setName(fileNameHintFromUrl(url));
+        fillAvatarFileFields(insert, url);
         systemFileDAO.insert(insert);
         return insert.getId();
+    }
+
+    private static void fillAvatarFileFields(SystemFileDO row, String url) {
+        row.setUrl(url);
+        row.setEndpoint(StrUtils.parseEndpoint(url));
+        row.setFileKey(StrUtils.parseKey(url));
+        row.setName(fileNameHintFromUrl(url));
     }
 
     private static String fileNameHintFromUrl(String url) {
@@ -104,25 +109,49 @@ public class SystemFileManagerImpl implements SystemFileManager {
         }
         String mainCode = mainType.getCode();
         String subCode = subType.getCode();
-        Set<String> urls = rows.stream().map(SystemFileDO::getUrl).collect(Collectors.toSet());
-        List<SystemFileDO> existingRows = systemFileDAO.selectList(Wrappers.<SystemFileDO>lambdaQuery().in(SystemFileDO::getUrl, urls).eq(SystemFileDO::getIsDeleted, 0));
-        Map<String, SystemFileDO> byUrl = existingRows.stream().collect(Collectors.toMap(SystemFileDO::getUrl, r -> r));
         for (SystemFileDO row : rows) {
-            String url = row.getUrl();
-            SystemFileDO existing = byUrl.get(url);
-            Long existingId = nonNull(existing) ? existing.getId() : row.getId();
+            normalizeScopedFileFields(row, mainCode, subCode);
+            Long existingId = row.getId();
+            if (existingId == null) {
+                SystemFileDO existing = findExistingInSameScope(mainCode, subCode, row);
+                existingId = nonNull(existing) ? existing.getId() : null;
+            }
             if (existingId != null) {
                 SystemFileDO updateRow = BeanUtils.toBean(row, SystemFileDO.class);
                 updateRow.setId(existingId);
-                updateRow.setMainType(mainCode);
-                updateRow.setSubType(subCode);
                 systemFileDAO.updateById(updateRow);
             } else {
                 SystemFileDO insertRow = BeanUtils.toBean(row, SystemFileDO.class);
-                insertRow.setMainType(mainCode);
-                insertRow.setSubType(subCode);
                 systemFileDAO.insert(insertRow);
             }
+        }
+    }
+
+    private SystemFileDO findExistingInSameScope(String mainCode, String subCode, SystemFileDO row) {
+        LambdaQueryWrapper<SystemFileDO> query = Wrappers.<SystemFileDO>lambdaQuery()
+                .eq(SystemFileDO::getMainType, mainCode)
+                .eq(SystemFileDO::getSubType, subCode)
+                .eq(SystemFileDO::getUrl, row.getUrl())
+                .eq(SystemFileDO::getIsDeleted, 0);
+        if (row.getMasterId() == null) {
+            query.isNull(SystemFileDO::getMasterId);
+        } else {
+            query.eq(SystemFileDO::getMasterId, row.getMasterId());
+        }
+        return systemFileDAO.selectOne(query.last("LIMIT 1"));
+    }
+
+    private static void normalizeScopedFileFields(SystemFileDO row, String mainCode, String subCode) {
+        row.setMainType(mainCode);
+        row.setSubType(subCode);
+        if (ValidityUtils.isBlank(row.getEndpoint())) {
+            row.setEndpoint(StrUtils.parseEndpoint(row.getUrl()));
+        }
+        if (ValidityUtils.isBlank(row.getFileKey())) {
+            row.setFileKey(StrUtils.parseKey(row.getUrl()));
+        }
+        if (ValidityUtils.isBlank(row.getName()) && isNotBlank(row.getFileKey())) {
+            row.setName(row.getFileKey().trim());
         }
     }
 

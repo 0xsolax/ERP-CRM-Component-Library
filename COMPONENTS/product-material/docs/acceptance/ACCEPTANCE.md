@@ -1,5 +1,7 @@
 # ACCEPTANCE｜product-material
 
+复核证据见：[REVIEW_EVIDENCE.md](REVIEW_EVIDENCE.md)。
+
 ## 快照验收
 
 - [x] `backend/zhongsheng-backend/` 包含产品、材料、面料、包材、伞架、工序 controller/service/manager/dao/entity/VO/DTO。

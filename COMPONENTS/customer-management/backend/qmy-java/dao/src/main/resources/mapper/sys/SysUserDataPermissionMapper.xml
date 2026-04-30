@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sys.SysUserDataPermissionMapper">
+    
+    <!-- 基础查询条件 -->
+    <sql id="baseWhere">
+        <where>
+            1=1
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="userId != null">
+                AND user_id = #{userId}
+            </if>
+            <if test="isDeleted != null">
+                AND is_deleted = #{isDeleted}
+            </if>
+        </where>
+    </sql>
+    
+    <!-- 根据用户ID查询数据权限 -->
+    <select id="getByUserId" resultType="com.qiaomoyun.entity.sys.SysUserDataPermission">
+        SELECT * FROM sys_user_data_permission
+        WHERE user_id = #{userId}
+        AND is_deleted = 0
+    </select>
+    
+    <!-- 根据用户ID列表查询数据权限列表 -->
+    <select id="getByUserIds" resultType="com.qiaomoyun.entity.sys.SysUserDataPermission">
+        SELECT * FROM sys_user_data_permission
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" close=")" separator=",">
+            #{userId}
+        </foreach>
+        AND is_deleted = 0
+        ORDER BY id ASC
+    </select>
+    <select id="getByUserIdAndPermission" resultType="com.qiaomoyun.entity.sys.SysUserDataPermission">
+        SELECT * FROM sys_user_data_permission
+        where user_id=#{userId} AND is_deleted = 0  and permissions=#{permission}
+    </select>
+
+    <!-- 批量更新用户数据权限 -->
+    <update id="updateBatch">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE sys_user_data_permission
+            <set>
+                <if test="item.permissions != null">permissions = #{item.permissions},</if>
+                <if test="item.isOrganizeData != null">is_organize_data = #{item.isOrganizeData},</if>
+                <if test="item.updateUser != null">update_user = #{item.updateUser},</if>
+                <if test="item.updateTime != null">update_time = #{item.updateTime},</if>
+            </set>
+            WHERE user_id = #{item.userId}
+            AND is_deleted = 0
+        </foreach>
+    </update>
+    
+    <!-- 根据用户ID删除数据权限（逻辑删除） -->
+    <update id="deleteByUserId">
+        UPDATE sys_user_data_permission
+        SET is_deleted = 1
+        WHERE user_id = #{userId}
+    </update>
+    
+    <!-- 更新用户数据权限 -->
+    <update id="updateById" parameterType="com.qiaomoyun.entity.sys.SysUserDataPermission">
+        UPDATE sys_user_data_permission
+        <set>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="permissions != null">permissions = #{permissions},</if>
+            <if test="isOrganizeData != null">is_organize_data = #{isOrganizeData},</if>
+            <if test="updateUser != null">update_user = #{updateUser},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </set>
+        WHERE id = #{id}
+        AND is_deleted = 0
+    </update>
+    
+    <!-- 逻辑删除 -->
+    <update id="deleteById">
+        UPDATE sys_user_data_permission
+        SET is_deleted = 1
+        WHERE id = #{id}
+    </update>
+    
+</mapper>
