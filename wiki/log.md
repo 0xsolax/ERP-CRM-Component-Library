@@ -22,3 +22,4 @@
 - `SOL-46` 快照明确产品主档成本与报价时点快照的边界，并标注 `/fabric/deteil`、`/packaging/typeList`、`/box-price/list` 等待验证接口事实；组件状态标记为 `reference`。
 - 启动并完成 Multica `SOL-47` 本地组件抽取：生成 `COMPONENTS/customer-management`，覆盖客户主档、联系人、地址、标签、跟进、客户数据权限、前端客户页面和调研材料。
 - `SOL-47` 快照明确 legacy `Customer.owner/follower` 与 `init.sql` 缺列不一致，补充 `qmy-java` 作为 `/sal/yt/customer/*` 后端证据，并标注客户导入/平台同步不是默认能力；组件状态标记为 `reference`。
+- `SOL-47` review 后补齐客户子资源写接口后端权限与客户范围校验，补入 `warehouse-history` 路由依赖、sed 客户 API 和可跟踪复核证据 `docs/acceptance/REVIEW_EVIDENCE.md`。

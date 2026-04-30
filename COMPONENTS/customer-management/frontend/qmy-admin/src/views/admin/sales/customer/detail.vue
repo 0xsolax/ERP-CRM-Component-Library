@@ -987,7 +987,7 @@ const handleTagRemove = async (labelId: number | string) => {
     type: 'warning'
   })
 
-  const { code, message } = await deleteLabel({ labelId })
+  const { code, message } = await deleteLabel({ labelId, customerId: customerData.customerId })
   if (code !== 200) return ElMessage.warning(message)
   ElMessage.success('删除成功')
   await loadCustomerData()
@@ -1115,7 +1115,7 @@ const handleAddressDelete = async (row: any) => {
     type: 'warning'
   })
 
-  const { code, message } = await deleteAddress({ addressId: row.id })
+  const { code, message } = await deleteAddress({ addressId: row.id, customerId: customerData.customerId })
   if (code !== 200) {
     return ElMessage.warning(message)
   }
@@ -1174,7 +1174,7 @@ const handleContactDelete = async (row: any) => {
     type: 'warning'
   })
 
-  const { code, message } = await deleteContactPerson({ contactId: row.id })
+  const { code, message } = await deleteContactPerson({ contactId: row.id, customerId: customerData.customerId })
   if (code !== 200) return ElMessage.warning(message)
   await loadCustomerData()
   ElMessage.success('删除成功')
@@ -1261,7 +1261,7 @@ const handleFollowRecordDelete = async (row: any) => {
     type: 'warning'
   })
 
-  const { code, message } = await deleteFollow({ followId: row.id })
+  const { code, message } = await deleteFollow({ followId: row.id, customerId: customerData.customerId })
   if (code !== 200) return ElMessage.warning(message)
   await loadCustomerData()
   ElMessage.success('删除成功')

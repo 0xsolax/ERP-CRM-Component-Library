@@ -7,8 +7,11 @@
 | legacy 后端 | `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/CustomerController.java` | 简版客户 CRUD 和 owner 过滤参考 | 复制为快照 |
 | legacy 数据 | `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql` | `customer` 表与扩展字段 | 抽取为 `db/zhongsheng-AI/init-customer.sql` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer` | 一唐客户列表、详情、新增编辑和扩展弹窗 | 复制为快照 |
+| 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history` | 客户详情独立仓历史路由依赖 | 复制为快照 |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer` | 盛尔达客户列表、详情、新增编辑 | 复制为快照 |
 | 前端 API | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts` | `/sal/yt/customer/*` API 封装 | 复制为快照 |
+| 前端 API | `RAW/PROJECTs/qmy-admin/src/api/sed/sales/customer.ts` | sed 客户页面 API 封装 | 复制为快照 |
+| 前端常量 | `RAW/PROJECTs/qmy-admin/src/constant/yitang/warehouse.ts` | 独立仓历史页业务类型枚举 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java` | 与 qmy-admin API 匹配的客户后端 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtCustomerManager.java` | 客户主档、地址、联系人、标签、跟进业务实现 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt` | 客户相关 MyBatis SQL 和数据范围字段 | 复制为快照 |
@@ -22,7 +25,7 @@
 
 - `zhongsheng-AI` 简版客户 CRUD、实体、Service、Mapper 和 legacy `customer` SQL。
 - `qmy-admin` admin/sed 客户列表、详情、新增编辑、联系人、地址、跟进、标签、自动层级、独立仓相关前端。
-- `qmy-admin` 客户 API、客户规格 API、销售路由权限和客户类型/层级常量。
+- `qmy-admin` 客户 API、客户规格 API、客户相关销售路由权限、客户类型/层级常量和独立仓历史页依赖；路由快照已裁剪掉订单/报价等非客户页面入口。
 - `qmy-java` 客户主档、地址、联系人、联系人电话、联系人社交账号、跟进、客户标签、客户规格对照、独立仓、数据权限相关后端证据。
 - `RAW/docs/zhongsheng` 中与客户管理直接相关的会议记录和需求点。
 
@@ -37,7 +40,7 @@
 
 - 目标项目是否需要一唐 admin 和盛尔达 sed 两套客户页面同时接入。
 - 客户独立仓、客户产品规格对照、VIP 客户和消费统计是否属于本项目首期范围。
-- `qmy-java` 中部分客户子资源接口缺少方法级权限注解，正式接入前是否要补齐。
+- 当前快照已补齐核心客户子资源写接口的方法级权限和客户范围校验；正式接入时需确认目标项目是否同步采用该补丁。
 - `zhongsheng-AI` legacy `Customer.owner/follower` 与 `init.sql` 缺列问题应如何迁移。
 
 ## 清洗规则
@@ -56,6 +59,7 @@
 - `qmy-admin` 客户页面调用 `/sal/yt/customer/list`、`detail`、`save`、`update`、地址、联系人、标签、跟进、独立仓、消费统计等接口。
 - `qmy-java` `SalYtCustomerController` 的 base path 为 `api/sal/yt/customer`，与前端 `/sal/yt/customer/*` API 语义匹配。
 - `qmy-java` 客户列表、详情、下拉选择使用 `@RequiresDataPermissions`，条件为 `belong_employee_id OR follow_employee_id`。
+- 当前快照已将客户主档修改/删除、地址、联系人、标签、跟进写接口纳入同一客户数据范围校验；这属于对原始 qmy-java 快照的审查后加固。
 - 调研资料明确客户需要标签、消费情况、订单情况、跨平台客户整合和跟进提醒。
 
 ### 推断
@@ -68,4 +72,3 @@
 - 客户标签是否继续复用 `pro_yt_product_label`，还是在新项目拆成独立 `customer_label` 表。
 - 客户跟进提醒是否只保留记录，还是需要任务/日历/消息提醒闭环。
 - 客户导入是否只做 Excel 导入，还是接平台 API 或授权同步。
-

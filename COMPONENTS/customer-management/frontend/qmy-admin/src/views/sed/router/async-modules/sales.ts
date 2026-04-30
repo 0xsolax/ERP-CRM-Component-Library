@@ -42,38 +42,6 @@ const permissionRouter: Array<RouteRecordRaw> = [
             }
           }
         ]
-      },
-      {
-        path: '/sales/quotation',
-        component: () => import('@/views/sed/sales/quotation/index.vue'),
-        name: 'sales-quotation',
-        meta: {
-          title: '报价单列表',
-          icon: 'Document',
-          permission: 'sal:sed:quotation:quotation:list'
-        }
-      },
-      {
-        path: '/sales/order',
-        component: () => import('@/views/sed/sales/order/index.vue'),
-        name: 'sales-order',
-        meta: {
-          title: '订单列表',
-          icon: 'List',
-          permission: 'sal:sed:order:list'
-        },
-        children: [
-          {
-            path: '/sales/order/detail',
-            component: () => import('@/views/sed/sales/order/detail.vue'),
-            name: 'sales-order-detail',
-            meta: {
-              title: '订单详情',
-              hidden: true,
-              permission: 'sal:sed:order:detail'
-            }
-          }
-        ]
       }
     ]
   }

@@ -11,8 +11,10 @@ source_layer:
     - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/CustomerService.java
     - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
     - RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer
+    - RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history
     - RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer
     - RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts
+    - RAW/PROJECTs/qmy-admin/src/api/sed/sales/customer.ts
     - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java
     - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtCustomerManager.java
     - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt
@@ -53,14 +55,17 @@ entrypoints:
     api:
       - frontend/qmy-admin/src/api/admin/sales/customer.ts
       - frontend/qmy-admin/src/api/admin/sales/customer-spec.ts
+      - frontend/qmy-admin/src/api/sed/sales/customer.ts
     views:
       - frontend/qmy-admin/src/views/admin/sales/customer
+      - frontend/qmy-admin/src/views/admin/sales/warehouse-history
       - frontend/qmy-admin/src/views/sed/sales/customer
     router:
       - frontend/qmy-admin/src/views/admin/router/async-modules/sales.ts
       - frontend/qmy-admin/src/views/sed/router/async-modules/sales.ts
     constants:
       - frontend/qmy-admin/src/constant/yitang/customer.ts
+      - frontend/qmy-admin/src/constant/yitang/warehouse.ts
       - frontend/qmy-admin/src/constant/sed/customer.ts
   db:
     schema:
@@ -72,6 +77,7 @@ contracts:
   permission: docs/contracts/PERMISSION_CONTRACT.md
 acceptance:
   checklist: docs/acceptance/ACCEPTANCE.md
+  evidence: docs/acceptance/REVIEW_EVIDENCE.md
 snapshot_policy:
   include_source_docs: true
   exclude:
@@ -91,4 +97,3 @@ notes:
   - qmy-java 是 SOL-47 的补充来源，用于补齐 qmy-admin 前端接口对应的后端事实。
   - legacy zhongsheng-AI 后端存在 Customer.owner/follower 与 init.sql 不一致，正式接入前必须修正。
   - 客户导入、平台同步和爬虫不是默认能力。
-

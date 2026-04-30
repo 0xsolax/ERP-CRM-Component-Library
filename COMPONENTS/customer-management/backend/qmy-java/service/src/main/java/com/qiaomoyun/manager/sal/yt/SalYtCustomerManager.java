@@ -23,8 +23,9 @@ import com.qiaomoyun.manager.feishu.FeiShuManager;
 import com.qiaomoyun.manager.pro.yt.ProYtProductLabelManager;
 import com.qiaomoyun.manager.pro.yt.ProYtProductManager;
 import com.qiaomoyun.manager.sys.SysDictionaryManager;
-import com.qiaomoyun.mapper.sal.yt.*;
 import com.qiaomoyun.mapper.pro.yt.ProYtProductFileMapper;
+import com.qiaomoyun.mapper.pro.yt.ProYtProductLabelMapper;
+import com.qiaomoyun.mapper.sal.yt.*;
 import com.qiaomoyun.mapper.sys.*;
 import com.qiaomoyun.param.sal.yt.CustomerVipParams;
 import com.qiaomoyun.param.sal.yt.SalYtCustomerQueryParams;
@@ -61,6 +62,8 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
     @Autowired
     private ProYtProductLabelManager proYtProductLabelManager;
     @Autowired
+    private ProYtProductLabelMapper proYtProductLabelMapper;
+    @Autowired
     private ProYtProductFileMapper proYtProductFileMapper;
     @Autowired
     private SalYtCustomerFollowMapper salYtCustomerFollowMapper;
@@ -90,6 +93,259 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
     private ProYtProductManager proYtProductManager;
     @Autowired
     private SysUserDataPermissionMapper sysUserDataPermissionMapper;
+
+    private static final String CUSTOMER_SCOPE_DENIED_MESSAGE = "客户不存在或无权限";
+
+    public void assertCustomerInCurrentDataScope(Long customerId) {
+        if (customerId == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "customerId必填");
+        }
+        SalYtCustomer customer = salYtCustomerMapper.selectById(customerId);
+        if (customer == null) {
+            throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(), CUSTOMER_SCOPE_DENIED_MESSAGE);
+        }
+    }
+
+    public void updateCustomerScoped(SalYtCustomer customer) {
+        if (customer == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "客户信息不能为空");
+        }
+        assertCustomerInCurrentDataScope(customer.getId());
+        updateCustomer(customer);
+    }
+
+    public void deleteCustomerScoped(Long id) {
+        assertCustomerInCurrentDataScope(id);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteCustomer(id);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void deleteBatchCustomerScoped(List<Long> ids) {
+        if (ids == null || ids.isEmpty()) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "客户ID不能为空");
+        }
+        for (Long id : ids) {
+            assertCustomerInCurrentDataScope(id);
+        }
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteBatchCustomer(ids);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void updateCustomerAddressScoped(SalYtCustomerAddress params) {
+        if (params == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "地址信息不能为空");
+        }
+        Long customerId = params.getCustomerId();
+        if (params.getId() != null) {
+            customerId = requireSameCustomer(customerId, resolveAddressCustomerId(params.getId()), "收货地址");
+        }
+        assertCustomerInCurrentDataScope(customerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            updateCustomerAddress(params);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void deleteCustomerAddressScoped(Long addressId, Long customerId) {
+        Long resolvedCustomerId = requireSameCustomer(customerId, resolveAddressCustomerId(addressId), "收货地址");
+        assertCustomerInCurrentDataScope(resolvedCustomerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteCustomerAddress(addressId);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public Object getCustomerAddressByCustomerIdScoped(Long id) {
+        assertCustomerInCurrentDataScope(id);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            return getCustomerAddressByCustomerId(id);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void updateCustomerContactPersonScoped(SalYtContactPerson contact) {
+        if (contact == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "联系人信息不能为空");
+        }
+        Long customerId = contact.getCustomerId();
+        if (contact.getId() != null) {
+            customerId = requireSameCustomer(customerId, resolveContactCustomerId(contact.getId()), "联系人");
+        }
+        assertCustomerInCurrentDataScope(customerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            updateCustomerContactPerson(contact);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void deleteContactPersonScoped(Long contactId, Long customerId) {
+        Long resolvedCustomerId = requireSameCustomer(customerId, resolveContactCustomerId(contactId), "联系人");
+        assertCustomerInCurrentDataScope(resolvedCustomerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteContactPerson(contactId);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void addLabelScoped(ProYtProductLabel label) {
+        if (label == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "标签信息不能为空");
+        }
+        Long customerId = label.getMasterId();
+        if (label.getId() != null) {
+            customerId = requireSameCustomer(customerId, resolveLabelCustomerId(label.getId()), "客户标签");
+        }
+        assertCustomerInCurrentDataScope(customerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            addLabel(label);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void deleteLabelScoped(Integer labelId, Long customerId) {
+        Long resolvedCustomerId = requireSameCustomer(customerId, resolveLabelCustomerId(labelId), "客户标签");
+        assertCustomerInCurrentDataScope(resolvedCustomerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteLabel(labelId);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void saveOrUpdateFollowScoped(SalYtCustomerFollow follow) {
+        if (follow == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "跟进记录不能为空");
+        }
+        Long customerId = follow.getCustomerId();
+        if (follow.getId() != null) {
+            customerId = requireSameCustomer(customerId, resolveFollowCustomerId(follow.getId()), "跟进记录");
+        }
+        assertCustomerInCurrentDataScope(customerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            saveOrUpdateFollow(follow);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    public void deleteCustomerFollowScoped(Long followId, Long customerId) {
+        Long resolvedCustomerId = requireSameCustomer(customerId, resolveFollowCustomerId(followId), "跟进记录");
+        assertCustomerInCurrentDataScope(resolvedCustomerId);
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            deleteCustomerFollow(followId);
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    private Long resolveAddressCustomerId(Long addressId) {
+        if (addressId == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "addressId必填");
+        }
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            SalYtCustomerAddress address = salYtCustomerAddressMapper.selectById(addressId);
+            if (address == null) {
+                throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(), "收货地址不存在");
+            }
+            return address.getCustomerId();
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    private Long resolveContactCustomerId(Long contactId) {
+        if (contactId == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "contactId必填");
+        }
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            SalYtContactPerson contactPerson = salYtContactPersonMapper.selectById(contactId);
+            if (contactPerson == null) {
+                throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(), "联系人不存在");
+            }
+            return contactPerson.getCustomerId();
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    private Long resolveFollowCustomerId(Long followId) {
+        if (followId == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "followId必填");
+        }
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            SalYtCustomerFollow follow = salYtCustomerFollowMapper.selectById(followId);
+            if (follow == null) {
+                throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(), "跟进记录不存在");
+            }
+            return follow.getCustomerId();
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    private Long resolveLabelCustomerId(Integer labelId) {
+        if (labelId == null) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), "labelId必填");
+        }
+        Boolean previous = suppressDataPermissionForChildOperation();
+        try {
+            ProYtProductLabel label = proYtProductLabelMapper.selectById(labelId);
+            if (label == null || !LabelTypeEnum.customerLabel.getKey().equals(label.getType())) {
+                throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(), "客户标签不存在");
+            }
+            return label.getMasterId();
+        } finally {
+            restoreDataPermission(previous);
+        }
+    }
+
+    private Long requireSameCustomer(Long requestCustomerId, Long resolvedCustomerId, String resourceName) {
+        if (requestCustomerId != null && !requestCustomerId.equals(resolvedCustomerId)) {
+            throw new BizException(ExceptionCodeEnum.Param_Exception.getCode(), resourceName + "不属于该客户");
+        }
+        return resolvedCustomerId;
+    }
+
+    private Boolean suppressDataPermissionForChildOperation() {
+        if (LoginUserInfoContext.getLoginUserInfo() == null) {
+            return null;
+        }
+        Boolean previous = LoginUserInfoContext.getLoginUserInfo().getIsOrganizeData();
+        LoginUserInfoContext.setIsOrganizeData(false);
+        return previous;
+    }
+
+    private void restoreDataPermission(Boolean previous) {
+        if (LoginUserInfoContext.getLoginUserInfo() != null) {
+            LoginUserInfoContext.setIsOrganizeData(previous);
+        }
+    }
 
 
     public Object list(SalYtCustomerQueryParams params){
