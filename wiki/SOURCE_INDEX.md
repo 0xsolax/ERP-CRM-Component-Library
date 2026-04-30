@@ -1,0 +1,63 @@
+# 来源索引
+
+## 范围
+
+本次首轮整理覆盖以下来源：
+
+| 来源 | 类型 | 当前用途 | 处理状态 |
+| :--- | :--- | :--- | :--- |
+| `RAW/PROJECTs/qmy-admin` | Vue 3 / Vite / Element Plus 管理后台 | 前端页面、API 封装、路由和多租户模块结构 | 已 ingest 到项目页与组件卡 |
+| `RAW/PROJECTs/project-scaffold` | Spring Boot 多模块脚手架 | 登录认证、JWT、租户配置、OSS、基础数据、分层规范 | 已 ingest 到项目页与组件卡 |
+| `RAW/PROJECTs/zhongsheng-AI` | 中盛 ERP 旧实现与 PRD | 客户、报价、订单、产品、物料、供应商、财务、上传、调研需求 | 已 ingest 到项目页与组件卡 |
+| `RAW/PROJECTs/zhongsheng-backend` | 中盛新版 Spring Boot 多模块后端 | 协议契约、权限、菜单、基础数据、产品、物料、OSS | 已 ingest 到项目页与组件卡 |
+| `RAW/docs/zhongsheng` | 调研会议记录和需求点 | 业务意图、岗位职责、流程痛点、报价与客户管理需求 | 已 ingest 到项目页与组件卡 |
+| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 暂未深挖 | 待后续 ingest |
+| `RAW/PROJECTs/jewelry-design` | 前端项目 | 暂未深挖 | 待后续 ingest |
+
+## 关键来源路径
+
+### 前端管理后台
+
+- `RAW/PROJECTs/qmy-admin/README.md`
+- `RAW/PROJECTs/qmy-admin/src/views/admin`
+- `RAW/PROJECTs/qmy-admin/src/views/sed`
+- `RAW/PROJECTs/qmy-admin/src/views/zs`
+- `RAW/PROJECTs/qmy-admin/src/api/admin`
+- `RAW/PROJECTs/qmy-admin/src/api/sed`
+- `RAW/PROJECTs/qmy-admin/src/api/zs`
+- `RAW/PROJECTs/qmy-admin/src/components/bz-table`
+- `RAW/PROJECTs/qmy-admin/src/components/search-form`
+- `RAW/PROJECTs/qmy-admin/src/components/bz-upload`
+
+### 后端基座
+
+- `RAW/PROJECTs/project-scaffold/README.md`
+- `RAW/PROJECTs/project-scaffold/project-api`
+- `RAW/PROJECTs/project-scaffold/project-core`
+- `RAW/PROJECTs/project-scaffold/docs/sql/init-auth.sql`
+- `RAW/PROJECTs/project-scaffold/docs/sql/init-base-data.sql`
+- `RAW/PROJECTs/project-scaffold/docs/sql/init-system-file.sql`
+- `RAW/PROJECTs/project-scaffold/docs/sql/init-tenant.sql`
+
+### 中盛业务实现
+
+- `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller`
+- `RAW/PROJECTs/zhongsheng-backend/README.md`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto`
+- `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core`
+- `RAW/PROJECTs/zhongsheng-backend/docs/sql`
+
+### 调研资料
+
+- `RAW/docs/zhongsheng/第一次调研（2026.02.11）/第一次会议.md`
+- `RAW/docs/zhongsheng/第一次调研（2026.02.11）/第二次会议.md`
+- `RAW/docs/zhongsheng/第二次调研/会议记录.md`
+- `RAW/docs/zhongsheng/第二次调研/需求点：.md`
+
+## Manifest 策略
+
+- `wiki/source_manifest.tsv` 记录当前 `RAW/` 下非 `.DS_Store`、非嵌套 `.git/` 内部文件的 `path`、`sha256`、`size_bytes`、`mtime`。
+- `.DS_Store` 是操作系统文件，不作为知识来源。
+- 复制进 `RAW/PROJECTs/` 的历史项目可能包含嵌套 Git 元数据；这些对象只表达 Git 仓库状态，不表达业务或接口知识，本轮不纳入 manifest。
