@@ -29,11 +29,15 @@
 | :--- | :--- |
 | `nodeIds` | 节点 ID 集合；为空时返回全部未删除基础数据 |
 
+请求体可为空；空请求体等价于不传 `nodeIds`，返回全部未删除基础数据。
+
 ### BaseDataQueryByNodeKeyDTO
 
 | 字段 | 说明 |
 | :--- | :--- |
 | `nodeKey` | 节点唯一标识，例如 `FIELD_MGMT_SIZE_RIB_COUNT` |
+
+请求体可为空；空请求体、空字符串、空白字符串或未知 `nodeKey` 均返回空列表。
 
 ### BaseTreeNodeListQueryDTO
 

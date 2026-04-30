@@ -30,14 +30,16 @@ backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/co
 frontend/qmy-admin/src/views/zs/router/async-modules/base-info.ts
 ```
 
-当前来源路由中字段管理使用 `permission: 'sys:role:list'`，这是占位或复用旧权限，不应直接作为新项目权限。
+快照路由已把来源占位权限 `sys:role:list` 替换为基础数据权限码。
 
-建议目标权限：
+当前快照权限：
 
-| 前端入口 | 建议权限 |
+| 前端入口 | 权限码 |
 | :--- | :--- |
-| 字段管理页面可见 | `base:data:list` 或 `base:data:tree` |
-| 新增/编辑基础数据 | `base:data:save` |
+| 产品列表入口 | `base:data:list` |
+| 产品新增/编辑入口 | `base:data:save` |
+| 工价管理入口 | `base:data:list` |
+| 字段管理入口 | `base:data:list` |
 | 删除基础数据 | `base:data:remove` |
 | 下拉查询 | `base:data:query` |
 

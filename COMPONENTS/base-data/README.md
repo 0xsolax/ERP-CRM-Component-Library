@@ -45,8 +45,13 @@
 
 - 目标项目是否沿用 `FIELD_MGMT`、`FABRIC`、`PACKAGING`、`UMBRELLA_FRAME`、`PRODUCT` 这些 `biz_type`。
 - 是否保留中圣版字段管理节点和默认值保护规则。
-- 前端路由权限当前来源中使用 `sys:role:list` 占位，接入时应替换为基础数据专用权限。
-- `list` 接口声明允许空请求体，但当前来源服务实现对 `query` 本身没有空值保护，接入时建议补齐。
+- 是否把产品、工价等同一路由下的页面拆到后续业务组件中独立授权。
+
+已修正：
+
+- 前端路由权限已由来源占位值 `sys:role:list` 替换为 `base:data:*`。
+- `list` 空请求体按“不加节点过滤”处理，不再触发 `query == null` 空指针。
+- `listByNodeKey` 对空请求体、空 `nodeKey`、未知 `nodeKey` 返回空列表，不再触发空指针。
 
 ## 快速接入
 

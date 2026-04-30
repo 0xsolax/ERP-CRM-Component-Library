@@ -61,4 +61,5 @@
 - `data_bind_flag = 1` 才允许挂数据；中圣版 `BaseTreeBizTypeEnum` 对多个业务类型启用仅叶子节点可绑定。
 - 中圣版 `BaseDataServiceImpl` 增加了重复校验、默认数据保护和逻辑删除。
 - `qmy-admin` 字段管理页面使用 `FIELD_MGMT` 加载节点，面料用量节点用 `value1`、`value2`、`value3`、`value4` 表达尺寸、数量和系数。
-- 来源前端路由权限使用 `sys:role:list`，应视为占位，不应直接作为基础数据权限上线。
+- 来源前端路由权限使用 `sys:role:list`；本快照已替换为 `base:data:*`，不再保留占位权限。
+- 来源服务层对空请求体和未知 `nodeKey` 防御不足；本快照已补齐空态防御。

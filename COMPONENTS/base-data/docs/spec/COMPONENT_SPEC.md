@@ -34,6 +34,8 @@
 - 新增时必须传 `nodeId`。
 - 更新时未传 `nodeId`，默认保留原节点。
 - 节点不存在、节点不允许绑定、非叶子节点绑定数据都应报错。
+- `list` 允许空请求体，按“不加节点过滤”查询未删除数据。
+- `listByNodeKey` 对空请求体、空 `nodeKey`、未知 `nodeKey` 返回空列表，用于下拉组件的空态兜底。
 - 中圣版额外校验：
   - 普通节点同一 `nodeId` 下 `value1` 不重复。
   - 面料用量节点按 `value1 + value2` 防重。
@@ -60,6 +62,4 @@
 ## 已知缺口
 
 - 快照不是一个独立可编译模块，`project-scaffold` 和 `zhongsheng-backend` 包名不同。
-- 来源 `list` 接口文档允许空请求体，但服务层未完全空值防御，接入时建议补齐。
 - 来源前端保留 `batchSaveOrUpdate` API 封装，但中圣 controller 未提供同名接口。
-- 来源路由权限使用 `sys:role:list`，应改为基础数据权限。

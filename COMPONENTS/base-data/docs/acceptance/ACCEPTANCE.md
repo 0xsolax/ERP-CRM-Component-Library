@@ -2,13 +2,21 @@
 
 ## 快照验收
 
-- [ ] `backend/project-scaffold/` 包含 DTO、枚举、初始化器、错误码、controller/service/manager/dao/entity/VO。
-- [ ] `backend/zhongsheng-backend/` 包含中圣业务节点、权限注解、重复校验和默认值保护。
-- [ ] `frontend/qmy-admin/` 包含基础数据 API、字段管理页面、可编辑下拉组件和路由入口。
-- [ ] `db/` 包含 `base_tree_node`、`base_data` DDL。
-- [ ] `docs/contracts/` 覆盖 API、数据、权限契约。
-- [ ] 不包含 `.git/`、`.DS_Store`、`target/`、`node_modules/`、`build/`、`dist/`。
-- [ ] 不包含真实数据库密码、token、密钥或本地环境配置。
+- [x] `backend/project-scaffold/` 包含 DTO、枚举、初始化器、错误码、controller/service/manager/dao/entity/VO。
+- [x] `backend/zhongsheng-backend/` 包含中圣业务节点、权限注解、重复校验和默认值保护。
+- [x] `frontend/qmy-admin/` 包含基础数据 API、字段管理页面、可编辑下拉组件和路由入口。
+- [x] `db/` 包含 `base_tree_node`、`base_data` DDL。
+- [x] `docs/contracts/` 覆盖 API、数据、权限契约。
+- [x] 不包含 `.git/`、`.DS_Store`、`target/`、`node_modules/`、`build/`、`dist/`。
+- [x] 不包含真实数据库密码、token、密钥或本地环境配置。
+
+## SOL-44 复核修正验收
+
+- [x] `list(null)` 不再访问 `query.getNodeIds()`，空请求体按不加节点过滤处理。
+- [x] `listByNodeKey(null)`、空字符串、未知 `nodeKey` 返回空列表，不再触发空指针。
+- [x] `project-scaffold` 与 `zhongsheng-backend` 两套 controller 均允许 `listByNodeKey` 空请求体。
+- [x] 路由权限不再使用来源占位值 `sys:role:list`。
+- [x] 路由权限已替换为 `base:data:list`、`base:data:save`。
 
 ## 接入验收
 
@@ -29,9 +37,9 @@
 - [ ] 只有配置人员能进入字段管理页面。
 - [ ] 普通业务用户只能使用被授权的下拉查询能力。
 - [ ] 前端按钮隐藏和后端接口拒绝同时生效。
-- [ ] 路由权限不再使用来源占位值 `sys:role:list`。
+- [x] 路由权限不再使用来源占位值 `sys:role:list`。
 
-## 当前快照未验证
+## 当前快照未运行验证
 
 - 未对抽取快照做编译，因为它是多来源拼装证据包，不是单一工程。
 - 未执行浏览器字段管理页面，因为 SOL-44 目标是组件快照抽取。

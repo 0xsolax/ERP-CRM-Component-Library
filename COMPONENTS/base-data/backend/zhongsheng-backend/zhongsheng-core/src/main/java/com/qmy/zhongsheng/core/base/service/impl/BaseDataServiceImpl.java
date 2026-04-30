@@ -17,6 +17,7 @@ import com.qmy.zhongsheng.core.base.service.BaseDataService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class BaseDataServiceImpl implements BaseDataService {
 
     @Override
     public List<BaseDataVO> list(BaseDataListQueryDTO query) {
-        List<Long> nodeIds = query.getNodeIds();
+        List<Long> nodeIds = query == null ? null : query.getNodeIds();
         List<BaseDataDO> rows = baseDataManager.listByNodeIds(nodeIds);
         List<Long> idList = rows.stream()
                 .map(BaseDataDO::getNodeId)
@@ -156,7 +157,13 @@ public class BaseDataServiceImpl implements BaseDataService {
 
     @Override
     public List<BaseDataVO> listByNodeKey(String nodeKey) {
+        if (!StringUtils.hasText(nodeKey)) {
+            return List.of();
+        }
         BaseTreeNodeDO nodeDO = baseTreeNodeManager.getByNodeKey(nodeKey);
+        if (nodeDO == null) {
+            return List.of();
+        }
         List<BaseDataDO> baseDataDOList = baseDataManager.listByNodeId(nodeDO.getId());
         List<BaseDataVO> resultVOList = BeanUtils.toBean(baseDataDOList, BaseDataVO.class);
         for (BaseDataVO resultVO : resultVOList) {

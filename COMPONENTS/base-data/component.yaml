@@ -70,4 +70,5 @@ snapshot_policy:
 notes:
   - 组件当前为 reference，适合作为新项目基础数据方案参考。
   - 中圣版包含业务种子和权限注解，project-scaffold 版更适合作为通用基座参考。
-  - qmy-admin 路由权限存在占位权限码，接入时必须替换为 base:data:* 或目标项目权限码。
+  - qmy-admin 路由权限已替换为 base:data:*；接入目标项目时可按本地权限模型映射。
+  - list 空请求体与 listByNodeKey 空/未知 nodeKey 已做空态防御，返回空列表或无过滤查询，不抛空指针。

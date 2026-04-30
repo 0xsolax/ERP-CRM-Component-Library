@@ -16,5 +16,5 @@
 ## 接入注意
 
 - `BaseTreeNodeDataInitializer` 依赖启动时运行，必须保证 `base_tree_node` 表已经存在。
-- `BaseDataServiceImpl.list` 来源代码声明请求体可空，但服务实现没有完全处理 `query == null`，接入时建议补空值防御。
+- `BaseDataServiceImpl.list` 已支持空请求体；`listByNodeKey` 已支持空请求体、空 `nodeKey` 和未知 `nodeKey` 的空列表返回。
 - 删除当前是逻辑删除，业务引用校验需要按目标项目补齐。

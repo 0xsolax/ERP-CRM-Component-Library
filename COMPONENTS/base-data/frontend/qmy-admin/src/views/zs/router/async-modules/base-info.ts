@@ -17,7 +17,7 @@ const baseInfoRoutes: RouteRecordRaw = {
       meta: {
         title: '产品列表',
         icon: 'Tickets',
-        permission: 'sys:role:list'
+        permission: 'base:data:list'
       },
       children: [
         {
@@ -26,7 +26,7 @@ const baseInfoRoutes: RouteRecordRaw = {
           component: () => import('@/views/zs/base-info/product/add.vue'),
           meta: {
             title: '新增产品',
-            permission: 'sys:role:list',
+            permission: 'base:data:save',
             hidden: true
           }
         },
@@ -36,7 +36,7 @@ const baseInfoRoutes: RouteRecordRaw = {
           component: () => import('@/views/zs/base-info/product/edit.vue'),
           meta: {
             title: '编辑产品',
-            permission: 'sys:role:list',
+            permission: 'base:data:save',
             hidden: true
           }
         }
@@ -48,7 +48,7 @@ const baseInfoRoutes: RouteRecordRaw = {
       name: 'base-info-process',
       meta: {
         title: '工价管理',
-        permission: 'sys:role:list',
+        permission: 'base:data:list',
         icon: 'Money'
       }
     },
@@ -58,7 +58,7 @@ const baseInfoRoutes: RouteRecordRaw = {
       name: 'base-info-field',
       meta: {
         title: '字段管理',
-        permission: 'sys:role:list',
+        permission: 'base:data:list',
         icon: 'List'
       }
     }

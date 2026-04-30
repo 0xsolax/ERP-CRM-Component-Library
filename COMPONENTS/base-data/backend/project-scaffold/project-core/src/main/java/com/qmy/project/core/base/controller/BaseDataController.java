@@ -80,8 +80,9 @@ public class BaseDataController {
      */
     @PostMapping("/listByNodeKey")
     @Operation(summary = "通过节点查询列表", description = "传入 nodeKey，返回该节点下配置的所有基础数据，用于下拉框等场景")
-    public ResultInfo<List<BaseDataVO>> listByNodeKey(@RequestBody BaseDataQueryByNodeKeyDTO dto) {
-        return ResultInfo.success(baseDataService.listByNodeKey(dto.getNodeKey()));
+    public ResultInfo<List<BaseDataVO>> listByNodeKey(@RequestBody(required = false) BaseDataQueryByNodeKeyDTO dto) {
+        String nodeKey = dto != null ? dto.getNodeKey() : null;
+        return ResultInfo.success(baseDataService.listByNodeKey(nodeKey));
     }
 
     /**
