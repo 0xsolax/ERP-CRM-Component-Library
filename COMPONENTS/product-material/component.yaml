@@ -91,4 +91,4 @@ notes:
   - 组件当前为 reference，适合作为产品物料与 BOM 方案参考。
   - 产品、材料、伞架图片依赖 file-oss；字段分类依赖 base-data。
   - 来源前端的 sys:role:list 路由占位权限已在快照路由中替换为产品、材料、工序权限。
-  - 来源存在 /fabric/deteil、/packaging/typeList、/box-price/list 等待统一的接口事实。
+  - /fabric/deteil 已新增 /fabric/detail 标准路径兼容；未使用的 /packaging/typeList、/box-price/list 前端封装已移除。

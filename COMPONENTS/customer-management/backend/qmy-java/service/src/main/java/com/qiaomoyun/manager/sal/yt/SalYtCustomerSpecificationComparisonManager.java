@@ -35,7 +35,7 @@ import java.util.List;
  */
 @Service
 public class SalYtCustomerSpecificationComparisonManager {
-    
+
     @Autowired
     private SalYtCustomerSpecificationComparisonMapper salYtCustomerSpecificationComparisonMapper;
     @Autowired
@@ -64,7 +64,7 @@ public class SalYtCustomerSpecificationComparisonManager {
             salYtCustomerSpecificationComparisonMapper.updateById(entity);
         }
     }
-    
+
     /**
      * 删除客户规格映射
      */
@@ -77,14 +77,14 @@ public class SalYtCustomerSpecificationComparisonManager {
         entity.setUpdateTime(LocalDateTime.now());
         salYtCustomerSpecificationComparisonMapper.updateById(entity);
     }
-    
+
     /**
      * 获取客户规格映射详情
      */
     public SalYtCustomerSpecificationComparison getById(Long id) {
         return salYtCustomerSpecificationComparisonMapper.selectById(id);
     }
-    
+
     /**
      * 查询客户规格映射列表
      */
@@ -118,7 +118,7 @@ public class SalYtCustomerSpecificationComparisonManager {
     public boolean existsByName(Long customerId, String specification, Long excludeId) {
         return salYtCustomerSpecificationComparisonMapper.existsByCustomerAndSpecification(customerId, specification, excludeId);
     }
-    
+
     /**
      * 批量删除客户的规格映射
      */
@@ -126,7 +126,7 @@ public class SalYtCustomerSpecificationComparisonManager {
     public void deleteByCustomerId(Long customerId) {
         salYtCustomerSpecificationComparisonMapper.deleteByCustomerId(customerId);
     }
-    
+
     /**
      * 批量导入客户规格映射
      */
@@ -148,7 +148,7 @@ public class SalYtCustomerSpecificationComparisonManager {
             });
         }
     }
-    
+
     /**
      * 根据客户ID和规格名称查询对应的客户规格
      */
@@ -157,7 +157,7 @@ public class SalYtCustomerSpecificationComparisonManager {
         wrapper.eq("customer_id", customerId);
         wrapper.eq("specification", specification);
         wrapper.eq("is_deleted", 0);
-        
+
         SalYtCustomerSpecificationComparison entity = salYtCustomerSpecificationComparisonMapper.selectOne(wrapper);
         return entity != null ? entity.getCustomerSpecification() : null;
     }

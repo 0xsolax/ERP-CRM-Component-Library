@@ -39,10 +39,10 @@ import java.util.List;
 @Validated
 @Tag(name = "销售管理", description = "客户规格映射")
 public class SalYtCustomerSpecificationComparisonController {
-    
+
     @Autowired
     private SalYtCustomerSpecificationComparisonManager salYtCustomerSpecificationComparisonManager;
-    
+
     /**
      * 新增或编辑客户规格映射
      */
@@ -62,7 +62,7 @@ public class SalYtCustomerSpecificationComparisonController {
             if (entity.getCustomerSpecification() == null || entity.getCustomerSpecification().trim().isEmpty()) {
                 return ResultInfo.error("客户规格不能为空");
             }
-            
+
             salYtCustomerSpecificationComparisonManager.createOrUpdate(entity);
             return ResultInfo.success("操作成功");
         } catch (RuntimeException e) {
@@ -93,7 +93,7 @@ public class SalYtCustomerSpecificationComparisonController {
             return ResultInfo.error(e.getMessage());
         }
     }
-    
+
     /**
      * 删除客户规格映射
      */
@@ -108,7 +108,7 @@ public class SalYtCustomerSpecificationComparisonController {
         salYtCustomerSpecificationComparisonManager.deleteById(id);
         return ResultInfo.success("删除成功");
     }
-    
+
     /**
      * 获取客户规格映射详情
      */
@@ -126,7 +126,7 @@ public class SalYtCustomerSpecificationComparisonController {
         }
         return ResultInfo.success(detail);
     }
-    
+
     /**
      * 查询客户规格映射列表
      */
@@ -146,7 +146,7 @@ public class SalYtCustomerSpecificationComparisonController {
         List<SalYtCustomerSpecificationComparison> result = salYtCustomerSpecificationComparisonManager.list(queryParam);
         return ResultInfo.success(result);
     }
-    
+
     /**
      * 检查规格是否已存在
      */
@@ -159,7 +159,7 @@ public class SalYtCustomerSpecificationComparisonController {
         boolean exists = salYtCustomerSpecificationComparisonManager.existsByName(customerId, specification, excludeId);
         return ResultInfo.success(exists);
     }
-    
+
     /**
      * 导出客户规格映射表
      */
@@ -173,22 +173,22 @@ public class SalYtCustomerSpecificationComparisonController {
             response.getWriter().write("{\"code\":400,\"message\":\"客户ID不能为空\"}");
             return;
         }
-        
+
         // 获取指定客户的规格映射数据
         SalYtCustomerSpecificationComparisonQueryParams queryParams = new SalYtCustomerSpecificationComparisonQueryParams();
         queryParams.setCustomerId(customerId);
         List<SalYtCustomerSpecificationComparison> list = salYtCustomerSpecificationComparisonManager.mappedItems(queryParams);
-        
+
         // 创建ExcelWriter
         ExcelWriter writer = ExcelUtil.getWriter();
-        
+
         // 设置表头别名
         writer.addHeaderAlias("specification", "规格");
         writer.addHeaderAlias("customerSpecification", "客户规格");
-        
+
         // 设置只输出设置了别名的字段
         writer.setOnlyAlias(true);
-        
+
         // 写入数据
         if (list != null && !list.isEmpty()) {
             writer.write(list, true);
@@ -200,20 +200,20 @@ public class SalYtCustomerSpecificationComparisonController {
             // 删除空数据行
             writer.getSheet().removeRow(writer.getSheet().getRow(1));
         }
-        
+
         // 设置响应头
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("客户规格映射表", "UTF-8") + ".xlsx";
         response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
-        
+
         // 输出Excel
         ServletOutputStream out = response.getOutputStream();
         writer.flush(out, true);
         writer.close();
         out.close();
     }
-    
+
     /**
      * 导入客户规格映射表
      */
@@ -228,7 +228,7 @@ public class SalYtCustomerSpecificationComparisonController {
         if (file == null || file.isEmpty()) {
             return ResultInfo.error("文件不能为空");
         }
-        
+
         // 读取Excel文件
         try (InputStream inputStream = file.getInputStream();
              ExcelReader reader = ExcelUtil.getReader(inputStream)) {
@@ -236,26 +236,26 @@ public class SalYtCustomerSpecificationComparisonController {
             reader.addHeaderAlias("客户规格", "customerSpecification");
             // 读取数据，忽略标题行
             List<SalYtCustomerSpecificationComparison> dataList = reader.readAll(SalYtCustomerSpecificationComparison.class);
-            
+
             // 检查数据
             if (dataList.isEmpty()) {
                 return ResultInfo.error("文件中没有数据");
             }
-            
+
             // 设置客户ID
             for (SalYtCustomerSpecificationComparison entity : dataList) {
                 entity.setCustomerId(customerId);
             }
-            
+
             // 批量导入数据
             salYtCustomerSpecificationComparisonManager.batchImport(dataList);
-            
+
             return ResultInfo.success("导入成功，共导入" + dataList.size() + "条数据");
         } catch (Exception e) {
             return ResultInfo.error("导入失败：" + e.getMessage());
         }
     }
-    
+
     /**
      * 获取客户规格列表
      */

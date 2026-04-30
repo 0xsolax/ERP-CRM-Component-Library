@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiaomoyun.mapper.pro.yt.ProYtProductLabelMapper">
-    
+
     <!-- 基础字段 -->
     <sql id="Base_Column_List">
         id, master_id, value, type, create_time, create_user, update_time, update_user, is_deleted
     </sql>
-    
+
     <!-- 根据masterId查询标签列表 -->
     <select id="selectByMasterIdAndType" parameterType="com.qiaomoyun.entity.pro.yt.ProYtProductLabel" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductLabel">
         SELECT pypl.*
@@ -15,7 +15,7 @@
         AND is_deleted = 0
         ORDER BY create_time DESC
     </select>
-    
+
     <!-- 根据类型查询标签列表 -->
     <select id="selectByType" parameterType="java.lang.String" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductLabel">
         SELECT <include refid="Base_Column_List" />
@@ -45,7 +45,7 @@
         </where>
         ORDER BY update_time DESC
     </select>
-    
+
     <!-- 根据类型查询去重的标签列表 -->
     <select id="selectDistinctLabelValuesByType" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT DISTINCT value
@@ -55,7 +55,7 @@
         AND value IS NOT NULL AND value != ''
         ORDER BY value
     </select>
-    
+
     <!-- 检查同一master和type下是否存在相同value的标签（排除指定ID） -->
     <select id="selectByMasterIdAndTypeAndValue" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductLabel">
         SELECT <include refid="Base_Column_List" />
@@ -68,7 +68,7 @@
             AND id != #{excludeId}
         </if>
     </select>
-    
+
     <!-- 逻辑删除 -->
     <update id="deleteById" parameterType="java.lang.Integer">
         UPDATE pro_yt_product_label

@@ -15,23 +15,23 @@ import java.util.Date;
 @Data
 @TableName("sal_yt_contact_person_phone")
 public class SalYtContactPersonPhone extends BaseEntity{
-    
+
     /**
      * 主键ID
      */
     @TableId(type = IdType.AUTO)
     private Long id;
-    
+
     /**
      * 联系人ID
      */
     private Long contactId;
-    
+
     /**
      * 区号
      */
     private String areaCode;
-    
+
     /**
      * 联系方式
      */

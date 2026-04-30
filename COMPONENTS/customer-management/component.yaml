@@ -1,0 +1,94 @@
+name: customer-management
+display_name: 客户管理
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/CustomerController.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Customer.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/CustomerService.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
+    - RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer
+    - RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer
+    - RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtCustomerManager.java
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_客户管理.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+  optional:
+    - file-oss
+    - product-material
+    - quote-management
+    - order-management
+entrypoints:
+  backend:
+    controllers:
+      - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/CustomerController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerSpecificationComparisonController.java
+    services:
+      - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/yt/SalYtCustomerService.java
+    dto:
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/yt
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/yt
+    entities:
+      - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Customer.java
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/yt
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pro/yt/ProYtProductLabel.java
+    data_permission:
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/annotation/RequiresDataPermissions.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/interceptor/AuthenticationInterceptor.java
+      - backend/qmy-java/dao/src/main/java/com/qiaomoyun/interceptor/TenantInterceptor.java
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/admin/sales/customer.ts
+      - frontend/qmy-admin/src/api/admin/sales/customer-spec.ts
+    views:
+      - frontend/qmy-admin/src/views/admin/sales/customer
+      - frontend/qmy-admin/src/views/sed/sales/customer
+    router:
+      - frontend/qmy-admin/src/views/admin/router/async-modules/sales.ts
+      - frontend/qmy-admin/src/views/sed/router/async-modules/sales.ts
+    constants:
+      - frontend/qmy-admin/src/constant/yitang/customer.ts
+      - frontend/qmy-admin/src/constant/sed/customer.ts
+  db:
+    schema:
+      - db/zhongsheng-AI/init-customer.sql
+      - docs/contracts/DATA_CONTRACT.md
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - .env
+    - secrets
+notes:
+  - 组件当前为 reference，适合作为客户管理方案参考。
+  - qmy-java 是 SOL-47 的补充来源，用于补齐 qmy-admin 前端接口对应的后端事实。
+  - legacy zhongsheng-AI 后端存在 Customer.owner/follower 与 init.sql 不一致，正式接入前必须修正。
+  - 客户导入、平台同步和爬虫不是默认能力。
+

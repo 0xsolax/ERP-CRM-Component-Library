@@ -71,8 +71,8 @@
   - 面料：`material:fabric:page`
   - 材料：`material:material:page`
   - 包材：`material:packaging:page`
-- 保留来源事实 `/fabric/deteil`，不在快照中擅自改后端路径。
-- 保留来源前端 `/packaging/typeList`、`/box-price/list` 封装，并在契约中标注后端缺口。
+- 保留来源事实 `/fabric/deteil`，并在快照后端新增 `/fabric/detail` 标准路径兼容。
+- 移除来源前端未使用的 `/packaging/typeList`、`/box-price/list` API 封装；包材类型由 `base-data` 查询，纸箱单价列表由 `/packaging/page` 加 `defaultTypeFlag = 1` 查询。
 
 ## 事实与判断
 

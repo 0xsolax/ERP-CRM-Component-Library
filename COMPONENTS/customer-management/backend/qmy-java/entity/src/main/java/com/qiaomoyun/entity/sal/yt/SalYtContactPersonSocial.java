@@ -24,19 +24,19 @@ public class SalYtContactPersonSocial extends BaseEntity {
      */
     @TableId(type = IdType.AUTO)
     private Long id;
-    
+
     /**
      * 联系人ID
      */
     @NotNull(message = "联系人id不能为空")
     private Long contactId;
-    
+
     /**
      * 社交平台
      */
     @NotBlank(message = "请选择社交平台")
     private String socialPlatform;
-    
+
     /**
      * 社交账号值
      */

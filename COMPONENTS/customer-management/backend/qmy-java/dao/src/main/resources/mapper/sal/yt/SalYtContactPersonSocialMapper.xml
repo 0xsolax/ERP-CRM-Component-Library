@@ -15,7 +15,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, contact_id, social_platform, value, create_user, create_time, update_user, update_time, 
+        id, contact_id, social_platform, value, create_user, create_time, update_user, update_time,
         tenant_id, is_deleted
     </sql>
 
@@ -31,7 +31,7 @@
         set is_deleted = 1
         where contact_id = #{contactId}
     </update>
-    
+
     <insert id="insertBatch" parameterType="java.util.List">
         insert into sal_yt_contact_person_social
         (contact_id, social_platform, value, create_user, create_time, update_user, update_time, tenant_id, is_deleted)

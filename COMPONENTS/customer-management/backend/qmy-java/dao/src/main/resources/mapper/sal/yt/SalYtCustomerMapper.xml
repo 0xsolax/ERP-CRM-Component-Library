@@ -35,7 +35,7 @@
         update_user, update_time, tenant_id, is_deleted, order_default_remark
     </sql>
 
-    
+
     <!-- 查询客户产品列表 -->
     <select id="list" parameterType="com.qiaomoyun.param.sal.yt.SalYtCustomerQueryParams" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomer">
         SELECT pyc.*,

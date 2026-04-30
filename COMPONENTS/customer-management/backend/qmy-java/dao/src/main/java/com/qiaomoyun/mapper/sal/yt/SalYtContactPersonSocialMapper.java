@@ -22,13 +22,13 @@ public interface SalYtContactPersonSocialMapper extends BaseMapper<SalYtContactP
      * @return 社交账号列表
      */
     List<SalYtContactPersonSocial> selectByContactId(Long contactId);
-    
+
     /**
      * 根据联系人ID删除所有社交账号（逻辑删除）
      * @param contactId 联系人ID
      */
     void deleteByContactId(Long contactId);
-    
+
     /**
      * 批量插入社交账号信息
      * @param socialList 社交账号列表

@@ -13,7 +13,7 @@ public class CustomerVipParams {
      * 新增VIP客户的ID列表
      */
     private List<Long> addVipIds;
-    
+
     /**
      * 移除VIP客户的ID列表
      */

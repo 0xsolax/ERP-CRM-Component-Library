@@ -101,7 +101,7 @@ public class SalYtCustomerController {
             return ResultInfo.error("修改失败：" + e.getMessage());
         }
     }
-    
+
 //    @RequiresPermissions("sal:yt:customer:address:delete")
 //    @RequiresPermissionsDesc(menu = {"销售管理", "客户列表"}, button = "删除地址")
     @Operation(summary = "删除客户收货地址")
@@ -134,7 +134,7 @@ public class SalYtCustomerController {
             return ResultInfo.error("修改失败：" + e.getMessage());
         }
     }
-    
+
 //    @RequiresPermissions("sal:yt:customer:contact:delete")
     @Operation(summary = "删除客户联系人")
     @GetMapping("/contact/delete")
@@ -296,7 +296,7 @@ public class SalYtCustomerController {
         salYtCustomerManager.saveOrUpdateFollow(follow);
         return ResultInfo.success("操作成功");
     }
-    
+
 //    @RequiresPermissions("sal:yt:customer:follow:delete")
     @Operation(summary = "删除客户跟进记录")
     @GetMapping("/follow/delete")
@@ -389,11 +389,11 @@ public class SalYtCustomerController {
             if (!"0".equals(store.getStatus()) && !"1".equals(store.getStatus())) {
                 return ResultInfo.error("状态值只能是0(关闭)或1(开启)");
             }
-            
+
             salYtCustomerStoreManager.updateStoreStatus(store);
             return ResultInfo.success("操作成功");
     }
-    
+
     /**
      * 查询客户独立仓预警数量
      * @param customerId 客户ID
@@ -410,7 +410,7 @@ public class SalYtCustomerController {
 
             return ResultInfo.success(salYtCustomerStoreManager.getWarningCountByCustomerId(customerId));
     }
-    
+
     /**
      * 查询客户独立仓产品预警数量
      * @param customerId 客户ID
@@ -442,7 +442,7 @@ public class SalYtCustomerController {
     public ResultInfo getVipCustomerList(@RequestBody CustomerVipParams params) {
             return ResultInfo.success(salYtCustomerManager.getVipCustomerList(params));
     }
-    
+
     /**
      * 设置VIP客户
      * @param params 设置VIP客户参数

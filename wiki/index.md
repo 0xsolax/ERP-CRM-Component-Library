@@ -21,6 +21,7 @@
 - [COMPONENT_base-data](../COMPONENTS/base-data/README.md)
 - [COMPONENT_file-oss](../COMPONENTS/file-oss/README.md)
 - [COMPONENT_product-material](../COMPONENTS/product-material/README.md)
+- [COMPONENT_customer-management](../COMPONENTS/customer-management/README.md)
 
 ## 来源项目
 

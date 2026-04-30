@@ -23,7 +23,7 @@
 
     <sql id="Base_Column_List">
         id, customer_id, consignee, phone, country_region,country_region_id, region_id, province,
-        city, county, detail, create_user, create_time, update_user, update_time, 
+        city, county, detail, create_user, create_time, update_user, update_time,
         tenant_id, is_deleted
     </sql>
 
@@ -47,7 +47,7 @@
         set is_deleted = 1
         where customer_id = #{customerId}
     </update>
-    
+
     <insert id="insertBatch" parameterType="java.util.List">
         insert into sal_yt_customer_address
         (customer_id, consignee, phone, country_region,country_region_id, region_id, province, city, county, detail, create_user, create_time, update_user, update_time, tenant_id, is_deleted)

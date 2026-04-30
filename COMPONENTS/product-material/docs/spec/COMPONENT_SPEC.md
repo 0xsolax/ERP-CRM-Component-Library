@@ -44,7 +44,7 @@ base-data 字段分类
 
 ## 已知缺口
 
-- 来源接口 `/fabric/deteil` 拼写错误，快照保留事实。
-- 来源前端存在 `/packaging/typeList` 和 `/box-price/list`，当前后端未找到对应 controller。
+- 来源接口 `/fabric/deteil` 拼写错误；快照已新增 `/fabric/detail` 标准路径并保留旧路径兼容。
+- 来源前端存在 `/packaging/typeList` 和 `/box-price/list` 未使用封装；快照已移除，避免保留无后端 controller 的 API。
 - 快照未包含 `base-data` 和 `file-oss` 代码，需要与对应组件一同接入。
 - 当前快照未做浏览器或接口联调验证。

@@ -80,7 +80,7 @@ public class TenantInterceptor implements Interceptor {
         String mappedStatementId = mappedStatement.getId();
         String mapperClassName = mappedStatementId.substring(0, mappedStatementId.lastIndexOf('.'));
         String methodName = mappedStatementId.substring(mappedStatementId.lastIndexOf('.') + 1);
-        
+
         try {
             // 反射获取Mapper接口
             Class<?> mapperClass = Class.forName(mapperClassName);
@@ -167,7 +167,7 @@ public class TenantInterceptor implements Interceptor {
                         return select.toString();
                     }
                 }
-                
+
                 // 处理普通表查询
                 tableName = plainSelect.getFromItem().toString();
                 // 处理有别名的情况，如table t
@@ -191,7 +191,7 @@ public class TenantInterceptor implements Interceptor {
             Expression tenantCondition = new EqualsTo()
                     .withLeftExpression(new Column(tableName + ".tenant_id"))
                     .withRightExpression(new LongValue(tenantId));
-            
+
             if (where == null) {
                 plainSelect.setWhere(tenantCondition);
             } else {
@@ -212,22 +212,22 @@ public class TenantInterceptor implements Interceptor {
                     conditions = new ArrayList<>();
                     conditions.add(new LoginUserInfo.ConditionInfo("create_user", "AND"));
                 }
-                
+
                 // 添加筛选条件进行数据权限过滤
                 if (createUserIdList != null && createUserIdList.size() > 0 && tableName != null) {
                     Expression currentWhere = plainSelect.getWhere();
                     Expression newWhere = null;
-                    
+
                     // 为每个条件添加IN条件
                     for (int i = 0; i < conditions.size(); i++) {
                         LoginUserInfo.ConditionInfo condition = conditions.get(i);
                         String field = condition.getField();
                         String logic = condition.getLogic();
-                        
+
                         // 创建IN表达式
                         InExpression fieldCondition = new InExpression();
                         fieldCondition.setLeftExpression(new Column(tableName + "." + field));
-                        
+
                         // 设置IN的右边值列表
                         List<Expression> expressions = new ArrayList<>();
                         for (Long userId : createUserIdList) {
@@ -238,7 +238,7 @@ public class TenantInterceptor implements Interceptor {
                             public void accept(net.sf.jsqlparser.expression.operators.relational.ItemsListVisitor itemsListVisitor) {
                                 // 实现必要的方法
                             }
-                            
+
                             @Override
                             public String toString() {
                                 StringBuilder sb = new StringBuilder("(");
@@ -252,7 +252,7 @@ public class TenantInterceptor implements Interceptor {
                                 return sb.toString();
                             }
                         });
-                        
+
                         // 组合多个筛选条件
                         if (newWhere == null) {
                             newWhere = fieldCondition;
@@ -264,12 +264,12 @@ public class TenantInterceptor implements Interceptor {
                             }
                         }
                     }
-                    
+
                     // 将筛选条件添加到WHERE子句
                     if (newWhere != null) {
                         // 创建括号表达式，将所有数据权限条件括起来
                         net.sf.jsqlparser.expression.Parenthesis parenthesis = new net.sf.jsqlparser.expression.Parenthesis(newWhere);
-                        
+
                         if (currentWhere == null) {
                             plainSelect.setWhere(parenthesis);
                         } else {
@@ -300,7 +300,7 @@ public class TenantInterceptor implements Interceptor {
         Expression tenantCondition = new EqualsTo()
                 .withLeftExpression(new Column(tableName + ".tenant_id"))
                 .withRightExpression(new LongValue(tenantId));
-        
+
         if (where == null) {
             update.setWhere(tenantCondition);
         } else {
@@ -317,7 +317,7 @@ public class TenantInterceptor implements Interceptor {
         Expression tenantCondition = new EqualsTo()
                 .withLeftExpression(new Column(tableName + ".tenant_id"))
                 .withRightExpression(new LongValue(tenantId));
-        
+
         if (where == null) {
             delete.setWhere(tenantCondition);
         } else {

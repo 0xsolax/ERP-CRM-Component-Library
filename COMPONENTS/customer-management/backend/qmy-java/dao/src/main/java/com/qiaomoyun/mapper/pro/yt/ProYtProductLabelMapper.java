@@ -15,12 +15,12 @@ import java.util.List;
  */
 public interface ProYtProductLabelMapper extends BaseMapper<ProYtProductLabel> {
     List<ProYtProductLabel> selectByMasterIdAndType(ProYtProductLabel proYtProductLabel);
-    
+
     /**
      * 根据类型查询去重的标签列表
      */
     List<String> selectDistinctLabelValuesByType(String type);
-    
+
     /**
      * 检查同一master和type下是否存在相同value的标签（排除指定ID）
      */

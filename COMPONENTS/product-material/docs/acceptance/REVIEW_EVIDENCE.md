@@ -7,7 +7,8 @@
 | 本地仓库路径 | `/Users/solazhu/software/ERP-CRM-Component-Library` |
 | 组件目录 | `COMPONENTS/product-material` |
 | 关联任务 | `SOL-46 P2｜业务组件：product-material` |
-| 当前组件提交 | `aee2ccd P2｜业务组件：product-material` |
+| 组件基线提交 | `aee2ccd P2｜业务组件：product-material` |
+| 证据文件状态 | 本文件用于补充 `aee2ccd` 的审计证据；复核时以包含本文件的最新提交为准 |
 | 证据日期 | `2026-04-30` |
 
 ## 变更证据
@@ -25,18 +26,20 @@ aee2ccd P2｜业务组件：product-material
 181 files changed, 13714 insertions(+), 27 deletions(-)
 ```
 
-组件文件数量：
+基线组件文件数量：
 
 ```bash
-git ls-files COMPONENTS/product-material | wc -l
+git ls-tree -r --name-only aee2ccd COMPONENTS/product-material | wc -l
 # 175
 ```
 
-本地文件数量：
+当前组件文件数量：
 
 ```bash
 find COMPONENTS/product-material -type f | wc -l
-# 175
+# 176
+git ls-files COMPONENTS/product-material | wc -l
+# 176
 ```
 
 ## 六大领域抽取对照
@@ -167,6 +170,14 @@ process:process:remove
 
 快照路由中已无来源占位权限 `sys:role:list`。
 
+## 接口差异处理证据
+
+| 差异 | 处理结果 | 证据 |
+| :--- | :--- | :--- |
+| `/fabric/deteil` 拼写错位 | 保留旧路径兼容，并新增 `/fabric/detail` 标准路径 | `backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/material/controller/FabricController.java` |
+| `/packaging/typeList` 前端封装无后端 controller | 已移除未使用前端封装 | `frontend/qmy-admin/src/api/zs/material/packaging.ts` |
+| `/box-price/list` 前端封装无后端 controller | 已移除未使用前端封装；纸箱单价列表使用 `/packaging/page` 加 `defaultTypeFlag = 1` | `frontend/qmy-admin/src/views/zs/material/packaging/components/box-price-dialog.vue`、`frontend/qmy-admin/src/api/zs/material/packaging.ts` |
+
 ## 污染与敏感信息扫描
 
 污染文件扫描：
@@ -187,4 +198,4 @@ find COMPONENTS/product-material -type f \( -name 'application-local.yml' -o -na
 
 - 本组件是快照证据包，不是独立可编译模块。
 - 编译和接口联调需要与 `BASE/project-scaffold`、`base-data`、`file-oss`、`auth-permission` 以及目标项目基座一起装配。
-- `/fabric/deteil`、`/packaging/typeList`、`/box-price/list` 为来源事实或前端遗留封装，已在 `API_CONTRACT.md` 和 `ACCEPTANCE.md` 中标为待验证项。
+- 接入验收需要目标基座装配后执行；SOL-46 当前只关闭快照级交付。

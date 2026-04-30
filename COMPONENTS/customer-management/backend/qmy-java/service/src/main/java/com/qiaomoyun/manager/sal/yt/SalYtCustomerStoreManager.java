@@ -33,10 +33,10 @@ import java.util.Map;
  */
 @Component
 public class SalYtCustomerStoreManager {
-    
+
     @Autowired
     private SalYtCustomerStoreMapper salYtCustomerStoreMapper;
-    
+
     @Autowired
     private ProYtProductSpecificationMapper productSpecificationMapper;
     @Autowired
@@ -54,7 +54,7 @@ public class SalYtCustomerStoreManager {
         PageHelper.startPage(params.getPageNum(), params.getPageSize());
         return salYtCustomerStoreMapper.selectProductList(params);
     }
-    
+
     /**
      * 检查产品是否开启独立仓
      */
@@ -62,7 +62,7 @@ public class SalYtCustomerStoreManager {
         Integer count = salYtCustomerStoreMapper.selectStoreExists(customerId, productId);
         return count != null && count > 0;
     }
-    
+
     /**
      * 保存或更新独立仓信息
      */
@@ -73,14 +73,14 @@ public class SalYtCustomerStoreManager {
             salYtCustomerStoreMapper.updateById(store);
         }
     }
-    
+
     /**
      * 根据ID查询独立仓信息
      */
     public SalYtCustomerStore getById(Long id) {
         return salYtCustomerStoreMapper.selectById(id);
     }
-    
+
     /**
      * 根据产品ID查询独立仓信息
      */
@@ -90,7 +90,7 @@ public class SalYtCustomerStoreManager {
         queryMap.put("is_deleted", 0);
         return salYtCustomerStoreMapper.selectByMap(queryMap).stream().findFirst().orElse(null);
     }
-    
+
     /**
      * 查询产品规格列表
      */
@@ -101,7 +101,7 @@ public class SalYtCustomerStoreManager {
         proYtProductSpecification.setName(params.getSpecificationName());
         // 先根据productId查询出产品的所有规格
         List<ProYtProductSpecification> specificationList = proYtProductManager.selectSpecificationByProductId(productId, proYtProductSpecification);
-        
+
         // 构建返回结果
         for (ProYtProductSpecification spec : specificationList) {
             spec.setCustomerId(customerId);
@@ -116,7 +116,7 @@ public class SalYtCustomerStoreManager {
                 spec.setStoreStatus("0");
             }
         }
-        
+
         return specificationList;
     }
 
@@ -125,7 +125,7 @@ public class SalYtCustomerStoreManager {
         customerStore.setStoreNumber(customerStore.getStoreNumber() - storeNumber);
         salYtCustomerStoreMapper.updateById(customerStore);
     }
-    
+
     /**
      * 更新独立仓状态
      */
@@ -133,21 +133,21 @@ public class SalYtCustomerStoreManager {
         Long customerId = store.getCustomerId();
         Long specificationId = store.getSpecificationId();
         String status = store.getStatus();
-        
+
         // 参数校验
         if (customerId == null || specificationId == null || status == null) {
             throw new IllegalArgumentException("客户ID、规格ID和状态不能为空");
         }
-        
+
         // 状态值校验
         if (!"0".equals(status) && !"1".equals(status)) {
             throw new IllegalArgumentException("状态值只能是0(关闭)或1(开启)");
         }
-        
+
         // 查询现有数据
         SalYtCustomerStore existingStore = salYtCustomerStoreMapper.selectByCustomerIdAndSpecificationId(customerId, specificationId);
 
-        
+
         if ("1".equals(status)) {
             // 开启独立仓
             if (existingStore != null) {
@@ -174,11 +174,11 @@ public class SalYtCustomerStoreManager {
                 // 检查实际库存和在途库存是否都为0
                 Integer storeNumber = existingStore.getStoreNumber();
                 Integer transitNumber = existingStore.getTransitNumber();
-                
+
                 if ((storeNumber != null && storeNumber > 0) || (transitNumber != null && transitNumber > 0)) {
                     throw new BizException("库存不为空，不能关闭独立仓");
                 }
-                
+
                 // 库存为空，可以关闭
                 salYtCustomerStoreMapper.updateStatus(existingStore.getId(), status);
             }
@@ -209,7 +209,7 @@ public class SalYtCustomerStoreManager {
             salYtCustomerStoreMapper.updateById(salYtCustomerStore);
         }
     }
-    
+
     /**
      * 获取客户独立仓预警数量
      * @param customerId 客户ID
@@ -221,7 +221,7 @@ public class SalYtCustomerStoreManager {
         }
         return salYtCustomerMapper.selectById(customerId);
     }
-    
+
     /**
      * 获取客户独立仓产品预警数量
      * @param customerId 客户ID

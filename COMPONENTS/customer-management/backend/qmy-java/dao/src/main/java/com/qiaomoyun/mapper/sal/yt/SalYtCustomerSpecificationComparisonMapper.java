@@ -15,14 +15,14 @@ import java.util.List;
  * 客户规格映射Mapper接口
  */
 public interface SalYtCustomerSpecificationComparisonMapper extends BaseMapper<SalYtCustomerSpecificationComparison> {
-    
+
     /**
      * 根据客户ID和条件查询规格映射列表
      * @param queryParams 查询参数（包含customerId、specification等）
      * @return 规格映射列表
      */
     List<SalYtCustomerSpecificationComparison> list(SalYtCustomerSpecificationComparisonQueryParams queryParams);
-    
+
     /**
      * 检查规格是否已存在（根据客户ID和规格名称）
      * @param customerId 客户ID
@@ -31,14 +31,14 @@ public interface SalYtCustomerSpecificationComparisonMapper extends BaseMapper<S
      * @return 是否存在
      */
     boolean existsByCustomerAndSpecification(Long customerId, String specification, Long excludeId);
-    
+
     /**
      * 根据客户ID删除所有规格映射
      * @param customerId 客户ID
      * @return 删除行数
      */
     int deleteByCustomerId(Long customerId);
-    
+
     /**
      * 批量插入规格映射
      * @param list 规格映射列表

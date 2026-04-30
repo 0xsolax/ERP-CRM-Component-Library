@@ -10,11 +10,11 @@ import java.lang.annotation.Target;
 public @interface RequiresDataPermissions {
     String[] value();
     Condition[] conditions() default { @Condition(field = "create_user", logic = LogicType.AND) };
-    
+
     enum LogicType {
         AND, OR
     }
-    
+
     @interface Condition {
         String field();
         LogicType logic() default LogicType.AND;

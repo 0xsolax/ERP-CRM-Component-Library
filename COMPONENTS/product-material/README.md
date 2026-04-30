@@ -65,5 +65,5 @@
 - 产品主档成本不应覆盖报价单快照。报价单应保存客户、数量、利润、汇率、税费、包材调整等报价时点信息。
 - `base_data` 的名称会被快照到产品/物料关系表，新项目需确认基础数据改名后的历史展示规则。
 - 产品图片和物料图片依赖 `file-oss`，不得在产品组件里硬编码文件访问密钥。
-- 来源存在 `/fabric/deteil` 拼写事实，接入新项目时应决定兼容旧路径或统一改为 `/fabric/detail`。
-- 来源前端保留 `/packaging/typeList`、`/box-price/list` API 封装，但当前后端快照未找到对应 controller；已列为待验证缺口。
+- 来源存在 `/fabric/deteil` 拼写事实；快照已新增 `/fabric/detail` 标准路径并保留旧路径兼容。
+- 来源前端曾保留 `/packaging/typeList`、`/box-price/list` 未使用封装；快照已移除，包材类型走 `base-data`，纸箱单价列表走 `/packaging/page` 加 `defaultTypeFlag = 1`。

@@ -20,44 +20,44 @@ import java.util.Map;
  */
 @Mapper
 public interface SalYtCustomerStoreMapper extends BaseMapper<SalYtCustomerStore> {
-    
+
     /**
      * 查询独立仓产品列表
      */
     List<Map<String, Object>> selectProductList(SalYtCustomerQueryParams params);
-    
+
     /**
      * 查询客户是否有某个产品的独立仓
      */
     Integer selectStoreExists(@Param("customerId") Long customerId, @Param("productId") Long productId);
-    
+
     /**
      * 根据客户ID和产品ID查询独立仓数据
      */
     List<SalYtCustomerStore> selectByCustomerIdAndProductId(@Param("customerId") Long customerId, @Param("productId") Long productId);
-    
+
     /**
      * 根据规格信息查询客户独立仓
      */
     SalYtCustomerStore selectBySpecificationAndCustomer( ProYtProductSpecification specification);
-    
+
     /**
      * 根据客户ID和规格ID查询独立仓数据
      */
     SalYtCustomerStore selectByCustomerIdAndSpecificationId(@Param("customerId") Long customerId, @Param("specificationId") Long specificationId);
-    
+
     /**
      * 更新独立仓状态
      */
     void updateStatus(@Param("id") Long id, @Param("status") String status);
-    
+
     /**
      * 查询客户独立仓预警数量
      * @param customerId 客户ID
      * @return 预警产品数量
      */
     Integer selectWarningCountByCustomerId(@Param("customerId") Long customerId);
-    
+
     /**
      * 查询客户独立仓产品预警数量
      * @param customerId 客户ID

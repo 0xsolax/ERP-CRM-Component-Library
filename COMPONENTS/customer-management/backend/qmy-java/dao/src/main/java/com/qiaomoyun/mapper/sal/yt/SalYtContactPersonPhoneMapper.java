@@ -9,21 +9,21 @@ import java.util.List;
  * 联系人电话Mapper接口
  */
 public interface SalYtContactPersonPhoneMapper extends BaseMapper<SalYtContactPersonPhone> {
-    
+
     /**
      * 根据联系人ID查询电话号码列表
      * @param contactId 联系人ID
      * @return 电话号码列表
      */
     List<SalYtContactPersonPhone> selectByContactId(@Param("contactId") Long contactId);
-    
+
     /**
      * 根据联系人ID删除电话号码（逻辑删除）
      * @param contactId 联系人ID
      * @return 删除成功的记录数
      */
     int deleteByContactId(@Param("contactId") Long contactId);
-    
+
     /**
      * 批量插入联系人电话号码
      * @param phoneList 电话号码列表

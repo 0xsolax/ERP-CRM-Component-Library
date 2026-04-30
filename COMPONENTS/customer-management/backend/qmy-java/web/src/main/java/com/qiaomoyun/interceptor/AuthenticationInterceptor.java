@@ -135,11 +135,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                         if(ObjectUtil.isEmpty(dataPermission)||dataPermission.getIsOrganizeData()==2){
                             //在TheaderLocal中做好标识，在mybatis拦截器中去拦截
                             loginUserInfo.setIsOrganizeData(true);
-                            
+
                             // 获取数据权限的createUserIdList
                             List<Long> createUserIdList = new ArrayList<>();
                             createUserIdList.add(userId);
-                            
+
                             // 查找负责的部门
                             List<SysDepartmentLeader> sysDepartmentLeaderList = sysDepartmentLeaderMapper.getByUserId(userId, Integer.valueOf(tenantId));
                             if(!ObjectUtil.isEmpty(sysDepartmentLeaderList)){
@@ -153,7 +153,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                                     }
                                 }
                             }
-                            
+
                             // 设置到LoginUserInfo中
                             loginUserInfo.setCreateUserIdList(createUserIdList);
                             // 设置条件信息

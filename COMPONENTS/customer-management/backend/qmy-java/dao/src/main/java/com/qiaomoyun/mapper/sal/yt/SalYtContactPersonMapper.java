@@ -23,26 +23,26 @@ public interface SalYtContactPersonMapper extends BaseMapper<SalYtContactPerson>
      * @return 联系人列表
      */
     List<SalYtContactPerson> selectByCustomerId(Long customerId);
-    
+
     /**
      * 根据客户ID删除所有联系人（逻辑删除）
      * @param customerId 客户ID
      */
     void deleteByCustomerId(Long customerId);
-    
+
     /**
      * 批量插入联系人信息
      * @param contactPersonList 联系人列表
      */
     void insertBatch(List<SalYtContactPerson> contactPersonList);
-    
+
     /**
      * 根据供应商ID查询联系人列表
      * @param supplierId 供应商ID
      * @return 联系人列表
      */
     List<SalYtContactPerson> selectBySupplierId(Long supplierId);
-    
+
     /**
      * 根据供应商ID删除所有联系人（逻辑删除）
      * @param supplierId 供应商ID

@@ -20,3 +20,5 @@
 - `SOL-45` 快照明确推荐 STS 临时凭证直传 OSS + `system_file` 文件记录，旧后端中转上传仅作为迁移参考；组件状态标记为 `reference`。
 - 启动并完成 Multica `SOL-46` 本地组件抽取：生成 `COMPONENTS/product-material`，覆盖产品主档、产品 BOM、伞架、面料、材料、包材、工序、SQL、前端维护页、路由权限和契约文档。
 - `SOL-46` 快照明确产品主档成本与报价时点快照的边界，并标注 `/fabric/deteil`、`/packaging/typeList`、`/box-price/list` 等待验证接口事实；组件状态标记为 `reference`。
+- 启动并完成 Multica `SOL-47` 本地组件抽取：生成 `COMPONENTS/customer-management`，覆盖客户主档、联系人、地址、标签、跟进、客户数据权限、前端客户页面和调研材料。
+- `SOL-47` 快照明确 legacy `Customer.owner/follower` 与 `init.sql` 缺列不一致，补充 `qmy-java` 作为 `/sal/yt/customer/*` 后端证据，并标注客户导入/平台同步不是默认能力；组件状态标记为 `reference`。

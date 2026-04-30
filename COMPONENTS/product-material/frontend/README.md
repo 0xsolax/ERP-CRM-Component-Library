@@ -25,4 +25,4 @@
 
 - 路由权限已从来源占位 `sys:role:list` 替换为产品/材料/工序权限。
 - 页面仍保留来源项目的业务字段和 UI 交互，接入新项目时应先对齐目标行业。
-- `packaging.ts` 中 `/packaging/typeList`、`/box-price/list` 需要后端补齐或清理。
+- `packaging.ts` 已移除来源中未使用的 `/packaging/typeList`、`/box-price/list` 封装；包材类型由 `base-data` 查询，纸箱单价列表由 `/packaging/page` 加 `defaultTypeFlag = 1` 查询。

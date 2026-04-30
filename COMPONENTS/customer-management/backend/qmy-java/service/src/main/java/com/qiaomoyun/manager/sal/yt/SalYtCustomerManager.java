@@ -109,11 +109,11 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
             if (follow != null) {
                 salYtCustomer.setFollowTime(follow.getCreateTime());
             }
-            
+
             // 近一年积累金额，最近下单时间字段填充
             BigDecimal yearOrderAmount = salYtOrderMapper.getYearOrderAmountByCustomerId(id);
             salYtCustomer.setYearOrderAmount(yearOrderAmount != null ? yearOrderAmount : BigDecimal.ZERO);
-            
+
             LocalDateTime lastOrderTime = salYtOrderMapper.getLastOrderTimeByCustomerId(id);
             salYtCustomer.setLastOrderTime(lastOrderTime);
 
@@ -404,14 +404,14 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
     public void deleteContactPerson(Long contactId) {
         // 删除联系人主表（逻辑删除）
         salYtContactPersonMapper.deleteById(contactId);
-        
+
         // 删除联系人社交账号信息
 //        salYtContactPersonSocialMapper.deleteByContactId(contactId);
-        
+
         // 删除联系人电话号码
 //        salYtContactPersonPhoneMapper.deleteByContactId(contactId.intValue());
     }
-    
+
     /**
      * 删除客户收货地址
      * @param addressId 收货地址ID
@@ -421,7 +421,7 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
         // 逻辑删除收货地址
         salYtCustomerAddressMapper.deleteById(addressId);
     }
-    
+
     /**
      * 删除客户跟进记录
      * @param followId 跟进记录ID
@@ -574,7 +574,7 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
         salYtCustomerMapper.updateById(customer);
 
     }
-    
+
     /**
      * 独立仓审核
      * @param customerId 客户ID
@@ -585,7 +585,7 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
         if (customer == null) {
             throw new BizException(ExceptionCodeEnum.Not_Exists.getCode(),"客户不存在");
         }
-        
+
         //更新独立仓状态
         customer.setStoreStatus(auditResult);
         customer.setStoreOperationTime(LocalDateTime.now());
@@ -596,7 +596,7 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
     public Object getCustomerAddress(Long id) {
         return salYtCustomerAddressMapper.selectByCustomerId(id);
     }
-    
+
     /**
      * 查询VIP客户名单
      * @return VIP客户和非VIP客户名单
@@ -604,18 +604,18 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
     public Map<String, List<SalYtCustomer>> getVipCustomerList(CustomerVipParams params) {
         // 查询VIP客户列表
         List<SalYtCustomer> vipList = salYtCustomerMapper.selectVipCustomers(params);
-        
+
         // 查询非VIP客户列表
         List<SalYtCustomer> nonVipList = salYtCustomerMapper.selectNonVipCustomers(params);
-        
+
         // 组装结果
         Map<String, List<SalYtCustomer>> result = new HashMap<>();
         result.put("vipList", vipList);
         result.put("nonVipList", nonVipList);
-        
+
         return result;
     }
-    
+
     /**
      * 设置VIP客户
      * @param addVipIds 新增VIP客户的ID列表
@@ -632,7 +632,7 @@ public class SalYtCustomerManager extends ServiceImpl<SalYtCustomerMapper, SalYt
                 salYtCustomerMapper.updateById(customer);
             }
         }
-        
+
         // 移除VIP客户
         if (removeVipIds != null && !removeVipIds.isEmpty()) {
             for (Long id : removeVipIds) {

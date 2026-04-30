@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtCustomerSpecificationComparisonMapper">
-    
+
     <!-- 基础字段 -->
     <sql id="Base_Column_List">
         id, customer_id, specification, customer_specification, item_number,
-        create_user, create_time, update_user, update_time, 
+        create_user, create_time, update_user, update_time,
         tenant_id, is_deleted
     </sql>
-    
+
     <!-- 根据客户ID和条件查询规格映射列表 -->
     <select id="list" resultType="com.qiaomoyun.entity.sal.yt.SalYtCustomerSpecificationComparison" parameterType="com.qiaomoyun.entity.sal.yt.SalYtCustomerSpecificationComparison">
         SELECT
@@ -29,7 +29,7 @@
         ORDER BY
         create_time DESC
     </select>
-    
+
     <!-- 检查规格是否已存在 -->
     <select id="existsByCustomerAndSpecification" resultType="java.lang.Boolean">
         SELECT
@@ -89,12 +89,12 @@
         customer_id = #{customerId}
         AND is_deleted = 0
     </update>
-    
+
     <!-- 批量插入规格映射 -->
     <insert id="batchInsert" parameterType="java.util.List">
         INSERT INTO sal_yt_customer_specification_comparison
-        (customer_id, specification, customer_specification, 
-        create_user, create_time, update_user, update_time, 
+        (customer_id, specification, customer_specification,
+        create_user, create_time, update_user, update_time,
         tenant_id, is_deleted)
         VALUES
         <foreach collection="list" item="item" separator=",">

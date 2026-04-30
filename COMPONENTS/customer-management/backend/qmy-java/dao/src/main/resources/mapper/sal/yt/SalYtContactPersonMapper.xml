@@ -20,7 +20,7 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, customer_id, supplier_id, name, email, position, birthday, gender, remark, 
+        id, customer_id, supplier_id, name, email, position, birthday, gender, remark,
         create_user, create_time, update_user, update_time, tenant_id, is_deleted
     </sql>
 
@@ -36,7 +36,7 @@
         set is_deleted = 1
         where customer_id = #{customerId}
     </update>
-    
+
     <insert id="insertBatch" parameterType="java.util.List">
         insert into sal_yt_contact_person
         (customer_id, supplier_id, name, email, position, birthday, gender, remark, create_user, create_time, update_user, update_time, tenant_id, is_deleted)
@@ -45,14 +45,14 @@
             (#{item.customerId}, #{item.supplierId}, #{item.name}, #{item.email}, #{item.position}, #{item.birthday}, #{item.gender}, #{item.remark}, #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, 0)
         </foreach>
     </insert>
-    
+
     <select id="selectBySupplierId" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         *
         from sal_yt_contact_person
         where supplier_id = #{supplierId} and is_deleted = 0
     </select>
-    
+
     <update id="deleteBySupplierId" parameterType="java.lang.Long">
         update sal_yt_contact_person
         set is_deleted = 1

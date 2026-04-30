@@ -33,7 +33,7 @@ public interface SalYtCustomerAddressMapper extends BaseMapper<SalYtCustomerAddr
  * @param customerId 客户ID
  */
 void deleteByCustomerId(Long customerId);
-    
+
 /**
  * 批量插入地址信息
  * @param addressList 地址列表

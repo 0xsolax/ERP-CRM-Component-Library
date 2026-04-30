@@ -11,7 +11,7 @@
 | `RAW/PROJECTs/zhongsheng-AI` | 中盛 ERP 旧实现与 PRD | 客户、报价、订单、产品、物料、供应商、财务、上传、调研需求 | 已 ingest 到项目页与组件卡 |
 | `RAW/PROJECTs/zhongsheng-backend` | 中盛新版 Spring Boot 多模块后端 | 协议契约、权限、菜单、基础数据、产品、物料、OSS | 已 ingest 到项目页与组件卡 |
 | `RAW/docs/zhongsheng` | 调研会议记录和需求点 | 业务意图、岗位职责、流程痛点、报价与客户管理需求 | 已 ingest 到项目页与组件卡 |
-| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 暂未深挖 | 待后续 ingest |
+| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 客户管理 SOL-47 已局部深挖，其他模块待后续 ingest | 局部 ingest |
 | `RAW/PROJECTs/jewelry-design` | 前端项目 | 暂未深挖 | 待后续 ingest |
 
 ## 关键来源路径
@@ -87,6 +87,26 @@
 - `RAW/PROJECTs/qmy-admin/src/api/zs/product`
 - `RAW/PROJECTs/qmy-admin/src/api/zs/material`
 - `RAW/PROJECTs/qmy-admin/src/api/zs/base-info/process.ts`
+
+#### 客户管理组件关键路径
+
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/CustomerController.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Customer.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql`
+- `RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer`
+- `RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`
+- `RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/sales.ts`
+- `RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts`
+- `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtCustomerManager.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt/SalYtCustomerMapper.xml`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt/SalYtCustomerAddressMapper.xml`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt/SalYtContactPersonMapper.xml`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt/SalYtCustomerFollowMapper.xml`
+- `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/annotation/RequiresDataPermissions.java`
+- `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/interceptor/AuthenticationInterceptor.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/interceptor/TenantInterceptor.java`
 
 ### 调研资料
 

@@ -12,6 +12,8 @@
 
 ## 接入验收
 
+复核证据见 `REVIEW_EVIDENCE.md`。当前组件快照已完成代码层静态闭环；运行时接口验收需装配到目标项目后执行。
+
 - [ ] 未登录用户调用 `/oss/getOssToken` 被拒绝。
 - [ ] 已登录用户调用 `/oss/getOssToken` 返回 STS 临时凭证、bucket、endpoint 和过期时间。
 - [ ] OSS/STs 配置缺失时返回明确业务错误，不返回空凭证。

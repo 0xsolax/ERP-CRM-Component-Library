@@ -29,39 +29,39 @@ public class SalYtContactPerson extends BaseEntity {
      */
     @TableId(type = IdType.AUTO)
     private Long id;
-    
+
     /**
      * 客户ID
      */
     private Long customerId;
-    
+
     /**
      * 联系人名
      */
     @NotBlank(message = "请输入联系人姓名")
     private String name;
-    
+
     /**
      * 邮箱
      */
     @Email(message = "邮箱格式不正确")
     private String email;
-    
+
     /**
      * 职位
      */
     private String position;
-    
+
     /**
      * 生日
      */
     private String birthday;
-    
+
     /**
      * 性别
      */
     private String gender;
-    
+
     /**
      * 备注
      */

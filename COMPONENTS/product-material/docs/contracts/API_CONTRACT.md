@@ -26,10 +26,10 @@
 | 保存或更新面料 | POST | `/fabric/saveOrUpdate` | `FabricSaveDTO` | `Long id` | `FABRIC_SAVE_OR_UPDATE` |
 | 分页查询面料 | POST | `/fabric/page` | `FabricListQueryDTO` | `PageResponse<FabricVO>` | `FABRIC_PAGE` |
 | 面料列表 | POST | `/fabric/list` | 空或查询条件 | `List<FabricVO>` | `FABRIC_LIST` |
-| 面料详情 | POST | `/fabric/deteil` | `IdRequestParam` | `FabricVO` | `FABRIC_DETAIL` |
+| 面料详情 | POST | `/fabric/deteil`、`/fabric/detail` | `IdRequestParam` | `FabricVO` | `FABRIC_DETAIL` |
 | 删除面料 | POST | `/fabric/delete` | `IdRequestParam` | `Boolean` | `FABRIC_DELETE` |
 
-说明：`/fabric/deteil` 为来源事实。新项目建议兼容旧路径并新增 `/fabric/detail`，或统一迁移前端。
+说明：`/fabric/deteil` 为来源事实。快照已新增 `/fabric/detail` 标准路径并保留 `/fabric/deteil` 兼容旧前端。
 
 ## 材料
 
@@ -52,12 +52,12 @@
 | 分页查询包材 | POST | `/packaging/page` | `PackagingListQueryDTO` | `PageResponse<PackagingVO>` | `PACKAGING_PAGE` |
 | 删除包材 | POST | `/packaging/delete` | `IdRequestParam` | `Boolean` | `PACKAGING_DELETE` |
 
-前端待核对：
+前端差异处理：
 
-| 前端封装 | 状态 | 处理建议 |
+| 来源封装 | 处理结果 | 当前替代方式 |
 | :--- | :--- | :--- |
-| `/packaging/typeList` | 当前后端快照未找到 controller | 新项目补齐或改为 `base-data` 的包材类型查询 |
-| `/box-price/list` | 当前后端快照未找到 controller | 若不做独立纸箱价格表，应删除前端封装 |
+| `/packaging/typeList` | 已从快照 API 中移除未使用封装 | `base-data` 的 `listByNodeKey({ nodeKey: 'PACKAGING_TYPE' })` |
+| `/box-price/list` | 已从快照 API 中移除未使用封装 | `/packaging/page` 加 `defaultTypeFlag = 1` |
 
 ## 工序
 
@@ -76,5 +76,5 @@
 | `frontend/qmy-admin/src/api/zs/material/umbrella-frame.ts` | `/umbrellaFrame/*` |
 | `frontend/qmy-admin/src/api/zs/material/fabric.ts` | `/fabric/*` |
 | `frontend/qmy-admin/src/api/zs/material/material.ts` | `/material/*` |
-| `frontend/qmy-admin/src/api/zs/material/packaging.ts` | `/packaging/*`、待验证 `/box-price/list` |
+| `frontend/qmy-admin/src/api/zs/material/packaging.ts` | `/packaging/*` |
 | `frontend/qmy-admin/src/api/zs/base-info/process.ts` | `/process/*` |

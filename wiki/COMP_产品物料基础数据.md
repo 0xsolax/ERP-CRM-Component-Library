@@ -40,7 +40,7 @@
 | :--- | :--- | :--- | :--- |
 | 产品保存/分页/详情/删除 | POST | `/product/saveOrUpdate`、`/product/page`、`/product/detail`、`/product/delete` | `ProductController` |
 | 伞架管理 | POST | `/umbrellaFrame/saveOrUpdate`、`/page`、`/detail`、`/delete`、`/list` | `UmbrellaFrameController` |
-| 面料管理 | POST | `/fabric/saveOrUpdate`、`/page`、`/list`、`/deteil`、`/delete` | `FabricController` |
+| 面料管理 | POST | `/fabric/saveOrUpdate`、`/page`、`/list`、`/deteil`、`/detail`、`/delete` | `FabricController` |
 | 材料管理 | POST | `/material/category/*`、`/material/saveOrUpdate`、`/material/page`、`/material/delete`、`/material/listByCategoryId` | `MaterialController` |
 | 包材管理 | POST | `/packaging/saveOrUpdate`、`/packaging/saveOrUpdateDefaultPaperBox`、`/packaging/page`、`/packaging/delete` | `PackagingController` |
 | 工序管理 | POST | `/process/saveOrUpdate`、`/process/page`、`/process/list`、`/process/delete` | `ProcessController` |
@@ -87,7 +87,7 @@
 
 ## 已知风险
 
-- `FabricController` 来源路径里 `deteil` 拼写保留来源事实，接新项目时应统一契约或做兼容。
-- 来源前端存在 `/packaging/typeList` 和 `/box-price/list` 封装，当前后端未找到对应 controller。
+- `FabricController` 来源路径里 `deteil` 拼写保留来源事实；快照已新增 `/fabric/detail` 标准路径并保留旧路径兼容。
+- 来源前端曾存在 `/packaging/typeList` 和 `/box-price/list` 未使用封装；快照已移除，包材类型走 `base-data`，纸箱单价列表走 `/packaging/page` 加 `defaultTypeFlag = 1`。
 - 产品 BOM 与成本公式强行业相关，需要在新项目需求阶段重新确认。
 - 非伞类产品是否共表或分业务线，需要在客户需求阶段确认。
