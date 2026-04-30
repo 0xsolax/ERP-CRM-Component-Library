@@ -65,4 +65,6 @@ snapshot_policy:
     - hardcoded debug token
 notes:
   - 组件当前为 reference，登录/JWT 可优先复用，RBAC 需要按目标项目整合。
+  - auth.jwt.secret 无代码默认值，必须通过环境变量或密钥系统注入。
+  - 扫码登录是可选扩展：飞书/钉钉依赖平台配置，企业微信为待接入占位。
   - qmy-admin 中存在多套业务线前端，接入时只能选择一套作为目标，不应全部直接复制。

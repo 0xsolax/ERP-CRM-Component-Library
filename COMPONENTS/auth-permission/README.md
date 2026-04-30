@@ -32,7 +32,7 @@
 已覆盖：
 
 - 账号密码登录：`/sysUser/loginByPassword`
-- 扫码登录扩展：`/sysUser/loginByScan`
+- 扫码登录扩展入口：`/sysUser/loginByScan`
 - 退出登录：`/sysUser/logout`
 - 当前用户信息：`/sysUser/info`
 - JWT 签发、解析和 `auth_token` 会话状态
@@ -43,10 +43,32 @@
 
 待项目确认：
 
-- 是否启用飞书、钉钉、企业微信扫码登录。
+- 是否启用飞书、钉钉、企业微信扫码登录；当前快照中飞书/钉钉依赖平台配置，企业微信策略是待接入占位。
 - 是否使用 `qiaomoyun-token` 作为 token header。
 - 是否保留 `*` 超级权限语义。
 - 角色、菜单、权限码是否沿用中盛命名，还是按新项目重建。
+
+## 配置要求
+
+JWT 密钥必须由环境变量或密钥系统注入：
+
+```yaml
+auth:
+  jwt:
+    secret: ${AUTH_JWT_SECRET}
+```
+
+`AuthSettingsConfiguration` 会在启动期校验 `auth.jwt.secret`，未配置或为空时直接启动失败。
+
+## 扫码登录边界
+
+| 通道 | 当前状态 | 接入要求 |
+| :--- | :--- | :--- |
+| 飞书 | 策略代码已带出 | 配置 appId、appSecret、redirectUri 或租户配置 |
+| 钉钉 | 策略代码已带出 | 配置 appId、appSecret，并完成开放平台应用配置 |
+| 企业微信 | 占位策略 | 需要补开放平台换票和用户身份解析后才能启用 |
+
+未配置的平台会返回 `SCAN_LOGIN_NOT_READY`，不是生产可用通道。
 
 ## 快速接入
 
@@ -61,5 +83,6 @@
 
 - 不得恢复硬编码调试 token。
 - 不得提交真实数据库密码、JWT secret、第三方 app secret。
+- 不得给 JWT secret 设置代码默认值；未配置时必须启动失败。
 - `/external/**`、Swagger、扫码回调等匿名路径必须按项目安全策略复核。
 - 前端隐藏按钮不是权限边界，后端接口必须同步校验。

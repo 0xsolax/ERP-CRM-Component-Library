@@ -14,7 +14,7 @@
 ## 当前内置能力
 
 - 账号密码登录
-- 扫码登录策略扩展，默认支持 `feishu` / `dingtalk` / `wecom`
+- 扫码登录策略扩展，飞书/钉钉为可选配置通道，企业微信为待接入占位
 - JWT 签发与校验
 - Token 会话持久化在 MySQL（`auth_token` 表）
 - 用户表、第三方绑定表、登录日志表、Token 状态表
@@ -127,7 +127,9 @@ Swagger / OpenAPI：`/swagger-ui.html`、`/v3/api-docs/**` 等已在拦截器中
 
 **飞书**：已对接开放平台换票与用户身份；`redirect_uri` 优先取请求头 **`Origin` + `/login`**，否则使用 `auth.scan.feishu.redirect-uri`。应用 ID/Secret 可从 **`tenant_config`**（`tenant.account-system.feishu-app-id` / `tenant.account-system.feishu-app-secret`）与 `application.yml` 中 `auth.scan.feishu` 组合读取（见 `FeishuScanLoginStrategy`）。
 
-**钉钉 / 企业微信**：当前为占位实现，调用时提示尚未完成平台配置，需自行补全换票与用户绑定逻辑。
+**钉钉**：已保留开放平台换票与用户解析路径，启用前必须配置应用 ID/Secret、回调域名与用户绑定。
+
+**企业微信**：当前为占位实现，调用时提示尚未完成平台配置，需自行补全换票与用户绑定逻辑。
 
 ## 数据表设计
 
@@ -210,7 +212,7 @@ Swagger / OpenAPI：`/swagger-ui.html`、`/v3/api-docs/**` 等已在拦截器中
 auth:
   jwt:
     issuer: project-scaffold
-    secret: please-change-me-to-a-strong-jwt-secret
+    secret: ${AUTH_JWT_SECRET}
     access-token-expire-seconds: 7200
     header-name: qiaomoyun-token
   scan:
@@ -229,7 +231,7 @@ auth:
 
 说明：
 
-- 生产环境务必替换 `auth.jwt.secret`；`header-name` 与前端或网关约定保持一致即可（token 无前缀，头内即完整 JWT）。
+- `auth.jwt.secret` 必须通过环境变量或密钥系统注入；未配置时应用启动失败。`header-name` 与前端或网关约定保持一致即可（token 无前缀，头内即完整 JWT）。
 - Token 会话依赖 `auth_token` 表，需先执行初始化 SQL
 - OSS STS、飞书告警、域名等租户专属参数不再通过 `yml` 管理，而是读取 `tenant_config`
 - 生产库和测试库直接通过各自数据库里的 `tenant_config` 数据做区分

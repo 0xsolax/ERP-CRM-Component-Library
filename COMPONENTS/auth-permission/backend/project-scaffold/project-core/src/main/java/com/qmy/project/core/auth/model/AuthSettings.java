@@ -17,7 +17,7 @@ public class AuthSettings {
 
         private String issuer = "project-scaffold";
 
-        private String secret = "please-change-me-to-a-strong-jwt-secret";
+        private String secret;
 
         private Long accessTokenExpireSeconds = 7200L;
 

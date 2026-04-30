@@ -42,6 +42,18 @@
 }
 ```
 
+## 运行配置
+
+| 配置 | 来源 | 要求 |
+| :--- | :--- | :--- |
+| `auth.jwt.secret` | 环境变量或密钥系统，例如 `AUTH_JWT_SECRET` | 必填；未配置启动失败 |
+| `auth.jwt.issuer` | 应用配置 | 可使用项目名 |
+| `auth.jwt.access-token-expire-seconds` | 应用配置 | 默认可参考 7200 秒 |
+| `auth.jwt.header-name` | 应用配置 | 前后端必须一致 |
+| `auth.scan.feishu.*` | 平台配置或租户配置 | 仅启用飞书扫码时必填 |
+| `auth.scan.dingtalk.*` | 平台配置或租户配置 | 仅启用钉钉扫码时必填 |
+| `auth.scan.wecom.*` | 平台配置或租户配置 | 当前策略未实现，配置不代表可用 |
+
 超级管理员可返回：
 
 ```json

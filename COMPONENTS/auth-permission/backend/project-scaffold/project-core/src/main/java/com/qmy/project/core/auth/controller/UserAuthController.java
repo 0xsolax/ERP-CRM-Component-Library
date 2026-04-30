@@ -37,7 +37,7 @@ public class UserAuthController {
     }
 
     @PostMapping("/loginByScan")
-    @Operation(summary = "通过第三方扫码登录（支持钉钉/飞书/企业微信）")
+    @Operation(summary = "通过第三方扫码登录（飞书/钉钉需平台配置，企业微信待接入）")
     public ResultInfo<UserLoginVO> loginByScan(@Valid @RequestBody ScanLoginDTO param, HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         return ResultInfo.success(authService.loginByScan(param, referer));

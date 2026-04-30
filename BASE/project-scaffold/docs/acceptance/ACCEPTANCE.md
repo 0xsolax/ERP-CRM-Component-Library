@@ -43,7 +43,7 @@ mvn -pl project-application spring-boot:run
 
 ## 安全验收
 
-- [ ] 已替换 JWT secret。
+- [ ] 已配置 JWT secret，且缺失时应用启动失败。
 - [ ] 已确认 token 请求头名称。
 - [ ] 已创建目标环境自己的 datasource 配置。
 - [ ] 已确认 `tenant_config` 不含空的必需配置。

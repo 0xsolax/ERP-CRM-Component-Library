@@ -40,6 +40,12 @@
 - 飞书/钉钉/企业微信应用配置。
 - OSS endpoint、region、bucket、STS role、policy。
 
+## 安全配置要求
+
+- `auth.jwt.secret` 必须由环境变量或密钥系统注入。
+- `AuthSettingsConfiguration` 会在启动期校验 `auth.jwt.secret`，缺失或为空时应用启动失败。
+- 不允许为 JWT secret 设置代码默认值或文档示例弱密钥。
+
 ## 环境策略
 
 推荐每个环境维护自己的数据库与 `tenant_config`，减少 `dev/prod` 配置差异：

@@ -52,6 +52,7 @@
 | `zhongsheng-application/.../AuthTokenInterceptor.java` | 未复制 | 源文件包含固定调试 token；组件使用 `BASE/project-scaffold` 已清理版本 |
 | `AdminUserInitializer.java` | 未复制 | 源文件包含硬编码初始化账号密码逻辑，不进入通用组件 |
 | `qmy-admin` 全量业务页面 | 未复制 | 仅保留登录、路由、权限、角色、菜单相关入口 |
+| `AuthSettings.jwt.secret` 代码默认值 | 已移除 | JWT 密钥必须由环境变量或密钥系统注入，缺失时启动失败 |
 
 ## 事实与判断
 
@@ -59,3 +60,4 @@
 - `zhongsheng-backend` 已具备 `role`、`system_menu`、`role_menu`、`user_role` 与 `@PreAuthorize` 权限判断。
 - `ApiPermissionConstants` 含多个业务域权限码，新项目接入时应按组件拆分保留需要的权限码。
 - `qmy-admin` 存在 `qmy`、`sed`、`admin`、`zs` 多套业务线，接入新项目时只应选定一套前端入口并统一 API 前缀。
+- 扫码登录入口已保留，但企业微信策略是待接入占位；飞书/钉钉在缺少平台配置时会返回 `SCAN_LOGIN_NOT_READY`。
