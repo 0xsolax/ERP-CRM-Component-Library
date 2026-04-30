@@ -16,3 +16,5 @@
 - `SOL-43` 快照未复制源环境配置、调试 token 与硬编码初始化管理员密码；组件状态标记为 `reference`。
 - 启动并完成 Multica `SOL-44` 本地组件抽取：生成 `COMPONENTS/base-data`，覆盖 `project-scaffold` 通用基础数据、`zhongsheng-backend` 中圣基础数据、`qmy-admin` 字段管理页面和可编辑下拉组件证据。
 - `SOL-44` 快照保留 `base_tree_node`、`base_data`、`nodeKey`、`biz_type`、权限码和字段管理契约；组件状态标记为 `reference`。
+- 启动并完成 Multica `SOL-45` 本地组件抽取：生成 `COMPONENTS/file-oss`，覆盖 `zhongsheng-backend` OSS STS、`system_file` 文件记录、`qmy-admin` 上传组件和 `zhongsheng-AI` legacy 上传控制器对比。
+- `SOL-45` 快照明确推荐 STS 临时凭证直传 OSS + `system_file` 文件记录，旧后端中转上传仅作为迁移参考；组件状态标记为 `reference`。

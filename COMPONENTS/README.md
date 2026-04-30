@@ -47,7 +47,7 @@ COMPONENTS/<component-name>/
 
 - [auth-permission](auth-permission/README.md) - `reference`，已抽取登录、JWT、Token、用户、角色、菜单、权限和前端守卫快照
 - [base-data](base-data/README.md) - `reference`，已抽取基础数据树、数据行、字段管理、nodeKey、权限码、SQL 和前端字段维护快照
-- `file-oss`
+- [file-oss](file-oss/README.md) - `reference`，已抽取 OSS STS、文件记录、上传组件、system_file SQL 和旧上传控制器对比快照
 - `product-material`
 - `customer-management`
 - `quote-management`

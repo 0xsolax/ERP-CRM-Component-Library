@@ -1,0 +1,77 @@
+name: file-oss
+display_name: 文件上传与 OSS
+status: reference
+type: foundation
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-backend
+    - RAW/PROJECTs/qmy-admin
+    - RAW/PROJECTs/zhongsheng-AI
+  wiki_pages:
+    - wiki/COMP_文件上传与OSS.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+  optional:
+    - base-data
+entrypoints:
+  backend:
+    controllers:
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/controller/OssController.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/controller/StorageController.java
+      - backend/zhongsheng-ai-legacy/src/main/java/com/erp/controller/UploadController.java
+    services:
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/service/OssService.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/service/impl/OssServiceImpl.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/service/SystemFileService.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/service/impl/SystemFileServiceImpl.java
+    managers:
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/manager/SystemFileManager.java
+      - backend/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file/manager/impl/SystemFileManagerImpl.java
+    dto:
+      - backend/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/file
+    support:
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/constants/TenantConfigCodeConstants.java
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/enums/TenantConfigCodeEnum.java
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/error/OssErrorCodeConstants.java
+      - backend/zhongsheng-backend/zhongsheng-common/src/main/java/com/qmy/zhongsheng/common/utils/StrUtils.java
+  frontend:
+    components:
+      - frontend/qmy-admin/src/components/bz-upload
+    api:
+      - frontend/qmy-admin/src/api/admin/system/storage.ts
+  db:
+    schema:
+      - db/zhongsheng-backend/init-system-file.sql
+      - db/zhongsheng-backend/init-tenant.sql
+    seed:
+      - TenantConfigCodeEnum OSS 配置项默认值
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - .env
+    - real OSS AccessKey
+    - real token
+notes:
+  - 组件当前为 reference，适合作为新项目文件上传方案参考。
+  - zhongsheng-backend 是推荐来源，采用 STS 临时凭证直传 OSS。
+  - zhongsheng-AI UploadController 是旧后端中转上传方案，仅作迁移对比。
+  - 快照包含 AccessKey 字段名和配置项编码，不包含真实密钥值。

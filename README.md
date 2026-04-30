@@ -32,10 +32,10 @@
 | :--- | :--- | :--- | :--- |
 | `auth-permission` | `reference` | [COMPONENTS/auth-permission](COMPONENTS/auth-permission/README.md) | 登录、JWT、Token、用户、角色、菜单、权限、前端守卫 |
 | `base-data` | `reference` | [COMPONENTS/base-data](COMPONENTS/base-data/README.md) | 基础数据树、字段分类、通用数据行、nodeKey、SQL、字段管理前端 |
+| `file-oss` | `reference` | [COMPONENTS/file-oss](COMPONENTS/file-oss/README.md) | OSS STS、文件记录、上传组件、system_file、旧上传控制器对比 |
 
 ### 第一批待沉淀组件
 
-- `file-oss`
 - `product-material`
 - `customer-management`
 - `quote-management`
@@ -102,7 +102,7 @@
 | P1 基座快照 | 已完成 | 抽取 `project-scaffold` 基座快照 |
 | P1 认证权限组件 | 已完成 | 抽取并修正 JWT 安全基线 |
 | P1 基础数据组件 | 已完成 | 抽取并修正空请求体、nodeKey 和路由权限边界 |
-| P1 文件 OSS 组件 | 待执行 | 待抽取 OSS STS、文件记录、上传组件 |
+| P1 文件 OSS 组件 | 已完成 | 抽取 OSS STS、文件记录、上传组件和旧上传控制器对比 |
 | P2 业务组件 | 待执行 | 产品物料、客户、报价、订单 |
 | P3 待验证组件 | 待执行 | 采购供应商、仓储发货 |
 | P4 装配演练 | 待执行 | 用组件组合模拟新项目装配 |

@@ -19,6 +19,7 @@
 - [组件快照模板](../COMPONENTS/_TEMPLATE/README.md)
 - [COMPONENT_auth-permission](../COMPONENTS/auth-permission/README.md)
 - [COMPONENT_base-data](../COMPONENTS/base-data/README.md)
+- [COMPONENT_file-oss](../COMPONENTS/file-oss/README.md)
 
 ## 来源项目
 

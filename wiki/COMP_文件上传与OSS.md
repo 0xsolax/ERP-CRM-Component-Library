@@ -6,12 +6,34 @@
 | :--- | :--- |
 | 组件类型 | 基础设施 / 文件 |
 | 复用等级 | 可参考改造 |
-| 适用项目 | 产品图片、材料图片、附件、报价/订单文件 |
-| 来源路径 | `RAW/PROJECTs/qmy-admin/src/components/bz-upload`、`RAW/PROJECTs/qmy-admin/src/api/admin/system/storage.ts`、`RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/UploadController.java`、`RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file`、`RAW/PROJECTs/zhongsheng-backend/docs/sql/init-system-file.sql`、`RAW/PROJECTs/project-scaffold/docs/sql/init-system-file.sql` |
+| 适用项目 | 产品图片、材料图片、客户附件、报价/订单文件 |
+| 组件快照 | [COMPONENTS/file-oss](../COMPONENTS/file-oss/README.md) |
+| 来源路径 | `RAW/PROJECTs/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/file`、`RAW/PROJECTs/zhongsheng-backend/docs/sql/init-system-file.sql`、`RAW/PROJECTs/qmy-admin/src/components/bz-upload`、`RAW/PROJECTs/qmy-admin/src/api/admin/system/storage.ts`、`RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/UploadController.java` |
+
+## 组件快照
+
+- [COMPONENTS/file-oss](../COMPONENTS/file-oss/README.md)
+- [来源映射](../COMPONENTS/file-oss/SOURCE_MAP.md)
+- [组件规范](../COMPONENTS/file-oss/docs/spec/COMPONENT_SPEC.md)
+- [API 契约](../COMPONENTS/file-oss/docs/contracts/API_CONTRACT.md)
+- [数据契约](../COMPONENTS/file-oss/docs/contracts/DATA_CONTRACT.md)
+- [权限契约](../COMPONENTS/file-oss/docs/contracts/PERMISSION_CONTRACT.md)
+- [验收清单](../COMPONENTS/file-oss/docs/acceptance/ACCEPTANCE.md)
 
 ## 业务目标
 
-为产品、材料、客户附件、报价文件等提供上传、存储记录和访问 URL 管理能力。
+为产品、材料、客户附件、报价文件等提供统一上传、存储记录和访问 URL 管理能力，避免每个业务模块重复实现上传逻辑。
+
+## 推荐链路
+
+```text
+前端上传组件
+  -> GET /oss/getOssToken
+  -> OSS STS 直传
+  -> POST /storage/saveSysStorage
+  -> system_file
+  -> 业务表引用 system_file.id
+```
 
 ## 前端入口
 
@@ -22,42 +44,50 @@
 
 | 能力 | 方法 | 路径 | 来源 |
 | :--- | :--- | :--- | :--- |
-| 图片上传 | POST | `/api/upload/image` | `UploadController` |
 | 获取 OSS STS | GET | `/oss/getOssToken` | `OssController` |
 | 保存文件记录 | POST | `/storage/saveSysStorage` | `StorageController` |
+| 旧图片上传 | POST | `/api/upload/image` | `UploadController` |
 
 ## 数据结构
 
 | 表/对象 | 关键字段 | 说明 |
 | :--- | :--- | :--- |
-| `system_file` | 文件名、类型、大小、endpoint、key、url | 文件存储记录 |
+| `system_file` | `main_type`、`sub_type`、`master_id`、`url`、`endpoint`、`file_key`、`name`、`type`、`size` | 文件存储记录 |
+| `tenant_config` | `tenant.oss.*` | OSS/STs 配置来源 |
 | `StorageDTO` | `url`、`name`、`type`、`size` | 保存文件记录入参 |
-| `OssStsTokenVO` | 临时凭证、bucket、endpoint 等 | 前端直传可用 |
+| `OssStsTokenVO` | 临时凭证、bucket、endpoint、过期时间 | 前端直传可用 |
 
 ## 权限边界
 
-- 上传接口通常要求登录。
-- 存储配置和 OSS 密钥不得暴露给普通用户。
+- 上传接口必须要求登录。
+- 获取 STS token 的接口不应匿名开放。
+- OSS 长期 AccessKey 不得暴露给前端。
+- STS Policy 应限制租户、路径前缀、操作类型和有效期。
 - 产品图片、客户附件、报价文件的访问范围应按业务模块控制。
 
 ## 接入步骤
 
-1. 选择上传方式：后端中转上传或前端 OSS STS 直传。
-2. 配置 OSS endpoint、bucket、base URL、STS role。
-3. 保存文件记录到 `system_file`。
-4. 业务表只保存文件 ID 或文件 URL；优先保存文件 ID。
-5. 前端统一使用上传组件和存储记录 API。
+1. 执行 `system_file` DDL。
+2. 确认目标基座是否已有 `tenant_config` 或等价配置源。
+3. 配置 OSS endpoint、bucket、STS role、duration 和 policy。
+4. 接入 `/oss/getOssToken` 与 `/storage/saveSysStorage`。
+5. 接入上传组件，并按业务设置 `modulePath`。
+6. 上传成功后保存 `system_file` 记录。
+7. 业务表优先保存 `system_file.id`；兼容历史时可同步保存 URL。
 
 ## 验收清单
 
-- [ ] 文件能上传并返回可访问 URL。
+- [ ] 已登录用户能获取 STS 临时凭证。
+- [ ] 未登录用户不能获取 STS 临时凭证。
+- [ ] 文件能直传 OSS 并返回可访问 URL。
 - [ ] 文件记录能保存到 `system_file`。
-- [ ] 业务表能引用文件。
-- [ ] OSS 密钥不出现在前端。
+- [ ] 业务表能引用文件 ID。
+- [ ] 前端不包含 OSS 长期密钥。
+- [ ] STS Policy 已限制租户路径和过期时间。
 - [ ] 删除或替换文件有明确策略。
 
 ## 已知风险
 
-- 旧 `UploadController` 直接使用 access key 后端中转上传；新版更适合使用 STS 和文件记录。
+- 旧 `UploadController` 直接使用后端长期凭据中转上传；新版更适合使用 STS 和文件记录。
 - 业务表保存 URL 还是文件 ID 需要项目统一，否则后续迁移 OSS 域名会有成本。
-
+- 当前快照未覆盖私有文件签名下载和 OSS 对象删除，需要后续按业务补齐。

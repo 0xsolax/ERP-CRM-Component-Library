@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS `system_file` (
+  `id` BIGINT NOT NULL COMMENT '主键 ID',
+  `main_type` VARCHAR(32) DEFAULT NULL COMMENT '文件主类型，对应 SystemFileMainTypeEnum',
+  `sub_type` VARCHAR(64) DEFAULT NULL COMMENT '文件次类型，须与 main_type 匹配，对应 SystemFileSubTypeEnum#code',
+  `master_id` BIGINT DEFAULT NULL COMMENT '关联业务主对象ID（如材料ID）',
+  `name` VARCHAR(512) DEFAULT NULL COMMENT '文件名称',
+  `url` VARCHAR(2048) DEFAULT NULL COMMENT '图片/文件地址',
+  `file_key` VARCHAR(1024) DEFAULT NULL COMMENT '文件存储路径（Key），URL中域名后面的路径部分',
+  `endpoint` VARCHAR(512) DEFAULT NULL COMMENT 'OSS Endpoint（域名部分）',
+  `size` BIGINT DEFAULT NULL COMMENT '文件大小（字节）',
+  `type` VARCHAR(128) DEFAULT NULL COMMENT '文件类型（如 MIME）',
+  `create_user` BIGINT NOT NULL DEFAULT -1 COMMENT '创建人 ID',
+  `update_user` BIGINT NOT NULL DEFAULT -1 COMMENT '修改人 ID',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除标记',
+  `deleted_time` DATETIME DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_system_file_master_id` (`master_id`),
+  KEY `idx_system_file_main_sub_is_deleted` (`main_type`, `sub_type`, `is_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统文件表';
