@@ -88,7 +88,6 @@
         <el-table-column label="操作" align="center" width="160" fixed="right">
           <template #default="{ row }">
             <template v-if="row.storeStatus == '1'">
-              <el-button type="primary" link size="small" @click="handleHistory(row)">历史流向</el-button>
               <el-button type="warning" link size="small" @click="handleWarning(row)">预警规则</el-button>
             </template>
           </template>
@@ -116,12 +115,10 @@ import { ref, computed, useAttrs, onMounted } from 'vue'
 import { ElMessage, ElImageViewer } from 'element-plus'
 import { Search, Link } from '@element-plus/icons-vue'
 import { dynamic } from '@bzlab/bz-core'
-import { useRouter } from 'vue-router'
 import { getProductDetail } from '@/api/admin/product'
 import { updateStoreStatus, getSpecificationList } from '@/api/admin/sales/customer'
 import WarningRuleDialog from './warning-rule-dialog.vue'
 
-const router = useRouter()
 const attrs = useAttrs()
 const { rowData, onDestroy } = attrs as any
 
@@ -207,17 +204,6 @@ const handleWarehouseSwitch = async (row: any) => {
   }
   ElMessage.success(row.warehouseEnabled ? '已启用独立仓' : '已禁用独立仓')
   loadProductDetail()
-}
-
-const handleHistory = (row: any) => {
-  router.push({
-    path: '/sales/customer/detail/warehouse-history',
-    query: {
-      id: rowData.customerId,
-      customerStoreId: row.customerStoreId || ''
-    }
-  })
-  drawerVisible.value = false
 }
 
 const handleWarning = (row: any) => {

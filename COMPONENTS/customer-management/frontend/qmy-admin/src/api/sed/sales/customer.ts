@@ -49,7 +49,7 @@ export const updateCustomer = (data: any) => {
 export const deleteCustomer = (params: any) => {
   return axios.request<IResponseModel<any>>({
     url: '/sal/yt/customer/delete',
-    method: 'get',
+    method: 'delete',
     params
   })
 }
@@ -67,7 +67,7 @@ export const saveFollow = (data: any) => {
 export const deleteFollow = (params: any) => {
   return axios.request<IResponseModel<any>>({
     url: '/sal/yt/customer/follow/delete',
-    method: 'get',
+    method: 'delete',
     params
   })
 }
@@ -85,7 +85,7 @@ export const createOrUpdateContactPerson = (data: any) => {
 export const deleteContactPerson = (params: any) => {
   return axios.request<IResponseModel<any>>({
     url: '/sal/yt/customer/contact/delete',
-    method: 'get',
+    method: 'delete',
     params
   })
 }
@@ -103,7 +103,7 @@ export const createOrUpdateAddress = (data: any) => {
 export const deleteAddress = (params: any) => {
   return axios.request<IResponseModel<any>>({
     url: '/sal/yt/customer/address/delete',
-    method: 'get',
+    method: 'delete',
     params
   })
 }
@@ -121,7 +121,7 @@ export const addLabel = (data: any) => {
 export const deleteLabel = (params: any) => {
   return axios.request<IResponseModel<any>>({
     url: '/sal/yt/customer/deleteLabel',
-    method: 'get',
+    method: 'delete',
     params
   })
 }

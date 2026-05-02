@@ -31,6 +31,10 @@
 - [PROJECT_zhongsheng-backend](PROJECT_zhongsheng-backend.md)
 - [PROJECT_zhongsheng调研资料](PROJECT_zhongsheng调研资料.md)
 
+## 综合方向
+
+- [SYNTH_工厂工具箱组件化方向](SYNTH_工厂工具箱组件化方向.md)
+
 ## 第一批组件卡
 
 - [COMP_登录认证与权限](COMP_登录认证与权限.md)

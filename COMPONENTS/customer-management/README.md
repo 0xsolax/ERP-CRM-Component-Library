@@ -22,7 +22,7 @@
 | :--- | :--- |
 | `backend/zhongsheng-AI/` | 旧中圣简版客户 CRUD：`CustomerController`、`Customer`、`CustomerService`、`CustomerMapper` |
 | `backend/qmy-java/` | 与 qmy-admin `/sal/yt/customer/*` 匹配的客户、联系人、地址、标签、跟进、独立仓、数据权限证据 |
-| `frontend/qmy-admin/` | 一唐 admin 与盛尔达 sed 客户列表、详情、新增编辑、弹窗组件、客户 API、路由、客户常量和独立仓历史页依赖 |
+| `frontend/qmy-admin/` | 一唐 admin 与盛尔达 sed 客户列表、详情、新增编辑、弹窗组件、客户 API、路由和客户常量 |
 | `db/` | legacy `customer` 表 SQL 和 qmy-java 表结构说明 |
 | `docs/source/` | 中圣调研中关于客户整合、跟进提醒、客户标签、老板视角的原始材料 |
 | `docs/spec/` | 组件规范 |

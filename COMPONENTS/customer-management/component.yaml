@@ -11,7 +11,6 @@ source_layer:
     - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/CustomerService.java
     - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
     - RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer
-    - RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history
     - RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer
     - RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts
     - RAW/PROJECTs/qmy-admin/src/api/sed/sales/customer.ts
@@ -58,14 +57,12 @@ entrypoints:
       - frontend/qmy-admin/src/api/sed/sales/customer.ts
     views:
       - frontend/qmy-admin/src/views/admin/sales/customer
-      - frontend/qmy-admin/src/views/admin/sales/warehouse-history
       - frontend/qmy-admin/src/views/sed/sales/customer
     router:
       - frontend/qmy-admin/src/views/admin/router/async-modules/sales.ts
       - frontend/qmy-admin/src/views/sed/router/async-modules/sales.ts
     constants:
       - frontend/qmy-admin/src/constant/yitang/customer.ts
-      - frontend/qmy-admin/src/constant/yitang/warehouse.ts
       - frontend/qmy-admin/src/constant/sed/customer.ts
   db:
     schema:

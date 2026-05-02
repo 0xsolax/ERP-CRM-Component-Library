@@ -113,12 +113,12 @@ public class SalYtCustomerController {
     @RequiresPermissions("sal:yt:customer:address:delete")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户列表"}, button = "删除地址")
     @Operation(summary = "删除客户收货地址")
-    @GetMapping("/address/delete")
+    @DeleteMapping("/address/delete")
     @RequiresDataPermissions(value = "开启数据权限",conditions = {
             @RequiresDataPermissions.Condition(field = "belong_employee_id", logic = RequiresDataPermissions.LogicType.OR),
             @RequiresDataPermissions.Condition(field = "follow_employee_id", logic = RequiresDataPermissions.LogicType.OR)
     })
-    public Object deleteCustomerAddress(Long addressId, Long customerId) {
+    public Object deleteCustomerAddress(@RequestParam Long addressId, @RequestParam(required = false) Long customerId) {
         if (ObjectUtil.isEmpty(addressId)) {
             return ResultInfo.error("收货地址ID不能为空");
         }
@@ -154,12 +154,12 @@ public class SalYtCustomerController {
     @RequiresPermissions("sal:yt:customer:contact:delete")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户列表"}, button = "删除联系人")
     @Operation(summary = "删除客户联系人")
-    @GetMapping("/contact/delete")
+    @DeleteMapping("/contact/delete")
     @RequiresDataPermissions(value = "开启数据权限",conditions = {
             @RequiresDataPermissions.Condition(field = "belong_employee_id", logic = RequiresDataPermissions.LogicType.OR),
             @RequiresDataPermissions.Condition(field = "follow_employee_id", logic = RequiresDataPermissions.LogicType.OR)
     })
-    public Object deleteContactPerson(Long contactId, Long customerId) {
+    public Object deleteContactPerson(@RequestParam Long contactId, @RequestParam(required = false) Long customerId) {
         if (ObjectUtil.isEmpty(contactId)) {
             return ResultInfo.error("联系人ID不能为空");
         }
@@ -216,13 +216,13 @@ public class SalYtCustomerController {
      */
     @RequiresPermissions("sal:yt:customer:delete")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户管理"}, button = "删除")
-    @GetMapping("/delete")
+    @DeleteMapping("/delete")
     @Operation(summary = "删除客户")
     @RequiresDataPermissions(value = "开启数据权限",conditions = {
             @RequiresDataPermissions.Condition(field = "belong_employee_id", logic = RequiresDataPermissions.LogicType.OR),
             @RequiresDataPermissions.Condition(field = "follow_employee_id", logic = RequiresDataPermissions.LogicType.OR)
     })
-    public ResultInfo delete(Long id) {
+    public ResultInfo delete(@RequestParam Long id) {
         try {
             salYtCustomerManager.deleteCustomerScoped(id);
             return ResultInfo.success("删除成功");
@@ -310,13 +310,13 @@ public class SalYtCustomerController {
      */
     @RequiresPermissions("sal:yt:customer:deleteLabel")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户管理"}, button = "删除标签")
-    @GetMapping("/deleteLabel")
+    @DeleteMapping("/deleteLabel")
     @Operation(summary = "删除客户标签")
     @RequiresDataPermissions(value = "开启数据权限",conditions = {
             @RequiresDataPermissions.Condition(field = "belong_employee_id", logic = RequiresDataPermissions.LogicType.OR),
             @RequiresDataPermissions.Condition(field = "follow_employee_id", logic = RequiresDataPermissions.LogicType.OR)
     })
-    public ResultInfo deleteLabel(Integer labelId, Long customerId) {
+    public ResultInfo deleteLabel(@RequestParam Integer labelId, @RequestParam(required = false) Long customerId) {
         try {
             salYtCustomerManager.deleteLabelScoped(labelId, customerId);
             return ResultInfo.success("标签删除成功");
@@ -346,12 +346,12 @@ public class SalYtCustomerController {
     @RequiresPermissions("sal:yt:customer:follow:delete")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户管理"}, button = "删除跟进记录")
     @Operation(summary = "删除客户跟进记录")
-    @GetMapping("/follow/delete")
+    @DeleteMapping("/follow/delete")
     @RequiresDataPermissions(value = "开启数据权限",conditions = {
             @RequiresDataPermissions.Condition(field = "belong_employee_id", logic = RequiresDataPermissions.LogicType.OR),
             @RequiresDataPermissions.Condition(field = "follow_employee_id", logic = RequiresDataPermissions.LogicType.OR)
     })
-    public Object deleteCustomerFollow(Long followId, Long customerId) {
+    public Object deleteCustomerFollow(@RequestParam Long followId, @RequestParam(required = false) Long customerId) {
         if (ObjectUtil.isEmpty(followId)) {
             return ResultInfo.error("跟进记录ID不能为空");
         }
@@ -361,9 +361,9 @@ public class SalYtCustomerController {
 
     @RequiresPermissions("sal:yt:customer:enableStore")
     @RequiresPermissionsDesc(menu = {"销售管理", "客户管理"}, button = "启动独立仓")
-    @GetMapping("/enableStore")
+    @PostMapping("/enableStore")
     @Operation(summary = "启用独立仓")
-    public ResultInfo enableStore(Long customerId) {
+    public ResultInfo enableStore(@RequestParam Long customerId) {
             salYtCustomerManager.enableStore(customerId);
             return ResultInfo.success("发送成功");
     }

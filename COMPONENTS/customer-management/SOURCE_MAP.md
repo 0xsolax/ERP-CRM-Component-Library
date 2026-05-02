@@ -7,11 +7,9 @@
 | legacy 后端 | `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/CustomerController.java` | 简版客户 CRUD 和 owner 过滤参考 | 复制为快照 |
 | legacy 数据 | `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql` | `customer` 表与扩展字段 | 抽取为 `db/zhongsheng-AI/init-customer.sql` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer` | 一唐客户列表、详情、新增编辑和扩展弹窗 | 复制为快照 |
-| 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history` | 客户详情独立仓历史路由依赖 | 复制为快照 |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer` | 盛尔达客户列表、详情、新增编辑 | 复制为快照 |
 | 前端 API | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts` | `/sal/yt/customer/*` API 封装 | 复制为快照 |
 | 前端 API | `RAW/PROJECTs/qmy-admin/src/api/sed/sales/customer.ts` | sed 客户页面 API 封装 | 复制为快照 |
-| 前端常量 | `RAW/PROJECTs/qmy-admin/src/constant/yitang/warehouse.ts` | 独立仓历史页业务类型枚举 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtCustomerController.java` | 与 qmy-admin API 匹配的客户后端 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtCustomerManager.java` | 客户主档、地址、联系人、标签、跟进业务实现 | 复制为快照 |
 | 补充后端 | `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt` | 客户相关 MyBatis SQL 和数据范围字段 | 复制为快照 |
@@ -25,7 +23,7 @@
 
 - `zhongsheng-AI` 简版客户 CRUD、实体、Service、Mapper 和 legacy `customer` SQL。
 - `qmy-admin` admin/sed 客户列表、详情、新增编辑、联系人、地址、跟进、标签、自动层级、独立仓相关前端。
-- `qmy-admin` 客户 API、客户规格 API、客户相关销售路由权限、客户类型/层级常量和独立仓历史页依赖；路由快照已裁剪掉订单/报价等非客户页面入口。
+- `qmy-admin` 客户 API、客户规格 API、客户相关销售路由权限和客户类型/层级常量；路由快照已裁剪掉订单、报价、独立仓历史等非最小客户档案入口。
 - `qmy-java` 客户主档、地址、联系人、联系人电话、联系人社交账号、跟进、客户标签、客户规格对照、独立仓、数据权限相关后端证据。
 - `RAW/docs/zhongsheng` 中与客户管理直接相关的会议记录和需求点。
 

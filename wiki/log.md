@@ -1,5 +1,12 @@
 # 维护日志
 
+## 2026-05-01
+
+- 记录新的组件整备方向：部分工厂客户可能更需要“工具箱”式轻量产品，而不是完整 ERP/CRM 一次性交付。
+- 新增 `SYNTH_工厂工具箱组件化方向.md`，将产品选取生成 PI Excel、导出生产单、内部管理清单和模板化导出中心作为待验证场景。
+- 更新 `wiki/index.md`，增加综合方向入口。
+- 当前仅沉淀方向和依赖矩阵，未把工具箱场景标记为已实现组件。
+
 ## 2026-04-30
 
 - 建立 ERP+CRM 组件知识库首版 `wiki/` 结构。
@@ -23,3 +30,4 @@
 - 启动并完成 Multica `SOL-47` 本地组件抽取：生成 `COMPONENTS/customer-management`，覆盖客户主档、联系人、地址、标签、跟进、客户数据权限、前端客户页面和调研材料。
 - `SOL-47` 快照明确 legacy `Customer.owner/follower` 与 `init.sql` 缺列不一致，补充 `qmy-java` 作为 `/sal/yt/customer/*` 后端证据，并标注客户导入/平台同步不是默认能力；组件状态标记为 `reference`。
 - `SOL-47` review 后补齐客户子资源写接口后端权限与客户范围校验，补入 `warehouse-history` 路由依赖、sed 客户 API 和可跟踪复核证据 `docs/acceptance/REVIEW_EVIDENCE.md`。
+- `SOL-47` 二次复核后采纳有效项：删除接口从 GET 收口为 DELETE，并将客户组件路由裁剪到客户列表/新增/详情，移除订单、报价、独立仓历史等非最小客户档案入口。

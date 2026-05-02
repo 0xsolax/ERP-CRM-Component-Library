@@ -8,7 +8,7 @@
 | 复用等级 | 可参考改造 |
 | 组件快照 | `COMPONENTS/customer-management` |
 | 适用项目 | B2B 销售、外贸、订单型制造企业 |
-| 来源路径 | `RAW/PROJECTs/zhongsheng-AI/erp-backend`、`RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer`、`RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history`、`RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer`、`RAW/PROJECTs/qmy-java`、`RAW/docs/zhongsheng` |
+| 来源路径 | `RAW/PROJECTs/zhongsheng-AI/erp-backend`、`RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer`、`RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer`、`RAW/PROJECTs/qmy-java`、`RAW/docs/zhongsheng` |
 
 ## 业务目标
 
@@ -17,7 +17,6 @@
 ## 前端入口
 
 - 一唐客户：`RAW/PROJECTs/qmy-admin/src/views/admin/sales/customer/index.vue`、`add.vue`、`detail.vue`。
-- 一唐独立仓历史：`RAW/PROJECTs/qmy-admin/src/views/admin/sales/warehouse-history/index.vue`。
 - 盛尔达客户：`RAW/PROJECTs/qmy-admin/src/views/sed/sales/customer`。
 - API 封装：`RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`、`RAW/PROJECTs/qmy-admin/src/api/sed/sales/customer.ts`。
 - 路由权限：`RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/sales.ts`、`RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts`。
@@ -32,7 +31,7 @@
 | 客户详情 | GET | `/sal/yt/customer/detail` | `qmy-admin` + `qmy-java SalYtCustomerController` |
 | 新增客户 | POST | `/sal/yt/customer/save` | `qmy-admin` + `qmy-java SalYtCustomerController` |
 | 编辑客户 | POST | `/sal/yt/customer/update` | `qmy-admin` + `qmy-java SalYtCustomerController` |
-| 联系人/地址/标签/跟进 | POST/GET | `/sal/yt/customer/*` | `qmy-admin` + `qmy-java SalYtCustomerController` |
+| 联系人/地址/标签/跟进 | POST/DELETE | `/sal/yt/customer/*` | `qmy-admin` + `qmy-java SalYtCustomerController` |
 | 客户下拉 | POST | `/sal/yt/customer/selectList` | 报价、订单选客户入口 |
 
 ## 数据结构
@@ -52,6 +51,7 @@
 - legacy `CustomerController` 按请求中的 `isAdmin` 和 `username` 做管理员/owner 过滤，但 legacy SQL 未提供 `owner` 字段。
 - qmy-java 列表、详情、下拉选择使用 `@RequiresDataPermissions`，以 `belong_employee_id OR follow_employee_id` 过滤。
 - 当前组件快照已补齐客户主档修改/删除，以及地址、联系人、标签、跟进写接口的后端权限和客户范围校验。
+- 客户、地址、联系人、标签、跟进删除接口已统一为 DELETE，避免 GET 承载破坏性操作。
 - 本人：当前用户是归属业务员或跟进人。
 - 部门：当前用户是部门负责人时，额外包含部门成员。
 - 全公司：用户数据权限为全部数据或租户未启用该权限过滤。

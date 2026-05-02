@@ -41,18 +41,7 @@ const permissionRouter: Array<RouteRecordRaw> = [
               permission: 'sal:yt:customer:detail',
               hidden: true,
               keepQuery: true
-            },
-            children: [
-              {
-                path: '/sales/customer/detail/warehouse-history',
-                component: () => import('@/views/admin/sales/warehouse-history/index.vue'),
-                name: 'sales-customer-detail-warehouse-history',
-                meta: {
-                  title: '历史流向',
-                  hidden: true
-                }
-              }
-            ]
+            }
           }
         ]
       }
