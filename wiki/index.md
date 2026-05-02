@@ -22,6 +22,7 @@
 - [COMPONENT_file-oss](../COMPONENTS/file-oss/README.md)
 - [COMPONENT_product-material](../COMPONENTS/product-material/README.md)
 - [COMPONENT_customer-management](../COMPONENTS/customer-management/README.md)
+- [COMPONENT_quote-management](../COMPONENTS/quote-management/README.md)
 
 ## 来源项目
 

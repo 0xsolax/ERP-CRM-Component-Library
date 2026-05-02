@@ -50,7 +50,7 @@ COMPONENTS/<component-name>/
 - [file-oss](file-oss/README.md) - `reference`，已抽取 OSS STS、文件记录、上传组件、system_file SQL 和旧上传控制器对比快照
 - [product-material](product-material/README.md) - `reference`，已抽取产品主档、产品 BOM、伞架、面料、材料、包材、工序、SQL、前端维护页和权限契约
 - [customer-management](customer-management/README.md) - `reference`，已抽取客户主档、联系人、地址、标签、跟进、客户数据权限、前端页面和导入/同步边界
-- `quote-management`
+- [quote-management](quote-management/README.md) - `reference`，已抽取基础报价 CRUD、SED 复杂报价、成本明细、历史报价、审核、导出和转订单边界
 - `order-management`
 - `purchase-supplier`
 - `warehouse-delivery`

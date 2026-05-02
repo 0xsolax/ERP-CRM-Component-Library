@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.sed.SalSedQuotationSkuPackingMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.sed.SalSedQuotationSkuPacking" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="quotation_id" property="quotationId"/>
+        <result column="quotation_sku_id" property="quotationSkuId"/>
+        <result column="packing_id" property="packingId"/>
+        <result column="attachment" property="attachment"/>
+        <result column="box_mum" property="boxMum"/>
+        <result column="packing_num" property="packingNum"/>
+        <result column="cost" property="cost"/>
+        <result column="packing_size" property="packingSize"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, quotation_id, quotation_sku_id, packing_id, attachment, box_mum, packing_num, cost, packing_size,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="getProcurementListByQuotationId" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationProcurementVo">
+        select a.id as id,
+               a.packing_id as packingId,
+           b.type as type,
+           b.name as name,
+           b.size as `size`,
+           a.box_mum as `boxMum`,
+           a.cost as costPrice,
+           a.packing_size as packingSize,
+           a.cost as cost
+        from sal_sed_quotation_sku_packing a left join pro_sed_packing b on a.packing_id=b.id
+        where a.quotation_id=#{id}
+          and a.is_deleted=0
+    </select>
+    <delete id="deleteByQuotationSkuId">
+        DELETE FROM sal_sed_quotation_sku_packing
+        WHERE quotation_sku_id IN
+        <!-- 遍历List集合，拼接ID列表 -->
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

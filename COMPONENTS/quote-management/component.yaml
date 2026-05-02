@@ -1,0 +1,112 @@
+name: quote-management
+display_name: 报价管理
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/QuoteController.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Quote.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/sed/SalSedQuotationController.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/sed/SalSedQuotationService.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed
+    - RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/sed
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/sed
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/sed
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/sed
+    - RAW/PROJECTs/qmy-admin/src/views/sed/sales/quotation
+    - RAW/PROJECTs/qmy-admin/src/api/sed/sales/quotation.ts
+    - RAW/PROJECTs/qmy-admin/src/constant/sed/quotation.ts
+    - RAW/PROJECTs/qmy-admin/src/constant/sed/sales.ts
+    - RAW/PROJECTs/qmy-admin/src/constant/file-type.ts
+    - RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_报价管理.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+    - base-data
+    - product-material
+    - customer-management
+  optional:
+    - file-oss
+    - order-management
+entrypoints:
+  backend:
+    legacy_crud:
+      controllers:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/QuoteController.java
+      services:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/QuoteService.java
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/impl/QuoteServiceImpl.java
+      entity:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Quote.java
+      mapper:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/mapper/QuoteMapper.java
+    sed_complex_flow:
+      controllers:
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/sed/SalSedQuotationController.java
+      services:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/sed/SalSedQuotationService.java
+      managers:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationManager.java
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationSkuManager.java
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationSkuPackingManager.java
+      mapper:
+        - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/sed
+        - backend/qmy-java/dao/src/main/resources/mapper/sal/sed
+      entity_param_vo:
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/sed
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/sed
+      enum:
+        - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/sed
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/sed/sales/quotation.ts
+      - frontend/qmy-admin/src/api/sed/product/packing.ts
+      - frontend/qmy-admin/src/api/admin/sales/customer.ts
+    views:
+      - frontend/qmy-admin/src/views/sed/sales/quotation
+    router:
+      - frontend/qmy-admin/src/views/sed/router/async-modules/sales.ts
+    constants:
+      - frontend/qmy-admin/src/constant/file-type.ts
+      - frontend/qmy-admin/src/constant/sed/quotation.ts
+      - frontend/qmy-admin/src/constant/sed/sales.ts
+  db:
+    schema:
+      - db/zhongsheng-AI/init-quote.sql
+      - db/qmy-java/sal-sed-quotation-schema-notes.md
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+  evidence: docs/acceptance/REVIEW_EVIDENCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 组件当前为 reference，适合作为报价链路和复杂报价流方案参考。
+  - zhongsheng-AI 仅覆盖 PRD 基础 CRUD；qmy-java/qmy-admin 覆盖 SED 复杂报价流。
+  - qmy-java 未提供完整建表 SQL，数据契约依据实体、Mapper XML 和前端字段整理。
+  - 复杂流强依赖产品物料、客户管理、基础数据、文件和订单组件，不能作为独立 SDK 使用。

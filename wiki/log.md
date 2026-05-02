@@ -1,5 +1,11 @@
 # 维护日志
 
+## 2026-05-02
+
+- 启动并完成 Multica `SOL-48` 本地组件抽取：生成 `COMPONENTS/quote-management`，覆盖 `zhongsheng-AI` 基础报价 CRUD、qmy-java SED 复杂报价后端、qmy-admin 报价页面/API、成本明细、历史报价、审核、导出和转订单边界。
+- `SOL-48` 快照明确基础 CRUD 与复杂报价流差异，标注 legacy `Quote.products` 与 `quote` SQL 不一致、qmy-java 缺完整 DDL、复杂流数据权限需接入前补齐。
+- 更新 `wiki/COMP_报价管理.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将报价组件纳入组件快照资产入口。
+
 ## 2026-05-01
 
 - 记录新的组件整备方向：部分工厂客户可能更需要“工具箱”式轻量产品，而不是完整 ERP/CRM 一次性交付。

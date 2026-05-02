@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.sed.SalSedQuotationSkuMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.sed.SalSedQuotationSku" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="quotation_id" property="quotationId"/>
+        <result column="product_id" property="productId"/>
+        <result column="match_id" property="matchId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="quotation_price" property="quotationPrice"/>
+        <result column="quotation_base_price" property="quotationBasePrice"/>
+        <result column="quantity" property="quantity"/>
+        <result column="volume" property="volume"/>
+        <result column="remark" property="remark"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, quotation_id, product_id, match_id, sku_id, quotation_price, quotation_base_price, quantity, volume, remark,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+    <select id="getQuotationSkuList" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationSkuVo">
+        select  c.id as quotationSkuId,
+                f.id as productId,
+                f.`code` as modelName,
+                f.`name` as productName,
+                e.id as combinationId,
+                e.`name` as combinationName,
+                c.sku_id as skuId,
+                d.`name` as skuName,
+                c.quotation_price as price,
+                c.quotation_base_price as basicPrice,
+                d.currency as currency,
+                c.quantity as number,
+                c.volume as volume,
+                c.remark as remark,
+                a.id as packageId,
+                a.type as packageType,
+                a.`name` as packageName,
+                a.size as packageSize,
+                b.packing_num as packingNumber,
+                b.packing_size as packingSize,
+                b.cost as packingCost,
+                b.id as quotationSkuPackingId
+--         from pro_sed_packing a left join  sal_sed_quotation_sku_packing b on a.id=b.packing_id
+--                                left join sal_sed_quotation_sku c on b.quotation_sku_id=c.id
+--                                left join pro_sed_product_match_sku d on c.sku_id=d.id
+--                                left join pro_sed_product_match e on d.match_id=e.id
+--                                left join pro_sed_product f on e.product_id=f.id
+        from sal_sed_quotation_sku c
+                 left join sal_sed_quotation_sku_packing b on c.id = b.quotation_sku_id
+                 left join pro_sed_packing a on b.packing_id = a.id
+                 left join pro_sed_product_match_sku d on c.sku_id = d.id
+                 left join pro_sed_product_match e on d.match_id = e.id  and e.is_deleted=0
+                 left join pro_sed_product f on e.product_id = f.id
+        where c.quotation_id=#{id}   and c.is_deleted=0   and (b.is_deleted =0 or b.is_deleted is null)
+    </select>
+
+    <select id="getQuotationSkuListForMerge" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationSkuVo">
+        select c.id as quotationSkuId,
+               f.id as productId,
+               f.`code` as modelName,
+               f.`name` as productName,
+               e.id as combinationId,
+               e.`name` as combinationName,
+               c.sku_id as skuId,
+               d.`name` as skuName,
+               c.quotation_price as price,
+               c.quotation_base_price as basicPrice,
+               d.currency as currency,
+               c.quantity as number,
+               c.volume as volume,
+               c.remark as remark,
+               a.id as packageId,
+               a.type as packageType,
+               a.`name` as packageName,
+               a.size as packageSize,
+               b.packing_num as packingNumber,
+               b.packing_size as packingSize,
+               b.cost as packingCost,
+               b.id as quotationSkuPackingId
+        from sal_sed_quotation_sku c
+                 left join sal_sed_quotation_sku_packing b on c.id = b.quotation_sku_id and (b.is_deleted = 0 or b.is_deleted is null)
+                 left join pro_sed_packing a on b.packing_id = a.id
+                 left join pro_sed_product_match_sku d on c.sku_id = d.id
+                 left join pro_sed_product_match e on d.match_id = e.id and e.is_deleted = 0
+                 left join pro_sed_product f on e.product_id = f.id
+        where c.quotation_id = #{quotationId}
+          and c.is_deleted = 0
+            <if test="skuName != null and skuName != ''">
+                and d.`name` like concat('%', #{skuName}, '%')
+            </if>
+            <if test="matchName != null and matchName != ''">
+                and e.`name` like concat('%', #{matchName}, '%')
+            </if>
+    </select>
+
+    <select id="getHistoryQuotationSkuList" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationSkuVo">
+        select  c.id as quotationSkuId,
+                b.quotation_id as quotationId,
+                f.id as productId,
+                f.`code` as modelName,
+                f.`name` as productName,
+                e.id as combinationId,
+                e.`name` as combinationName,
+                c.sku_id as skuId,
+                d.`name` as skuName,
+                c.quotation_price as price,
+                c.quotation_base_price as basicPrice,
+                d.currency as currency,
+                c.quantity as number,
+                c.volume as volume,
+                c.remark as remark,
+                b.packing_id as packageId,
+                a.type as packageType,
+                a.`name` as packageName,
+                a.size as packageSize,
+                b.packing_num as packingNumber,
+                b.packing_size as packingSize,
+                b.cost as packingCost,
+                b.id as quotationSkuPackingId
+        from pro_sed_packing a left join  sal_sed_quotation_sku_packing b on a.id=b.packing_id
+                               left join sal_sed_quotation_sku c on b.quotation_sku_id=c.id
+                               left join pro_sed_product_match_sku d on c.sku_id=d.id
+                               left join pro_sed_product_match e on d.match_id=e.id
+                               left join pro_sed_product f on e.product_id=f.id
+        where c.is_deleted=0 and  b.is_deleted=0  and b.quotation_id in
+        <foreach item="id" collection="list" separator="," open="(" close=")" index="">
+            #{id}
+        </foreach>
+    </select>
+    <select id="getQuotationMatchIdsIds" resultType="java.lang.Long">
+        select  match_id from sal_sed_quotation_sku where quotation_id=#{id}
+    </select>
+    <select id="selectQuotationPriceListBySkuIdAndMatchId" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationSkuInfoVo">
+        SELECT a.quotation_price as quotationPrice,
+               b.currency as currency,
+               b.exchange_rate as exchangeRate,
+               (SELECT count(1) FROM sal_sed_quotation_sku WHERE sku_id=#{skuId} AND match_id=#{matchId} AND is_deleted=0) as totalCount
+        FROM sal_sed_quotation_sku a
+        LEFT JOIN sal_sed_quotation b ON a.quotation_id = b.id AND b.is_deleted = 0
+        WHERE a.sku_id=#{skuId} AND a.match_id=#{matchId} AND a.is_deleted=0
+        ORDER BY a.id
+    </select>
+    <select id="getAllAvgQuotationPriceList" resultType="com.qiaomoyun.vo.sal.sed.SalSedHistoryQuotationCustomerVo">
+        select round(avg(quotation_price),2) as averagePrice,
+              date(create_time) as quotationDate
+        from sal_sed_quotation_sku
+        where   sku_id=#{skuId} and match_id=#{matchId} and is_deleted=0
+        GROUP BY date(create_time)
+        ORDER BY quotationDate
+    </select>
+    <select id="getOneAvgQuotationPriceList" resultType="com.qiaomoyun.vo.sal.sed.SalSedHistoryQuotationCustomerVo">
+        select round(avg(a.quotation_price),2) as averagePrice,
+            date(a.create_time) as quotationDate
+        from sal_sed_quotation_sku a left join sal_sed_quotation b on a.quotation_id=b.id
+        where  a.match_id=#{matchId} and a.sku_id=#{skuId} and b.customer_id =#{customerId} and a.is_deleted=0 and b.is_deleted=0
+        GROUP BY date(a.create_time)
+        ORDER BY quotationDate
+    </select>
+    <select id="getAllQuotationPriceList" resultType="com.qiaomoyun.vo.sal.sed.SalSedHistoryQuotationCustomerVo">
+        select d.`name` as customerName,
+               b.currency as currency,
+               a.quotation_price as price,
+               date(a.create_time) as quotationDate,
+               c.nick_name as salerName
+        from sal_sed_quotation_sku a left join sal_sed_quotation b on a.quotation_id =b.id
+            left join sys_user c on c.user_id=b.salesman_id
+            left join sal_yt_customer d on b.customer_id=d.id
+        where a.match_id=#{matchId} and a.sku_id=#{skuId} and a.is_deleted=0 and b.is_deleted=0
+    </select>
+    <select id="getOneQuotationPriceList" resultType="com.qiaomoyun.vo.sal.sed.SalSedHistoryQuotationCustomerVo">
+        select d.`name` as customerName,
+               b.currency as currency,
+               a.quotation_price as price,
+               date(a.create_time) as quotationDate,
+               c.nick_name as salerName
+        from sal_sed_quotation_sku a left join sal_sed_quotation b on a.quotation_id =b.id
+            left join sys_user c on c.user_id=b.salesman_id
+            left join sal_yt_customer d on b.customer_id=d.id
+        where a.match_id=#{matchId} and a.sku_id=#{skuId} and b.customer_id=#{customerId} and a.is_deleted=0 and b.is_deleted=0
+    </select>
+    <select id="getQuotationSkuAndPackingInfoByQuotationId" resultType="com.qiaomoyun.entity.sal.sed.SalSedOrderDetail">
+        select a.id as quotationSkuPackingId,
+               a.box_mum as boxNum,
+               a.packing_num as packingNum,
+               a.packing_id as packingId,
+               b.sku_id as skuId,
+               b.id as quotationSkuId,
+               b.quotation_id as quotationId,
+               b.product_id as productId,
+               b.quotation_price as quotationPrice,
+               b.quantity as quantity,
+               b.volume as volume,
+               b.match_id as matchId,
+               b.remark as remark,
+               a.packing_size as packingSize,
+               a.cost as packingCost
+        from sal_sed_quotation_sku_packing a left join sal_sed_quotation_sku b on a.quotation_sku_id=b.id
+        where b.quotation_id=#{quotationId} and a.is_deleted=0 and b.is_deleted=0
+    </select>
+
+    <select id="getQuotationSkuAndPackingInfoBySkuId" resultType="com.qiaomoyun.entity.sal.sed.SalSedOrderDetail">
+        select a.id as quotationSkuPackingId,
+               a.box_mum as boxNum,
+               a.packing_num as packingNum,
+               a.packing_id as packingId,
+               b.sku_id as skuId,
+               b.id as quotationSkuId,
+               b.quotation_id as quotationId,
+               b.product_id as productId,
+               b.quotation_price as quotationPrice,
+               b.quantity as quantity,
+               b.volume as volume,
+               b.match_id as matchId,
+               b.remark as remark,
+               a.packing_size as packingSize,
+               a.cost as packingCost
+        from sal_sed_quotation_sku_packing a left join sal_sed_quotation_sku b on a.quotation_sku_id=b.id
+        where b.id=#{quotationSkuId} and a.is_deleted=0 and b.is_deleted=0
+    </select>
+
+
+</mapper>

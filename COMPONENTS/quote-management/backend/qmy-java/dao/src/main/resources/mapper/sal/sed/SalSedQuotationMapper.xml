@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.sed.SalSedQuotationMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.sed.SalSedQuotation" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="quotation_code" property="quotationCode"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="salesman_id" property="salesmanId"/>
+<!--        <result column="order_source" property="orderSource"/>-->
+        <result column="procurement_cost" property="procurementCost"/>
+        <result column="procurement_cost_state" property="procurementCostState"/>
+        <result column="logistics_cost" property="logisticsCost"/>
+        <result column="logistics_cost_state" property="logisticsCostState"/>
+        <result column="total_cost" property="totalCost"/>
+        <result column="total_cost_state" property="totalCostState"/>
+        <result column="order_amount" property="orderAmount"/>
+        <result column="logistics_remark" property="logisticsRemark"/>
+        <result column="discount_amount" property="discountAmount"/>
+        <result column="receive_address_id" property="receiveAddressId"/>
+        <result column="receive_address" property="receiveAddress"/>
+        <result column="special_requirements" property="specialRequirements"/>
+        <result column="status" property="status"/>
+        <result column="reject_reason" property="rejectReason"/>
+        <result column="shift_status" property="shiftStatus"/>
+        <result column="currency" property="currency"/>
+        <result column="tax" property="tax"/>
+        <result column="fob" property="fob"/>
+        <result column="exw" property="exw"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, quotation_code, customer_id, salesman_id, procurement_cost,
+        procurement_cost_state, logistics_cost, logistics_cost_state, total_cost, total_cost_state,  order_amount,
+        logistics_remark, discount_amount, receive_address_id, receive_address,
+        special_requirements, status, reject_reason, shift_status, currency, tax, fob, exw, exchange_rate,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="list" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationVo">
+        select a.id  as id,
+               a.quotation_code as quotationCode,
+               b.`name` as  customerName,
+               c.nick_name as salesmanName,
+               a.create_time as createTime,
+               a.update_time as updateTime,
+               a.procurement_cost  as procurementCost,
+               a.procurement_cost_state as procurementCostState,
+               a.logistics_cost as logisticsCost,
+               a.logistics_cost_state as logisticsCostState,
+               a.total_cost as totalCost,
+               a.total_cost_state as totalCostState,
+               a.order_amount orderAmount,
+               a.status as status,
+               a.shift_status as shiftStatus,
+               a.currency as currency,
+               a.tax as tax,
+               a.fob as fob,
+               a.exw as exw,
+               a.exchange_rate as exchangeRate
+
+        FROM sal_sed_quotation a left join sal_yt_customer b on a.customer_id=b.id
+           LEFT JOIN sys_user c on b.belong_employee_id =c.user_id
+        WHERE
+        a.is_deleted = 0
+            <if test="quotationCode != null and quotationCode != ''">
+                AND a.quotation_code LIKE CONCAT('%', #{quotationCode}, '%')
+            </if>
+            <if test="customerName != null and customerName != ''">
+                AND b.`name` LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+            <if test="status != null and status != ''">
+                AND a.status =#{status}
+            </if>
+            <if test="financePending != null and financePending == true">
+                AND a.status IN ('5', '6', '8')
+            </if>
+            <if test="presidentPending != null and presidentPending == true">
+                AND a.status IN ('5', '7')
+            </if>
+            <if test="createStartTime != null">
+                AND a.create_time &gt;= #{createStartTime}
+            </if>
+            <if test="createEndTime != null">
+                AND a.create_time &lt;= #{createEndTime}
+            </if>
+            <if test="lastEditStartTime != null">
+                AND a.update_time &gt;= #{lastEditStartTime}
+            </if>
+            <if test="lastEditEndTime != null">
+                AND a.update_time &lt;= #{lastEditEndTime}
+            </if>
+         order by a.create_time desc
+    </select>
+
+    <update id="procurementConfirm">
+      UPDATE sal_sed_quotation
+      SET procurement_cost=#{procurementCost},
+         procurement_cost_state='1'
+        WHERE id=#{id}
+    </update>
+    <update id="logisticsConfirm">
+        UPDATE sal_sed_quotation
+        SET logistics_cost=#{logisticsCost},
+         logistics_cost_state='1',
+         logistics_remark=#{logisticsRemark}
+        WHERE id= #{id}
+    </update>
+
+    <select id="getHistoryQuotation" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationHistoryImportVo">
+        select   a.id as quotationId,
+                 a.quotation_code as quotationCode,
+                 b.name as customerName,
+                 a.create_time as createTime
+        FROM sal_sed_quotation a left join sal_yt_customer b on a.customer_id=b.id
+        WHERE
+        a.is_deleted = 0
+            <if test="quotationCode != null and quotationCode != ''">
+                AND a.quotation_code LIKE CONCAT('%', #{quotationCode}, '%')
+            </if>
+            <if test="customerName != null and customerName != ''">
+                AND b.`name` LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+            <if test="createTime != null">
+                AND a.create_time &gt;= #{createTime}
+                AND a.create_time &lt; DATE_ADD(#{createTime}, INTERVAL 1 DAY)
+            </if>
+        ORDER BY a.create_time DESC
+    </select>
+
+    <select id="getQuotationDetailById" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationDetailVo">
+        select a.id as id,
+               a.customer_id as customerId,
+               b.`name` as customerName,
+               a.receive_address_id receiveAddressId,
+               a.receive_address as receiveAddress,
+               a.special_requirements as specialRequirements,
+               c.user_id as salesmanId,
+               c.nick_name as salesmanName,
+               a.procurement_cost as procurementCost,
+               a.procurement_cost_state as procurementCostState,
+               a.logistics_cost as logisticsCost,
+               a.logistics_cost_state as logisticsCostState,
+               a.logistics_remark as logisticsRemark,
+               a.discount_amount as discountAmount,
+               a.order_amount as orderAmount,
+               a.status,
+               a.reject_reason as rejectReason,
+               a.currency as currency,
+               a.tax as tax,
+               a.fob as fob,
+               a.exw as exw,
+               a.exchange_rate as exchangeRate,
+               a.shift_status as shiftStatus
+        from sal_sed_quotation a left join sal_yt_customer b on a.customer_id=b.id
+                                 left join sys_user c on b.belong_employee_id=c.user_id
+        where a.id=#{id}
+    </select>
+    <!-- 合并转订单：仅审核通过的报价单，支持报价单编号筛选 -->
+    <select id="listForMerge" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationMergeItemVo">
+        select a.id as id,
+               a.quotation_code as quotationCode,
+               b.`name` as customerName,
+               c.nick_name as salesmanName,
+               a.create_time as createTime
+        from sal_sed_quotation a
+        left join sal_yt_customer b on a.customer_id = b.id
+        left join sys_user c on b.belong_employee_id = c.user_id
+        where a.is_deleted = 0
+          and a.status = '4'
+            <if test="quotationCode != null and quotationCode != ''">
+                and a.quotation_code like concat('%', #{quotationCode}, '%')
+            </if>
+        <if test="skuName != null and skuName != '' or matchName != null and matchName != ''">
+            and exists (
+                select 1 from sal_sed_quotation_sku sku
+                left join pro_sed_product_match_sku pms on sku.sku_id = pms.id
+                left join pro_sed_product_match pmt on pms.match_id = pmt.id
+                where sku.quotation_id = a.id
+                  and sku.is_deleted = 0
+                <if test="skuName != null and skuName != ''">
+                    and pms.name like concat('%', #{skuName}, '%')
+                </if>
+                <if test="matchName != null and matchName != ''">
+                    and pmt.name like concat('%', #{matchName}, '%')
+                </if>
+            )
+        </if>
+        order by a.create_time desc
+    </select>
+
+    <select id="getQuotationProductInfo" resultType="com.qiaomoyun.vo.sal.sed.SalSedQuotationExportVo">
+        select b.`name` as item,
+               a.quantity as moq,
+               b.weight as weightPerUnit,
+               a.quotation_price as fobNingboPrice,
+               a.remark as remarks,
+               a.sku_id as skuId,
+               a.product_id as productId,
+               a.id as quotationSkuId,
+               a.match_id as matchId,
+               a.volume as volume,
+               c.packing_size as packingSize,
+               c.cost as packingCost
+        from sal_sed_quotation_sku a
+        left join pro_sed_product b on a.product_id=b.id
+        left join sal_sed_quotation_sku_packing c on a.id = c.quotation_sku_id
+        where a.quotation_id=#{quotationId}
+
+    </select>
+</mapper>

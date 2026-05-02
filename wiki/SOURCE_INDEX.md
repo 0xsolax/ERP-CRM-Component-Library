@@ -11,7 +11,7 @@
 | `RAW/PROJECTs/zhongsheng-AI` | 中盛 ERP 旧实现与 PRD | 客户、报价、订单、产品、物料、供应商、财务、上传、调研需求 | 已 ingest 到项目页与组件卡 |
 | `RAW/PROJECTs/zhongsheng-backend` | 中盛新版 Spring Boot 多模块后端 | 协议契约、权限、菜单、基础数据、产品、物料、OSS | 已 ingest 到项目页与组件卡 |
 | `RAW/docs/zhongsheng` | 调研会议记录和需求点 | 业务意图、岗位职责、流程痛点、报价与客户管理需求 | 已 ingest 到项目页与组件卡 |
-| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 客户管理 SOL-47 已局部深挖，其他模块待后续 ingest | 局部 ingest |
+| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 客户管理 SOL-47、报价管理 SOL-48 已局部深挖，其他模块待后续 ingest | 局部 ingest |
 | `RAW/PROJECTs/jewelry-design` | 前端项目 | 暂未深挖 | 待后续 ingest |
 
 ## 关键来源路径
@@ -107,6 +107,29 @@
 - `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/annotation/RequiresDataPermissions.java`
 - `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/interceptor/AuthenticationInterceptor.java`
 - `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/interceptor/TenantInterceptor.java`
+
+#### 报价管理组件关键路径
+
+- `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/QuoteController.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Quote.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql`
+- `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/sed/SalSedQuotationController.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/sed/SalSedQuotationService.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationManager.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationSkuManager.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed/SalSedQuotationSkuPackingManager.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/sed/SalSedQuotationMapper.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/sed/SalSedQuotationMapper.xml`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/sed/SalSedQuotationSkuMapper.xml`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed/SalSedQuotation.java`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed/SalSedQuotationSku.java`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed/SalSedQuotationSkuPacking.java`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed/SalSedQuotationHistory.java`
+- `RAW/PROJECTs/qmy-admin/src/views/sed/sales/quotation`
+- `RAW/PROJECTs/qmy-admin/src/api/sed/sales/quotation.ts`
+- `RAW/PROJECTs/qmy-admin/src/constant/sed/quotation.ts`
+- `RAW/PROJECTs/qmy-admin/src/constant/sed/sales.ts`
 
 ### 调研资料
 

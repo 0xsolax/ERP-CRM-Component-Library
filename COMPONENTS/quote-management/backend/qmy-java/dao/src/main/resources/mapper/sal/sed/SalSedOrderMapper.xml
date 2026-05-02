@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.sed.SalSedOrderMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.sed.SalSedOrder" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="order_resource" property="orderResource"/>
+        <result column="customer_id" property="customerId"/>
+        <result column="user_id" property="userId"/>
+        <result column="special_requirements" property="specialRequirements"/>
+        <result column="discount_amount" property="discountAmount"/>
+        <result column="salesman_id" property="salesmanId"/>
+        <result column="receive_address_id" property="receiveAddressId"/>
+        <result column="receive_address" property="receiveAddress"/>
+        <result column="third_platform_id" property="thirdPlatformId"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+        <result column="delivery_date" property="deliveryDate"/>
+        <result column="order_money" property="orderMoney"/>
+        <result column="third_platform_order_code" property="thirdPlatformOrderCode"/>
+        <result column="sync_status" property="syncStatus"/>
+        <result column="sync_fail_reason" property="syncFailReason"/>
+        <result column="guanjiapo_code" property="guanjiapoCode"/>
+        <result column="currency" property="currency"/>
+        <result column="tax" property="tax"/>
+        <result column="fob" property="fob"/>
+        <result column="exw" property="exw"/>
+        <result column="exchange_rate" property="exchangeRate"/>
+        <result column="contract_number" property="contractNumber"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, code, order_resource, customer_id, user_id, special_requirements, discount_amount, receive_address_id, receive_address, third_platform_id, third_platform_order_code, guanjiapo_code, create_user, create_time, update_user, update_time, tenant_id, is_deleted, delivery_date, order_money, sync_status, sync_fail_reason, currency, tax, fob, exw, exchange_rate, contract_number
+    </sql>
+
+    <select id="getMonthlyConsumptionByCustomerId" resultType="java.util.Map">
+        select
+            DATE_FORMAT(so.create_time, '%Y-%m') as month,
+            COALESCE(
+                sum(
+        so.order_money
+                ), 0
+            ) as amount
+        from sal_sed_order as so
+        where so.is_deleted = 0
+        and so.customer_id = #{customerId}
+        <if test="startTime != null">
+            and so.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and so.create_time &lt;= #{endTime}
+        </if>
+        group by DATE_FORMAT(so.create_time, '%Y-%m')
+        order by month
+    </select>
+
+    <select id="list" resultType="com.qiaomoyun.vo.sal.sed.SalSedOrderVo">
+        SELECT
+            so.id,
+            so.code,
+            so.order_resource as orderResource,
+            so.customer_id as customerId,
+            IFNULL(sc.name, so.customer_name) as customerName,
+            so.user_id as userId,
+            so.special_requirements as specialRequirements,
+            so.discount_amount as discountAmount,
+            so.salesman_id as salesmanId,
+            su_salesman.nick_name as salesmanName,
+            su_follower.nick_name as followerName,
+            so.receive_address_id as receiveAddressId,
+            so.receive_address as receiveAddress,
+            so.third_platform_id as thirdPlatformId,
+            so.create_user as createUser,
+            so.create_time as createTime,
+            so.update_user as updateUser,
+            so.update_time as updateTime,
+            so.delivery_date as deliveryTime,
+            so.order_money as orderMoney,
+            so.third_platform_order_code as thirdPlatformOrderCode,
+            so.sync_status as syncStatus,
+            so.sync_fail_reason as syncFailReason,
+            so.guanjiapo_code as guanjiapoCode,
+            so.currency as currency,
+            so.tax as tax,
+            so.fob as fob,
+            so.exw as exw,
+            so.exchange_rate as exchangeRate,
+            so.contract_number as contractNumber
+        FROM
+            sal_sed_order so
+        LEFT JOIN sal_yt_customer sc ON so.customer_id = sc.id AND sc.is_deleted = 0
+        LEFT JOIN sys_user su_salesman ON so.salesman_id = su_salesman.user_id AND su_salesman.is_deleted = 0
+        LEFT JOIN sys_user su_follower ON so.user_id = su_follower.user_id AND su_follower.is_deleted = 0
+        WHERE
+            so.is_deleted = 0
+        <if test="code != null and code != ''">
+            AND so.code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND (
+                so.customer_id IN (SELECT id FROM sal_yt_customer WHERE name LIKE CONCAT('%', #{customerName}, '%') AND is_deleted = 0)
+                OR so.customer_name LIKE CONCAT('%', #{customerName}, '%')
+            )
+        </if>
+        <if test="orderResource != null and orderResource != ''">
+            AND so.order_resource LIKE CONCAT('%', #{orderResource}, '%')
+        </if>
+        <if test="startTime != null">
+            AND so.create_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND so.create_time &lt;= #{endTime}
+        </if>
+        ORDER BY so.create_time DESC
+    </select>
+
+    <select id="orderDetail" resultType="com.qiaomoyun.vo.sal.sed.SalSedOrderVo">
+        SELECT
+            so.id,
+            so.code,
+            so.order_resource as orderResource,
+            so.customer_id as customerId,
+            IFNULL(sc.name, so.customer_name) as customerName,
+            so.user_id as userId,
+            so.special_requirements as specialRequirements,
+            so.discount_amount as discountAmount,
+            so.salesman_id as salesmanId,
+            so.receive_address_id as receiveAddressId,
+            so.receive_address as receiveAddress,
+            so.third_platform_id as thirdPlatformId,
+            so.create_user as createUser,
+            so.create_time as createTime,
+            so.update_user as updateUser,
+            so.update_time as updateTime,
+            so.delivery_date as deliveryTime,
+            so.order_money as orderMoney,
+            so.third_platform_order_code as thirdPlatformOrderCode,
+            so.sync_status as syncStatus,
+            so.sync_fail_reason as syncFailReason,
+            so.guanjiapo_code as guanjiapoCode,
+            so.currency as currency,
+            so.tax as tax,
+            so.fob as fob,
+            so.exw as exw,
+            so.exchange_rate as exchangeRate,
+            so.contract_number as contractNumber
+        FROM
+            sal_sed_order so
+        LEFT JOIN sal_yt_customer sc ON so.customer_id = sc.id AND sc.is_deleted = 0
+        WHERE
+            so.id = #{id}
+            AND so.is_deleted = 0
+    </select>
+</mapper>

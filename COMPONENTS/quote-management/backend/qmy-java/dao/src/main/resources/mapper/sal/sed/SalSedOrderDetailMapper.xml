@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.sed.SalSedOrderDetailMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.sed.SalSedOrderDetail" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="order_id" property="orderId"/>
+        <result column="quotation_sku_packing_id" property="quotationSkuPackingId"/>
+        <result column="box_num" property="boxNum"/>
+        <result column="packing_num" property="packingNum"/>
+        <result column="packing_id" property="packingId"/>
+        <result column="sku_id" property="skuId"/>
+        <result column="quotation_sku_id" property="quotationSkuId"/>
+        <result column="product_id" property="productId"/>
+        <result column="quotation_id" property="quotationId"/>
+        <result column="quotation_price" property="quotationPrice"/>
+        <result column="quantity" property="quantity"/>
+        <result column="volume" property="volume"/>
+        <result column="match_id" property="matchId"/>
+        <result column="packing_cost" property="packingCost"/>
+        <result column="packing_size" property="packingSize"/>
+        <result column="remark" property="remark"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, order_id, quotation_sku_packing_id, box_num, packing_num, packing_id, sku_id, quotation_sku_id, product_id, quotation_id, quotation_price, quantity, volume, match_id, packing_cost, packing_size, remark, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="getOrderDetailListWithInfo" resultType="com.qiaomoyun.vo.sal.sed.SalSedOrderDetailVo">
+        select
+            a.id as id,
+            a.id as orderSkuId,
+            a.order_id as orderId,
+            a.quotation_sku_packing_id as quotationSkuPackingId,
+            a.box_num as boxNum,
+            a.packing_num as packingNum,
+            a.packing_id as packingId,
+            b.name as packingName,
+            a.packing_size as packingSize,
+            a.packing_cost as packingCost,
+            a.remark as remark,
+            a.sku_id as skuId,
+            d.name as skuName,
+            a.quotation_sku_id as quotationSkuId,
+            a.product_id as productId,
+            e.code as productCode,
+            e.name as productName,
+            a.quotation_id as quotationId,
+            c.quotation_code as quotationCode,
+            a.quotation_price as quotationPrice,
+            a.quantity as quantity,
+            a.volume as volume,
+            a.match_id as matchId,
+            f.id as combinationId,
+            f.name as matchName
+        from
+            sal_sed_order_detail a
+        left join pro_sed_packing b on a.packing_id = b.id
+        left join sal_sed_quotation_sku_packing g on a.quotation_sku_packing_id = g.id
+        left join pro_sed_product_match_sku d on a.sku_id = d.id
+        left join pro_sed_product_match f on d.match_id = f.id
+        left join pro_sed_product e on f.product_id = e.id
+        left join sal_sed_quotation c on a.quotation_id = c.id
+        where
+            a.order_id = #{orderId}
+            and a.is_deleted = 0
+    </select>
+
+    <select id="countDistinctQuotationSkuIdByQuotationId" resultType="long">
+        SELECT COUNT(DISTINCT quotation_sku_id)
+        FROM sal_sed_order_detail
+        WHERE quotation_id = #{quotationId}
+        AND is_deleted = 0
+    </select>
+
+    <select id="checkSkuExistsInOrders" resultType="com.qiaomoyun.entity.sal.sed.SalSedOrderDetail">
+        SELECT d.*
+        FROM sal_sed_order_detail d
+        INNER JOIN sal_sed_order o ON d.order_id = o.id
+        WHERE d.product_id = #{productId}
+          AND d.match_id = #{matchId}
+          AND d.sku_id = #{skuId}
+          AND d.is_deleted = 0
+          AND o.is_deleted = 0
+    </select>
+
+    <!-- 查询指定 SKU 组合存在于哪些订单中 -->
+    <select id="findOrderIdsBySkuTriplet" resultType="long">
+        SELECT DISTINCT d.order_id
+        FROM sal_sed_order_detail d
+        INNER JOIN sal_sed_order o ON d.order_id = o.id
+        WHERE d.product_id = #{productId}
+          AND d.match_id = #{matchId}
+          AND d.sku_id = #{skuId}
+          AND d.is_deleted = 0
+          AND o.is_deleted = 0
+    </select>
+
+    <!-- 根据报价单SKU ID统计订单详情数量 -->
+    <select id="countByQuotationSkuId" resultType="long">
+        SELECT COUNT(*)
+        FROM sal_sed_order_detail
+        WHERE quotation_sku_id = #{quotationSkuId}
+          AND is_deleted = 0
+    </select>
+
+</mapper>
