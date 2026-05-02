@@ -34,12 +34,12 @@
 | `base-data` | `reference` | [COMPONENTS/base-data](COMPONENTS/base-data/README.md) | 基础数据树、字段分类、通用数据行、nodeKey、SQL、字段管理前端 |
 | `file-oss` | `reference` | [COMPONENTS/file-oss](COMPONENTS/file-oss/README.md) | OSS STS、文件记录、上传组件、system_file、旧上传控制器对比 |
 | `product-material` | `reference` | [COMPONENTS/product-material](COMPONENTS/product-material/README.md) | 产品主档、产品 BOM、伞架、面料、材料、包材、工序、成本字段 |
+| `customer-management` | `reference` | [COMPONENTS/customer-management](COMPONENTS/customer-management/README.md) | 客户主档、联系人、地址、标签、跟进、数据权限和导入/同步边界 |
+| `quote-management` | `reference` | [COMPONENTS/quote-management](COMPONENTS/quote-management/README.md) | 基础报价 CRUD、SED 复杂报价、成本明细、审核、导出和转订单边界 |
+| `order-management` | `reference` | [COMPONENTS/order-management](COMPONENTS/order-management/README.md) | 基础订单 CRUD、YT 复杂订单、状态、采购申请、退货、发货、完结和关闭边界 |
 
 ### 第一批待沉淀组件
 
-- `customer-management`
-- `quote-management`
-- `order-management`
 - `purchase-supplier`
 - `warehouse-delivery`
 
@@ -103,7 +103,7 @@
 | P1 认证权限组件 | 已完成 | 抽取并修正 JWT 安全基线 |
 | P1 基础数据组件 | 已完成 | 抽取并修正空请求体、nodeKey 和路由权限边界 |
 | P1 文件 OSS 组件 | 已完成 | 抽取 OSS STS、文件记录、上传组件和旧上传控制器对比 |
-| P2 业务组件 | 进行中 | 产品物料已完成，后续继续客户、报价、订单 |
+| P2 业务组件 | 进行中 | 产品物料、客户、报价、订单已完成，后续继续采购供应商、仓储发货 |
 | P3 待验证组件 | 待执行 | 采购供应商、仓储发货 |
 | P4 装配演练 | 待执行 | 用组件组合模拟新项目装配 |
 

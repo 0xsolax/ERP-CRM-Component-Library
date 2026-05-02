@@ -24,6 +24,7 @@
 - [COMPONENT_customer-management](../COMPONENTS/customer-management/README.md)
 - [COMPONENT_quote-management](../COMPONENTS/quote-management/README.md)
 - [COMPONENT_order-management](../COMPONENTS/order-management/README.md)
+- [COMPONENT_purchase-supplier](../COMPONENTS/purchase-supplier/README.md)
 
 ## 来源项目
 

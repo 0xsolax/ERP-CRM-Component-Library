@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtSupplierMapper">
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, code, name, short_name, address, remark, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 查询供应商下拉框列表 -->
+    <select id="selectForDropdown" resultType="com.qiaomoyun.entity.pur.yt.PurYtSupplier">
+        SELECT id, name
+        FROM pur_yt_supplier
+        WHERE is_deleted = 0
+        ORDER BY create_time ASC
+    </select>
+
+    <!-- 分页查询供应商列表 -->
+    <select id="list" parameterType="com.qiaomoyun.param.pur.yt.PurYtSupplierQueryParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtSupplier">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM pur_yt_supplier
+        WHERE is_deleted = 0
+        <if test="code != null and code != ''">
+            AND code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="name != null and name != ''">
+            AND name LIKE CONCAT('%', #{name}, '%')
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询供应商最近采购时间 -->
+    <select id="selectRecentPurchaseTime" parameterType="java.lang.Long" resultType="java.util.Date">
+        SELECT MAX(create_time) as recent_purchase_time
+        FROM pur_yt_purchase
+        WHERE supplier_id = #{supplierId} AND is_deleted = 0
+    </select>
+
+    <!-- 查询供应商最近跟进时间 -->
+    <select id="selectRecentFollowTime" parameterType="java.lang.Long" resultType="java.util.Date">
+        SELECT MAX(create_time) as recent_follow_time
+        FROM pur_yt_supplier_follow
+        WHERE supplier_id = #{supplierId} AND is_deleted = 0
+    </select>
+    <select id="selectByName" resultType="com.qiaomoyun.entity.pur.yt.PurYtSupplier">
+            select *
+            from pur_yt_supplier
+            where name = #{name}
+            and is_deleted = 0
+    </select>
+</mapper>

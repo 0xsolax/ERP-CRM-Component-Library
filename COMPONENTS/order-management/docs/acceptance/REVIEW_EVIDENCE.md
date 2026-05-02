@@ -6,6 +6,8 @@
 - 复制 `zhongsheng-AI` 基础订单 CRUD 后端、`orders/order_item` SQL 和 PRD。
 - 复制 qmy-java YT 复杂订单后端证据：订单、子订单、商品项、退货、半成品、发货、关闭、导出、采购申请。
 - 复制 qmy-admin admin 订单页面、订单 API、订单常量和裁剪后的订单路由。
+- 复核后补入订单列表直接使用的 `interface/table.ts`，并把 `footer-actions`、`product-selector`、`tagsStore` 等递归共享依赖明确为装配前置，而不是订单私有能力。
+- 复核后裁剪客户、组织、产品依赖 API，只保留订单页面实际调用函数，避免把客户维护、组织账号、产品维护误收为订单组件能力。
 - 编写 README、SOURCE_MAP、组件规范、API/数据/权限契约和验收清单。
 - 更新 wiki 组件卡、组件索引、本地报告和记忆日志。
 
@@ -20,6 +22,8 @@
 | 采购申请边界后端 | `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java` |
 | 复杂订单前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/order` |
 | 前端 API | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/order.ts` |
+| 前端类型 | `RAW/PROJECTs/qmy-admin/src/interface/table.ts` |
+| 前端共享依赖 | `RAW/PROJECTs/qmy-admin/src/components/product-selector`、`RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue`、`RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts` |
 | 调研材料 | `RAW/docs/zhongsheng` |
 
 ## 已执行命令证据
@@ -48,13 +52,14 @@ rg -n "@((Get|Post|Delete|Put)Mapping|RequiresPermissions|RequiresDataPermission
 
 | 验证项 | 结果 |
 | :--- | :--- |
-| 快照文件数量 | 103 个文件 |
-| 污染文件扫描 | 未发现 `.DS_Store`、`.git`、`node_modules`、`target`、`dist`、`build` |
+| 快照文件数量 | 104 个文件 |
+| 污染文件扫描 | 组件快照范围内未发现 `.DS_Store`、`.git`、`node_modules`、`target`、`dist`、`build` |
 | 精确敏感配置扫描 | 未发现数据库连接串、云访问密钥、私钥或口令赋值 |
 | 宽松 token 扫描 | 仅命中文档排除项 `secrets` 和前端请求头名 `qiaomoyun-token`，未发现真实密钥 |
 | 订单路由裁剪扫描 | 未发现 `sales/customer`、`warehouse-history`、客户页面、仓库历史或报价路由引用 |
 | 关键文档 | `README.md`、`SOURCE_MAP.md`、`COMPONENT_SPEC.md`、`API_CONTRACT.md`、`DATA_CONTRACT.md`、`PERMISSION_CONTRACT.md`、`ACCEPTANCE.md` 均存在 |
 | 来源 TODO 扫描 | 仅命中 qmy-java 历史源码原注释，作为来源事实保留，未新增待办占位 |
+| 依赖 API 裁剪 | `customer.ts` 仅保留 2 个订单函数，`org.ts` 仅保留 1 个订单函数，`product/index.ts` 仅保留 2 个订单函数 |
 | 行尾空白扫描 | 本次范围无输出 |
 | 已跟踪文件 diff 检查 | `git diff --check` 对已跟踪修改无输出 |
 

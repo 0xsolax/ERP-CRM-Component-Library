@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtStoreWarningMapper">
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, customer_id, product_id, specification_id, warning_time, warning_reason,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据客户ID查询库存预警列表 -->
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM pur_yt_store_warning
+        WHERE is_deleted = 0
+        AND customer_id = #{customerId}
+        ORDER BY warning_time DESC
+    </select>
+
+    <!-- 根据产品ID查询库存预警列表 -->
+    <select id="selectByProductId" parameterType="java.lang.Long" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM pur_yt_store_warning
+        WHERE is_deleted = 0
+        AND product_id = #{productId}
+        ORDER BY warning_time DESC
+    </select>
+
+    <!-- 根据规格ID查询库存预警列表 -->
+    <select id="selectBySpecificationId" parameterType="java.lang.Long" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM pur_yt_store_warning
+        WHERE is_deleted = 0
+        AND specification_id = #{specificationId}
+        ORDER BY warning_time DESC
+    </select>
+
+    <!-- 根据客户ID、产品ID和规格ID查询库存预警 -->
+    <select id="selectByParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM pur_yt_store_warning
+        WHERE is_deleted = 0
+        <if test="customerId != null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="productId != null">
+            AND product_id = #{productId}
+        </if>
+        <if test="specificationId != null">
+            AND specification_id = #{specificationId}
+        </if>
+        ORDER BY warning_time DESC
+    </select>
+
+    <select id="list" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        select pysw.*,pyp.code as productCode
+        from pur_yt_store_warning as pysw
+        left join pro_yt_product as pyp on pyp.id = pysw.product_id
+        left join sal_yt_customer as syc  on syc.id=pysw.customer_id
+        left join sal_yt_customer_store as sycs on sycs.customer_id = pysw.customer_id
+            and sycs.product_id = pysw.product_id
+            and sycs.specification_id = pysw.specification_id
+        where pysw.is_deleted=0
+        and (sycs.status = 1 or sycs.id is null)
+        <if test="storeName!=null and storeName !=''">
+            and pysw.store_name like concat('%',#{storeName},'%')
+        </if>
+        <if test="productCode!=null and productCode !=''">
+            and pyp.code like concat('%',#{productCode},'%')
+        </if>
+    </select>
+
+    <!-- 根据id列表查询库存预警列表 -->
+    <select id="selectByIds" parameterType="java.util.List" resultType="com.qiaomoyun.entity.pur.yt.PurYtStoreWarning">
+        SELECT pysw.*,(select code from pro_yt_product where id = pysw.product_id) as productCode
+        FROM pur_yt_store_warning as pysw
+        WHERE is_deleted = 0
+        AND id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        ORDER BY warning_time DESC
+    </select>
+
+    <!--删除前一天的库存预警数据-->
+    <update id="deleteYesterdayData">
+        update pur_yt_store_warning set is_deleted=1
+        WHERE DATE_SUB(CURDATE(), INTERVAL 0 DAY) > warning_time
+    </update>
+
+    <!--删除所有未删除的库存预警数据-->
+    <update id="deleteAllWarningData">
+        update pur_yt_store_warning set is_deleted=1
+        WHERE is_deleted = 0
+    </update>
+</mapper>

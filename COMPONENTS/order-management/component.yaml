@@ -20,7 +20,14 @@ source_layer:
     - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/pur/yt/PurYtApplyPurchaseMapper.xml
     - RAW/PROJECTs/qmy-admin/src/views/admin/sales/order
     - RAW/PROJECTs/qmy-admin/src/api/admin/sales/order.ts
+    - RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts
+    - RAW/PROJECTs/qmy-admin/src/api/admin/auth/org.ts
+    - RAW/PROJECTs/qmy-admin/src/api/admin/product/index.ts
     - RAW/PROJECTs/qmy-admin/src/constant/yitang/sales.ts
+    - RAW/PROJECTs/qmy-admin/src/interface/table.ts
+    - RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue
+    - RAW/PROJECTs/qmy-admin/src/components/product-selector
+    - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts
     - RAW/docs/zhongsheng
   wiki_pages:
     - wiki/COMP_订单管理.md
@@ -84,6 +91,8 @@ entrypoints:
     constants:
       - frontend/qmy-admin/src/constant/yitang/sales.ts
       - frontend/qmy-admin/src/constant/yitang/finance.ts
+    types:
+      - frontend/qmy-admin/src/interface/table.ts
   db:
     schema:
       - db/zhongsheng-AI/init-order.sql
@@ -113,3 +122,5 @@ notes:
   - zhongsheng-AI 仅覆盖 orders/order_item 基础 CRUD；qmy-java/qmy-admin 覆盖 YT 复杂订单流。
   - qmy-java 未提供完整建表 SQL，数据契约依据实体、Mapper XML 和前端字段整理。
   - 采购申请、仓储发货和财务回款只作为边界证据，不并入订单组件默认能力。
+  - customer/org/product 前端 API 已裁剪为订单页面实际使用函数，避免把客户维护、组织账号、产品维护等跨模块能力收进订单组件。
+  - qmy-admin 订单页还依赖 footer-actions、product-selector、tagsStore、bz-table、auth/download 工具等前端基座或共享组件；本快照仅复制无递归依赖的 table 类型，其他共享 UI 依赖在前端 README 中列为装配依赖。

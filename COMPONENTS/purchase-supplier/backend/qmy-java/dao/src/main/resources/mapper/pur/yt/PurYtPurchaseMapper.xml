@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtPurchaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.pur.yt.PurYtPurchase">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="status" property="status" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="order_platform_code" property="orderPlatformCode" />
+        <result column="shipping_cost" property="shippingCost" />
+        <result column="discount_amount" property="discountAmount" />
+        <result column="delivery_time" property="deliveryTime" />
+        <result column="pay_method" property="payMethod" />
+        <result column="pay_way" property="payWay" />
+        <result column="submit_purchase_time" property="submitPurchaseTime" />
+        <result column="completed_time" property="completedTime" />
+        <result column="remark" property="remark" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="is_inbound_delivery" property="isInboundDelivery" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code, status, supplier_id, supplier_name, order_platform_code, shipping_cost,
+        discount_amount, delivery_time, pay_method, pay_way, submit_purchase_time, completed_time, remark, create_user,
+        create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据条件查询采购订单列表 -->
+    <select id="list" resultMap="BaseResultMap" parameterType="com.qiaomoyun.param.pur.yt.PurYtPurchaseQueryParams">
+        SELECT DISTINCT
+        p.*
+        FROM pur_yt_purchase p
+        LEFT JOIN pur_yt_purchase_item pi ON p.id = pi.purchase_id
+        LEFT JOIN sal_yt_order_sub sos ON sos.id = pi.order_sub_id
+            left join sal_yt_order so on so.id = sos.order_id
+        LEFT JOIN pro_yt_product pr ON pi.product_id = pr.id
+        WHERE p.is_deleted = 0
+        <if test="code != null and code != ''">
+            AND p.code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="status != null and status != '' ">
+            AND (SELECT MIN(status) AS min_status
+            FROM pur_yt_purchase_item
+            WHERE purchase_id = p.id
+            AND is_deleted = 0 and specification_id is not null ) = #{status}
+        </if>
+        <if test="minStatus != null and minStatus != '' ">
+            AND (SELECT MIN(status) AS min_status
+            FROM pur_yt_purchase_item
+            WHERE purchase_id = p.id
+            AND is_deleted = 0 and specification_id is not null ) > #{minStatus}
+        </if>
+        <if test="supplierId != null">
+            AND p.supplier_id = #{supplierId}
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND p.supplier_name LIKE CONCAT('%', #{supplierName}, '%')
+        </if>
+        <if test="orderPlatformCode != null and orderPlatformCode != ''">
+            AND p.order_platform_code = #{orderPlatformCode}
+        </if>
+        <if test="isInboundDelivery != null">
+            AND p.is_inbound_delivery = #{isInboundDelivery}
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pr.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="orderSubCode != null and orderSubCode != ''">
+            AND sos.sub_code LIKE CONCAT('%', #{orderSubCode}, '%')
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            AND so.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        <if test="deliveryStartTime != null">
+            AND p.delivery_time >= #{deliveryStartTime}
+        </if>
+        <if test="deliveryEndTime != null">
+            AND p.delivery_time &lt;= #{deliveryEndTime}
+        </if>
+        ORDER BY p.submit_purchase_time DESC, p.create_time DESC
+    </select>
+
+    <!-- 根据编号检查是否存在 -->
+    <select id="existsByCode" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM pur_yt_purchase
+        WHERE code = #{code}
+        AND is_deleted = 0
+        <if test="excludeId != null and excludeId > 0">
+            AND id != #{excludeId}
+        </if>
+    </select>
+    <!-- 查询供应商月度采购统计 -->
+    <select id="getMonthlyPurchaseBySupplierId" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(p.create_time, '%Y-%m') AS month,
+            SUM(pi.supplier_price * pi.number) AS amount
+        FROM
+            pur_yt_purchase p
+        LEFT JOIN
+            pur_yt_purchase_item pi ON p.id = pi.purchase_id
+        WHERE
+            p.supplier_id = #{supplierId}
+            AND p.is_deleted = 0
+            AND pi.is_deleted = 0
+            <if test="startTime != null">
+                AND p.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND p.create_time &lt;= #{endTime}
+            </if>
+        GROUP BY
+            DATE_FORMAT(p.create_time, '%Y-%m')
+        ORDER BY
+            month
+    </select>
+
+    <!-- 查询供应商采购品类占比 -->
+    <select id="getPurchaseRatioBySupplierId" resultType="java.util.Map">
+        SELECT
+            pypc.name AS categoryName,
+            SUM(pi.supplier_price * pi.number) AS amount
+        FROM
+            pur_yt_purchase p
+        LEFT JOIN
+            pur_yt_purchase_item pi ON p.id = pi.purchase_id
+        LEFT JOIN
+            pro_yt_product pyp ON pi.product_id = pyp.id
+        LEFT JOIN
+            pro_yt_product_category pypc ON pyp.category_id = pypc.id
+        WHERE
+            p.supplier_id = #{supplierId}
+            AND p.is_deleted = 0
+            AND pi.is_deleted = 0
+            AND pyp.is_deleted = 0
+            AND pypc.is_deleted = 0
+            <if test="startTime != null">
+                AND p.create_time >= #{startTime}
+            </if>
+            <if test="endTime != null">
+                AND p.create_time &lt;= #{endTime}
+            </if>
+        GROUP BY
+            pypc.id, pypc.name
+        ORDER BY
+            amount DESC
+   </select>
+</mapper>

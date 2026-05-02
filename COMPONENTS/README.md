@@ -52,7 +52,7 @@ COMPONENTS/<component-name>/
 - [customer-management](customer-management/README.md) - `reference`，已抽取客户主档、联系人、地址、标签、跟进、客户数据权限、前端页面和导入/同步边界
 - [quote-management](quote-management/README.md) - `reference`，已抽取基础报价 CRUD、SED 复杂报价、成本明细、历史报价、审核、导出和转订单边界
 - [order-management](order-management/README.md) - `reference`，已抽取基础订单 CRUD、YT 复杂订单、子订单、商品项、状态、审核、采购申请、退货、发货、完结、关闭和跨组件边界
-- `purchase-supplier`
+- [purchase-supplier](purchase-supplier/README.md) - `draft`，已抽取供应商 CRUD、YT 供应商、待采购、采购单、库存预警、采购退货、导出和采购/仓储/财务边界
 - `warehouse-delivery`
 
 ## 使用顺序

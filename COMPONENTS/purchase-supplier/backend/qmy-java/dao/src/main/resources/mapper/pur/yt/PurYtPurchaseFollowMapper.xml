@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtPurchaseFollowMapper">
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, purchase_id, theme, contact_person, description, next_visit_date,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" parameterType="java.lang.Long" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseFollow">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM pur_yt_purchase_follow
+        WHERE id = #{id} AND is_deleted = 0
+    </select>
+
+    <!-- 根据采购订单ID查询跟进记录 -->
+    <select id="selectByPurchaseId" parameterType="com.qiaomoyun.param.pur.yt.PurYtPurchaseQueryParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseFollow">
+        SELECT
+        pypf.*,
+        (select nick_name from sys_user where user_id = pypf.create_user) as createUserName
+        FROM pur_yt_purchase_follow as pypf
+        WHERE purchase_id = #{purchaseId} AND is_deleted = 0
+        <if test="startTime!=null">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null">
+            AND create_time &lt;= #{endTime}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 查询所有记录 -->
+    <select id="list" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseFollow">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM pur_yt_purchase_follow
+        WHERE is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 新增记录 -->
+    <insert id="insert" parameterType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseFollow">
+        INSERT INTO pur_yt_purchase_follow (
+            purchase_id, theme, contact_person, description, next_visit_date,
+            create_user, create_time, update_user, update_time, tenant_id, is_deleted
+        ) VALUES (
+            #{purchaseId}, #{theme}, #{contactPerson}, #{description}, #{nextVisitDate},
+            #{createUser}, #{createTime}, #{updateUser}, #{updateTime}, #{tenantId}, #{isDeleted}
+        )
+    </insert>
+
+    <!-- 更新记录 -->
+    <update id="updateById" parameterType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseFollow">
+        UPDATE pur_yt_purchase_follow
+        SET
+            purchase_id = #{purchaseId},
+            theme = #{theme},
+            contact_person = #{contactPerson},
+            description = #{description},
+            next_visit_date = #{nextVisitDate},
+            update_user = #{updateUser},
+            update_time = #{updateTime}
+        WHERE id = #{id} AND is_deleted = 0
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteById" parameterType="java.lang.Long">
+        UPDATE pur_yt_purchase_follow
+        SET is_deleted = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 批量保存采购跟进记录 -->
+    <insert id="saveBatch" parameterType="java.util.List">
+        INSERT INTO pur_yt_purchase_follow (
+            purchase_id, theme, contact_person, description, next_visit_date,
+            create_user, create_time, update_user, update_time, tenant_id, is_deleted
+        ) VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+                #{item.purchaseId}, #{item.theme}, #{item.contactPerson}, #{item.description}, #{item.nextVisitDate},
+                #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, #{item.isDeleted}
+            )
+        </foreach>
+    </insert>
+</mapper>

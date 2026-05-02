@@ -1,0 +1,117 @@
+name: purchase-supplier
+display_name: 采购供应商
+status: draft
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/SupplierController.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Supplier.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtSupplierController.java
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtPurchaseController.java
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtStoreWarningController.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/pur/yt
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pur/yt
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/pur/yt
+    - RAW/PROJECTs/qmy-admin/src/views/admin/purchase
+    - RAW/PROJECTs/qmy-admin/src/api/admin/purchase
+    - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/purchase.ts
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_采购供应商.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+    - product-material
+    - order-management
+  optional:
+    - customer-management
+    - warehouse-delivery
+    - finance
+    - file-oss
+entrypoints:
+  backend:
+    legacy_supplier_crud:
+      controllers:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/SupplierController.java
+      entity:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Supplier.java
+      services:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/SupplierService.java
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/impl/SupplierServiceImpl.java
+      mapper:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/mapper/SupplierMapper.java
+    yt_purchase_flow:
+      controllers:
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtSupplierController.java
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtPurchaseController.java
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtStoreWarningController.java
+      managers:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/pur/yt
+      mapper:
+        - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/pur/yt
+        - backend/qmy-java/dao/src/main/resources/mapper/pur/yt
+        - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/pro/yt/ProYtProductSpecificationSupplierMapper.java
+        - backend/qmy-java/dao/src/main/resources/mapper/pro/yt/ProYtProductSpecificationSupplierMapper.xml
+      entity_param_vo:
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pur/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pro/yt/ProYtProductSpecificationSupplier.java
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/yt/SalYtReturnOrder.java
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/pur/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/yt/PurYtApplyPurchaseQueryParams.java
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/pur/yt
+      event_export:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/event/yt/PurchaseEvent.java
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/listener/yt/PurchaseEventListener.java
+        - backend/qmy-java/web/src/main/resources/excel-template/yitang-purchaseExport.xlsx
+      enum:
+        - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/PurchaseStatusEnum.java
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/admin/purchase
+      - frontend/qmy-admin/src/api/admin/product/index.ts
+      - frontend/qmy-admin/src/api/admin/sales/customer.ts
+      - frontend/qmy-admin/src/api/admin/auth/org.ts
+    views:
+      - frontend/qmy-admin/src/views/admin/purchase
+    router:
+      - frontend/qmy-admin/src/views/admin/router/async-modules/purchase.ts
+    constants:
+      - frontend/qmy-admin/src/constant/yitang/purchase.ts
+      - frontend/qmy-admin/src/constant/yitang/sales.ts
+      - frontend/qmy-admin/src/constant/file-type.ts
+      - frontend/qmy-admin/src/interface/table.ts
+  db:
+    schema:
+      - db/zhongsheng-AI/init-supplier.sql
+      - db/qmy-java/pur-yt-purchase-schema-notes.md
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+  evidence: docs/acceptance/REVIEW_EVIDENCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 按 SOL-50 要求保持 draft；未补齐目标项目 DDL、状态机、权限和运行验收前不得标记可直接复用。
+  - zhongsheng-AI 只提供 supplier 基础 CRUD；qmy-java/qmy-admin 提供采购复杂流参考证据。
+  - 报价阶段不强绑定供应商，采购阶段按供应商聚合采购单，是本组件的关键业务边界。
+  - 入库、库存、财务付款和供应商对账仍需 warehouse-delivery 与 finance 组件承接。

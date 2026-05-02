@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pro.yt.ProYtProductSpecificationSupplierMapper">
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, supplier_id, specification_id
+    </sql>
+
+    <!-- 根据规格ID删除关联关系 -->
+    <update id="deleteBySpecificationId">
+        udpate  pro_yt_product_specification_supplier set is_deleted=1
+        WHERE specification_id = #{id}
+    </update>
+
+    <select id="selectSupplierInfoById" parameterType="java.lang.Long"
+            resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        SELECT pss.*,s.name as supplierName,s.code as supplierCode,
+               (select code from pro_yt_product where id=(select product_id from pro_yt_product_specification where id=pss.specification_id)) as productCode
+
+        FROM pur_yt_supplier s
+                 left JOIN pro_yt_product_specification_supplier pss ON s.id = pss.supplier_id
+        WHERE pss.id = #{id}
+    </select>
+    <select id="selectBySpecificationIdAndSupplier"
+            resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        select * from pro_yt_product_specification_supplier
+        where specification_id=#{specificationId}
+        and supplier_id=#{supplierId} and is_deleted=0
+    </select>
+    <select id="selectBySpecificationId"
+            resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        select pypss.*,pys.name as supplierName from pro_yt_product_specification_supplier as pypss
+                 left join pur_yt_supplier as pys  on pys.id = pypss.supplier_id
+        where specification_id=#{specificationId} and pypss.is_deleted=0
+    </select>
+
+    <!-- 批量保存规格与供应商的关联关系 -->
+    <insert id="saveBatch" parameterType="java.util.List">
+        INSERT INTO pro_yt_product_specification_supplier (
+            supplier_id, specification_id, create_user, create_time,supplier_specification,min_number,supplier_price,
+        update_user, update_time, tenant_id, is_deleted,supplier_specification_code
+        ) VALUES
+        <foreach collection="supplierList" item="item" index="index" separator=",">
+            (
+                #{item.supplierId}, #{item.specificationId}, #{item.createUser}, #{item.createTime},#{item.supplierSpecification},#{item.minNumber},#{item.supplierPrice},
+            #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, #{item.isDeleted}, #{item.supplierSpecificationCode}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据规格ID列表获取可更换的供应商 -->
+    <select id="listReplaceableSuppliers" parameterType="java.util.List" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        SELECT pys.id as supplierId, pys.name as supplierName
+        FROM pur_yt_supplier as pys
+        LEFT JOIN pro_yt_product_specification_supplier as pypss ON pys.id = pypss.supplier_id
+        WHERE pypss.is_deleted = 0
+            <if test="specificationIds!=null and specificationIds.size()>0">
+                AND pypss.specification_id IN
+                <foreach collection="specificationIds" item="specificationId" index="index" open="(" separator="," close=")">
+                    #{specificationId}
+                </foreach>
+            </if>
+        GROUP BY pys.id, pys.name
+        <if test="specificationIds!=null and specificationIds.size()>0">
+        HAVING COUNT(DISTINCT pypss.specification_id) = ${specificationIds.size()}
+        </if>
+    </select>
+
+    <select id="selectBySupplierId" parameterType="java.lang.Long" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        SELECT
+            p.id,
+            p.supplier_id,
+            p.specification_id,
+            p.supplier_specification,
+            p.min_number,
+            p.supplier_price,
+            ps.name as supplierName,
+            ps.code as supplierCode
+        FROM
+            pro_yt_product_specification_supplier p
+                LEFT JOIN pur_yt_supplier ps ON p.supplier_id = ps.id
+        WHERE
+            p.supplier_id = #{supplierId}
+          AND p.is_deleted = 0
+    </select>
+
+    <select id="selectBySpecificationSupplier" parameterType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier" resultType="com.qiaomoyun.entity.pro.yt.ProYtProductSpecificationSupplier">
+        SELECT
+            p.id,
+            p.supplier_id,
+            p.specification_id,
+            p.supplier_specification,
+            p.min_number,
+            p.supplier_price,
+            ps.name as supplierName,
+            ps.code as supplierCode,
+            p.supplier_specification_code,
+            (select code from pro_yt_product where id=(select product_id from pro_yt_product_specification where id=p.specification_id)) as productCode
+        FROM
+            pro_yt_product_specification_supplier p
+                LEFT JOIN pur_yt_supplier ps ON p.supplier_id = ps.id
+        WHERE
+            p.supplier_id = #{supplierId}
+          AND p.is_deleted = 0
+        <if test="productCode != null">
+            AND p.specification_id in (select id from pro_yt_product_specification where product_id in (select id from pro_yt_product where code like concat('%',#{productCode},'%')))
+        </if>
+        <if test="specificationName != null">
+            AND p.specification_id in (select product_specification_id from  pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{specificationName}, '%')))
+        </if>
+        <if test="specificationId != null">
+            AND p.specification_id = #{specificationId}
+        </if>
+        <if test="supplierSpecification != null and supplierSpecification != ''">
+            AND p.supplier_specification LIKE CONCAT('%', #{supplierSpecification}, '%')
+        </if>
+        <if test="minNumber != null">
+            AND p.min_number = #{minNumber}
+        </if>
+        <if test="supplierSpecificationCode != null">
+            AND p.supplier_specification_code  like concat('%',#{supplierSpecificationCode},'%')
+        </if>
+        <if test="supplierPrice != null">
+            AND p.supplier_price = #{supplierPrice}
+        </if>
+    </select>
+</mapper>

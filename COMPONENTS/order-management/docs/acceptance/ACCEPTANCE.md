@@ -16,6 +16,8 @@
 - [x] `backend/` 包含 qmy-java YT 复杂订单 controller/service/manager/entity/mapper/enum 快照。
 - [x] `backend/` 包含订单申请采购的 controller/manager/entity/mapper 边界证据。
 - [x] `frontend/` 包含订单页面、订单 API、订单常量和裁剪后的路由。
+- [x] 客户、组织、产品依赖 API 已裁剪为订单页面实际使用函数，避免跨模块能力污染。
+- [x] `frontend/` 已补入订单列表直接使用的 `interface/table.ts` 类型文件。
 - [x] `db/` 包含 legacy `orders/order_item` SQL 和 qmy-java 复杂表结构说明。
 - [x] 缺失的 qmy-java 完整 DDL、数据范围守卫和 HTTP 方法风险已明确标记为待补齐。
 
@@ -53,3 +55,4 @@
 - [ ] `/delete`、`/confirmComplete` 等状态变更 GET 接口的方法收口。
 - [ ] 报价转订单幂等、字段快照和重复转换防护。
 - [ ] 本人、部门、全公司、老板视角的真实账号回归。
+- [ ] 新项目若直接编译 qmy-admin 页面，需先接入 `footer-actions`、`product-selector`、`tagsStore`、`bz-table`、`utils` 等前端基座/共享依赖。

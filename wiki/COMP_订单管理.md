@@ -31,6 +31,8 @@
 | 复杂订单 | qmy-java 的 `SalYtOrderController`、`SalYtOrderManager`、订单实体与 Mapper | 覆盖主订单、子订单、商品项、审核、退货、半成品、发货、完结、关闭、导出 |
 | 采购申请 | qmy-java 的 `PurYtApplyPurchaseController`、`PurYtApplyPurchaseManager` | 订单生成采购需求的边界，不包含采购单全流程 |
 | 前端 | qmy-admin `views/admin/sales/order`、`api/admin/sales/order.ts` | 覆盖订单列表、新增、编辑、详情、申请采购、退货、物流、导出页面 |
+| 前端依赖 API | 客户、组织、产品 API 已裁剪到订单页面实际使用函数 | 避免把客户维护、组织账号、产品维护误收为订单组件 |
+| 前端共享依赖 | `interface/table.ts` 已复制；`footer-actions`、`product-selector`、`tagsStore` 已标注为装配依赖 | 避免把产品选择器和前端基座误收为订单私有能力 |
 | 调研/PRD | `RAW/docs/zhongsheng`、`PRD_Detailed_V2.md` | 支撑订单、采购、退货、仓储、财务边界判断 |
 
 ## 能力清单
@@ -69,6 +71,7 @@
 - 已确认 `/sal/yt/order/delete`、`/sal/yt/order/confirmComplete` 来源为 GET 状态变更接口，新项目应收口为 DELETE/POST。
 - 数据范围至少需要覆盖本人、部门、全公司、老板视角，并按客户归属、业务员、跟单员或组织树限制。
 - 导出、物流导出、退货、关闭和采购申请必须在后端重新校验订单范围，不能依赖列表页。
+- 直接编译 qmy-admin 订单页前，需要先接入前端基座、`footer-actions`、`product-selector`、`tagsStore` 和通用表格能力。
 
 ## 接入步骤
 

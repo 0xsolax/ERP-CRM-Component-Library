@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtPurchaseItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        <id column="id" property="id" />
+        <result column="purchase_id" property="purchaseId" />
+        <result column="apply_purchase_id" property="applyPurchaseId" />
+        <result column="product_id" property="productId" />
+        <result column="specification_id" property="specificationId" />
+        <result column="order_sub_id" property="orderSubId" />
+        <result column="order_sub_item_id" property="orderSubItemId" />
+        <result column="supplier_price" property="supplierPrice" />
+        <result column="remark" property="remark" />
+        <result column="category_specification_item_id" property="categorySpecificationItemId" />
+        <result column="category_specification_item_name" property="categorySpecificationItemName" />
+        <result column="number" property="number" />
+        <result column="enter_number" property="enterNumber" />
+        <result column="customer_id" property="customerId" />
+        <result column="customer_name" property="customerName" />
+        <result column="sales_employee_id" property="salesEmployeeId" />
+        <result column="status" property="status" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, purchase_id, apply_purchase_id, product_id, specification_id, order_sub_id, order_sub_item_id,enter_number,
+        supplier_price, remark, category_specification_item_id, category_specification_item_name,
+        number, customer_id, customer_name, sales_employee_id, status, create_user,
+        create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据条件查询采购订单子表列表 -->
+    <select id="list" resultMap="BaseResultMap" parameterType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM pur_yt_purchase_item
+        WHERE is_deleted = 0
+        <if test="purchaseId != null">
+            AND purchase_id = #{purchaseId}
+        </if>
+        <if test="productId != null">
+            AND product_id = #{productId}
+        </if>
+        <if test="specificationId != null">
+            AND specification_id = #{specificationId}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+        <if test="customerId != null">
+            AND customer_id = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND customer_name LIKE CONCAT('%', #{customerName}, '%')
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据采购订单ID查询子表列表 -->
+    <select id="listByPurchaseId" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem" parameterType="java.lang.Long">
+        SELECT
+            pypi.*,
+            (select code from pro_yt_product where id =pypi.product_id ) as productCode,
+            (select number from pur_yt_apply_purchase where id=pypi.apply_purchase_id) as applyNumber,
+            (select b.code from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id where a.id=pypi.order_sub_id) as orderCode,
+            (select b.remark from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id where a.id=pypi.order_sub_id) as orderNote,
+            (select hand_product_level from pro_yt_product_specification where id = pypi.specification_id) as handProductLevel
+        FROM pur_yt_purchase_item as pypi
+        WHERE purchase_id = #{purchaseId}
+        AND is_deleted = 0
+        ORDER BY id ASC
+    </select>
+
+    <!-- 根据采购订单ID计算采购总价 -->
+    <select id="calculateTotalAmountByPurchaseId" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        SELECT SUM(supplier_price * number) AS total_amount
+        FROM pur_yt_purchase_item
+        WHERE purchase_id = #{purchaseId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据采购订单ID获取最小状态值 -->
+    <select id="getMinStatusByPurchaseId" resultType="java.lang.String" parameterType="java.lang.Long">
+        SELECT MIN(status) AS min_status
+        FROM pur_yt_purchase_item
+        WHERE purchase_id = #{purchaseId} and specification_id is not null
+        AND is_deleted = 0
+    </select>
+
+    <!-- 批量插入采购订单子表 -->
+    <insert id="saveBatch" parameterType="java.util.List">
+        INSERT INTO pur_yt_purchase_item (
+            purchase_id, apply_purchase_id, product_id, specification_id, order_sub_id,order_sub_item_id,enter_number,
+            supplier_price, remark, category_specification_item_id, category_specification_item_name,
+            number, customer_id, customer_name, sales_employee_id, status,
+            create_user, create_time, update_user, update_time, tenant_id, is_deleted
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.purchaseId}, #{item.applyPurchaseId}, #{item.productId}, #{item.specificationId}, #{item.orderSubId},#{item.orderSubItemId},#{item.enterNumber},
+                #{item.supplierPrice}, #{item.remark}, #{item.categorySpecificationItemId}, #{item.categorySpecificationItemName},
+                #{item.number}, #{item.customerId}, #{item.customerName}, #{item.salesEmployeeId}, #{item.status},
+                #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, #{item.isDeleted}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据采购单ID、订单父ID、规格名称、产品code查询采购单产品列表 -->
+    <select id="completedListByPurchaseAndProductParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem" parameterType="com.qiaomoyun.param.pur.yt.PurYtPurchaseProductQueryParams">
+        SELECT
+            pypi.*,pyp.code as productCode,
+            (select code from sal_yt_order where id in (select order_id from sal_yt_order_sub where id = pypi.order_sub_id)) as orderCode,
+            (select nick_name from sys_user where user_id = pypi.sales_employee_id) as salesEmployeeName,
+            (select delivery_number from sal_yt_order_sub_item where id =pypi.order_sub_item_id) as deliveryNumber
+        FROM pur_yt_purchase_item AS pypi
+        LEFT JOIN pro_yt_product_specification AS pyps ON pypi.specification_id = pyps.id AND pyps.is_deleted = 0
+        LEFT JOIN pro_yt_product AS pyp ON pypi.product_id = pyp.id AND pyp.is_deleted = 0
+        WHERE pypi.is_deleted = 0 and pypi.specification_id is not null
+        <if test="purchaseId != null">
+            AND pypi.purchase_id = #{purchaseId}
+        </if>
+        <if test="orderSubId != null">
+            AND pypi.order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderCode != null and orderCode!= ''">
+            AND (select order_id from sal_yt_order_sub where id = pypi.order_sub_id) in (select id from sal_yt_order where code like concat('%',#{orderCode},'%'))
+        </if>
+        <if test="specificationName != null and specificationName != ''">
+            AND pyps.id in (select product_specification_id from  pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{specificationName}, '%')))
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pyp.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="status != null">
+            AND pypi.status = #{status}
+        </if>
+        ORDER BY pypi.create_time DESC
+    </select>
+
+    <!-- 根据采购单ID、订单父ID、产品code查询采购单半成品列表（没有规格的产品） -->
+    <select id="listSemiFinishedProductsByParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem" parameterType="com.qiaomoyun.param.pur.yt.PurYtPurchaseProductQueryParams">
+        SELECT
+            pypi.*,
+            CASE
+                WHEN (
+                    SELECT COALESCE(SUM(number), 0)
+                    FROM pur_yt_purchase_item
+                    WHERE confirm_item_id = pypi.id AND is_deleted = 0
+                ) &lt; pypi.number THEN 0
+                ELSE 1
+            END AS confirmStatus,
+            pyp.code as productCode,
+            (select code from sal_yt_order where id in (select order_id from sal_yt_order_sub where id = pypi.order_sub_id)) as orderCode,
+            (select nick_name from sys_user where user_id = pypi.sales_employee_id) as salesEmployeeName
+        FROM pur_yt_purchase_item AS pypi
+        LEFT JOIN pro_yt_product AS pyp ON pypi.product_id = pyp.id AND pyp.is_deleted = 0
+        WHERE pypi.is_deleted = 0 and pypi.specification_id is null
+        <if test="purchaseId != null">
+            AND pypi.purchase_id = #{purchaseId}
+        </if>
+        <if test="orderSubId != null">
+            AND pypi.order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderCode != null and orderCode!= ''">
+            AND (select order_id from sal_yt_order_sub where id = pypi.order_sub_id) in (select id from sal_yt_order where code like concat('%',#{orderCode},'%'))
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pyp.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="status != null">
+            AND CASE
+                    WHEN (
+                        SELECT COALESCE(SUM(number), 0)
+                        FROM pur_yt_purchase_item
+                        WHERE confirm_item_id = pypi.id AND is_deleted = 0
+                    ) &lt; pypi.number THEN 0
+                    ELSE 1
+                END = #{status}
+        </if>
+        ORDER BY pypi.create_time DESC
+    </select>
+    <select id="selectByOrderSubItemId" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*
+        FROM pur_yt_purchase_item AS pypi
+        where order_sub_item_id =#{orderSubItemId} and is_deleted=0
+    </select>
+    <select id="selectListByOrderSubItemId" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*
+        FROM pur_yt_purchase_item AS pypi
+        where order_sub_item_id =#{orderSubItemId} and is_deleted=0
+    </select>
+    <select id="sumTemporaryNumberByOrderSubItemIds" resultType="java.util.Map">
+        SELECT pypi.order_sub_item_id AS orderSubItemId, COALESCE(SUM(pypi.number), 0) AS totalNumber
+        FROM pur_yt_purchase_item pypi
+        INNER JOIN pur_yt_purchase pyp ON pyp.id = pypi.purchase_id
+        WHERE pypi.is_deleted = 0
+          AND pyp.is_deleted = 0
+          AND pyp.status = '0'
+          AND pypi.order_sub_item_id IN
+          <foreach collection="orderSubItemIds" item="orderSubItemId" open="(" close=")" separator=",">
+              #{orderSubItemId}
+          </foreach>
+        GROUP BY pypi.order_sub_item_id
+    </select>
+    <select id="selectByConfirmId" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*
+        FROM pur_yt_purchase_item AS pypi
+        where pypi.confirm_item_id=#{confirmId} and pypi.is_deleted=0
+    </select>
+    <select id="selectByPurchaseId" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*,
+               (select code from pro_yt_product where id = pypi.product_id) as productCode
+        FROM pur_yt_purchase_item AS pypi
+        where pypi.purchase_id=#{purchaseId} and pypi.is_deleted=0
+    </select>
+    <select id="calculateWaitEnterByPurchaseId" resultType="java.lang.Integer">
+        SELECT SUM(number)-sum(enter_number) AS waitEnter
+        FROM pur_yt_purchase_item
+        WHERE purchase_id = #{purchaseId}
+          AND is_deleted = 0
+    </select>
+    <select id="selectByPurchaseIdAndStatus" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*
+        FROM pur_yt_purchase_item AS pypi
+        where pypi.purchase_id=#{purchaseId} and pypi.is_deleted=0
+        and pypi.status=#{status}
+    </select>
+
+    <select id="selectCompletedByPurchaseIdAndStatus" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem">
+        select pypi.*
+        FROM pur_yt_purchase_item AS pypi
+        where pypi.purchase_id=#{purchaseId} and pypi.is_deleted=0 and pypi.specification_id is not null
+          and pypi.status=#{status}
+    </select>
+
+    <!-- 根据采购订单ID获取半成品状态map -->
+    <select id="getSemiFinishedProductStatusMapByPurchaseId" resultType="java.util.Map" parameterType="java.lang.Long">
+--         SELECT
+--             CASE
+--                 WHEN (SELECT sum(number) FROM pur_yt_purchase_item WHERE confirm_item_id = pypi.id AND is_deleted = 0) = pypi.number THEN '1'
+--                 ELSE '0'
+--             END AS status,
+--             COUNT(*) AS count
+--         FROM pur_yt_purchase_item AS pypi
+--         WHERE pypi.purchase_id = {purchaseId}
+--             AND pypi.is_deleted = 0
+--             AND pypi.specification_id IS NULL
+--         GROUP BY status
+
+            SELECT
+                status,
+                COUNT(*) AS count
+                FROM (
+                -- 内层先计算每条记录的正确 status
+                    SELECT
+                        CASE
+                            WHEN (SELECT sum(number) FROM pur_yt_purchase_item WHERE confirm_item_id = pypi.id AND is_deleted = 0) = pypi.number THEN '1'
+                            ELSE '0'
+                            END AS status
+                            FROM pur_yt_purchase_item AS pypi
+                              WHERE pypi.purchase_id = #{purchaseId}
+                                 AND pypi.is_deleted = 0
+                                AND pypi.specification_id IS NULL
+                                 ) AS temp
+            GROUP BY status;
+    </select>
+    <select id="listByPurchaseAndProductParams" resultType="com.qiaomoyun.entity.pur.yt.PurYtPurchaseItem"
+            parameterType="com.qiaomoyun.param.pur.yt.PurYtPurchaseProductQueryParams">
+        SELECT
+        pypi.*,pyp.code as productCode,
+        (select sub_code from sal_yt_order_sub where id = pypi.order_sub_id) as orderSubCode,
+        (select nick_name from sys_user where user_id = pypi.sales_employee_id) as salesEmployeeName,
+        (select delivery_number from sal_yt_order_sub_item where id =pypi.order_sub_item_id) as deliveryNumber
+        FROM pur_yt_purchase_item AS pypi
+        LEFT JOIN pro_yt_product_specification AS pyps ON pypi.specification_id = pyps.id AND pyps.is_deleted = 0
+        LEFT JOIN pro_yt_product AS pyp ON pypi.product_id = pyp.id AND pyp.is_deleted = 0
+        WHERE pypi.is_deleted = 0
+        <if test="purchaseId != null">
+            AND pypi.purchase_id = #{purchaseId}
+        </if>
+        <if test="orderSubId != null">
+            AND pypi.order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderSubCode != null and orderSubCode!= ''">
+            AND pypi.order_sub_id in (select id from sal_yt_order_sub where sub_code like concat('%',#{orderSubCode},'%'))
+        </if>
+        <if test="specificationName != null and specificationName != ''">
+            AND pyps.id in (select product_specification_id from  pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{specificationName}, '%')))
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pyp.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="status != null">
+            AND pypi.status = #{status}
+        </if>
+        ORDER BY pypi.create_time DESC
+    </select>
+</mapper>

@@ -18,7 +18,9 @@
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/sales/order` | 订单列表、新增、编辑、详情、申请采购、退货、发货、导出页面 | 复制到 `frontend/qmy-admin/` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/order.ts` | 订单 API 封装 | 复制到 `frontend/qmy-admin/` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/constant/yitang/sales.ts`、`finance.ts` | 订单状态、订单类型、发货方式、操作类型、回款状态枚举 | 复制到 `frontend/qmy-admin/` |
-| 前端依赖 | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`、`auth/org.ts`、`product/index.ts` | 订单表单依赖的客户、组织用户、产品数据 | 复制为依赖说明证据 |
+| 前端类型 | `RAW/PROJECTs/qmy-admin/src/interface/table.ts` | 订单列表 `ColumnProps` 类型 | 复制到 `frontend/qmy-admin/` |
+| 前端依赖 API | `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`、`auth/org.ts`、`product/index.ts` | 订单表单依赖的客户、组织用户、产品数据 | 已裁剪为订单实际使用函数后复制 |
+| 前端共享依赖 | `RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue`、`components/product-selector`、`views/admin/store/modules/tags/index.ts` | 订单页面直接引用的通用组件和标签页 store | 不复制或不全量复制，列为前端基座/产品物料依赖 |
 | 调研/PRD | `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`、`RAW/docs/zhongsheng` | 订单来源、采购、退货、完结、仓储/财务边界背景 | 复制到 `docs/source/` |
 
 ## 抽取范围
@@ -29,6 +31,8 @@
 - qmy-java YT 复杂订单 controller、service、manager、entity、param、VO、mapper、枚举。
 - qmy-java 采购申请 controller/manager/entity/mapper，作为订单生成采购需求的边界证据。
 - qmy-admin admin 订单页面、订单 API、订单状态常量、裁剪后的销售订单路由。
+- qmy-admin 客户、组织、产品 API 的订单最小依赖函数：`getCustomerSelectList`、`getCustomerAddressList`、`getAllEmployee`、`getProductDetail`、`getCategoryLabelList`。
+- qmy-admin `interface/table.ts`，用于订单列表表格类型。
 - PRD 与调研记录，作为订单、采购、退货、完结和跨模块边界的业务证据。
 
 未抽取：
@@ -36,7 +40,9 @@
 - 完整采购单、供应商付款、采购入库、采购对账页面与后端；归 `purchase-supplier`。
 - 仓库入库、打包、发货、包裹、物流详情完整实现；归 `warehouse-delivery`。
 - 财务流水、应收、利润核算和收款单完整实现；归 `finance`。
+- 客户维护、组织账号、产品维护等跨模块前端 API；本组件只保留订单页面直接调用的最小函数。
 - qmy-admin 全局布局、权限守卫、下载工具、上传组件、通用表格等基座能力；归基座或通用组件。
+- qmy-admin `footer-actions`、`product-selector`、`tagsStore` 等共享前端能力；本组件只记录为装配依赖，其中 `product-selector` 依赖产品/组合产品 API 和产品物料组件。
 - qmy-java 完整 DDL；来源仓没有提供订单全量建表 SQL。
 
 待验证：
@@ -50,6 +56,7 @@
 
 - 未复制源项目嵌套 `.git/`、`.DS_Store`、构建产物、依赖目录和环境配置。
 - 未复制 qmy-admin 销售管理中的客户、独立仓历史、报价页面路由，组件路由已裁剪到订单入口。
+- 未把 `product-selector` 的递归产品维护依赖并入订单组件，避免将产品组合、图片选择、规格新增误收为订单私有能力。
 - 采购、仓储、财务只保留订单直接调用或字段证据，不把对方完整模块并入订单组件。
 - 保留源码包路径，便于后续按来源项目回查。
 - 原始 `RAW/` 只读，不在抽取过程中修改。
