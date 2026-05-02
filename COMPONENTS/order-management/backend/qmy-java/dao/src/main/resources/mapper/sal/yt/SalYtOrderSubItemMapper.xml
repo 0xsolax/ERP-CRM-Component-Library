@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtOrderSubItemMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem" id="SalYtOrderSubItemResult">
+        <id property="id" column="id"/>
+        <result property="orderSubId" column="order_sub_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="specificationId" column="specification_id"/>
+        <result property="price" column="price"/>
+        <result property="number" column="number"/>
+        <result property="labelId" column="label_id"/>
+        <result property="labelName" column="label_name"/>
+        <result property="remark" column="remark"/>
+        <result property="status" column="status"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="supplierPrice" column="supplier_price"/>
+        <result property="occupyStoreNumber" column="occupy_store_number"/>
+        <result property="occupyTransitNumber" column="occupy_transit_number"/>
+        <result property="occupyTransitPurchaseItemId" column="occupy_transit_purchase_item_id"/>
+        <result property="occupyTransitEnterNumber" column="occupy_transit_enter_number"/>
+        <result property="enterNumber" column="enter_number"/>
+        <result property="deliveryNumber" column="delivery_number"/>
+        <result property="endReturnNumber" column="end_return_number"/>
+        <result property="applyPurchaseNumber" column="apply_purchase_number"/>
+        <result property="confirmItemId" column="confirm_item_id"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <!-- 新增字段 -->
+        <result property="orderSubCode" column="order_sub_code"/>
+        <result property="customerName" column="customer_name"/>
+        <result property="orderCode" column="orderCode"/>
+        <result property="handProductLevel" column="hand_product_level"/>
+        <result property="salesEmployeeName" column="salesEmployeeName"/>
+        <result property="deliveryTime" column="deliveryTime"/>
+        <result property="currentBindNumber" column="currentBindNumber"/>
+        <result property="totalBindNumber" column="totalBindNumber"/>
+        <result property="basePrice" column="base_price"/>
+        <result property="totalOccupyTransitNumber" column="totalOccupyTransitNumber"/>
+    </resultMap>
+
+    <sql id="selectSalYtOrderSubItemVo">
+        select id, order_sub_id, product_id, specification_id, price, number, label_id, label_name,
+        remark, status, supplier_id, supplier_price, occupy_store_number, occupy_transit_number,
+        occupy_transit_purchase_item_id, occupy_transit_enter_number, enter_number, delivery_number,
+        end_return_number, apply_purchase_number, confirm_item_id, create_user, create_time, update_user,
+        update_time, tenant_id, is_deleted,base_price
+        from sal_yt_order_sub_item where is_deleted = 0
+    </sql>
+
+    <select id="selectSalYtOrderSubItemById" parameterType="Long" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi where is_deleted = 0
+        and id = #{id}
+    </select>
+
+    <select id="selectSalYtOrderSubItemList" parameterType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        <where>
+        is_deleted=0
+            <if test="orderSubId != null">and order_sub_id = #{orderSubId}</if>
+            <if test="productId != null">and product_id = #{productId}</if>
+            <if test="specificationId != null">and specification_id = #{specificationId}</if>
+            <if test="status != null and status != ''">and status = #{status}</if>
+            <if test="supplierId != null">and supplier_id = #{supplierId}</if>
+            <if test="productCode != null and productCode != ''">and product_id in  (select id from pro_yt_product where code like concat('%',#{productCode},'%'))</if>
+            <if test="specificationName != null and specificationName != ''">and specification_id in  (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where `value` like concat('%',#{specificationName},'%')) and is_deleted=0)</if>
+
+        </where>
+    </select>
+
+    <select id="selectSalYtOrderSubItemByOrderSubId" parameterType="Long" resultMap="SalYtOrderSubItemResult">
+        select syosi.*,pyp.code as productCode,
+               (select hand_product_level from pro_yt_product_specification where id = syosi.specification_id and is_deleted=0 ) as hand_product_level
+         from sal_yt_order_sub_item as syosi
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        where syosi.is_deleted = 0
+        and order_sub_id = #{orderSubId}
+    </select>
+
+    <select id="selectSalYtOrderSubItemByOrderSubIds" parameterType="List" resultMap="SalYtOrderSubItemResult">
+        <include refid="selectSalYtOrderSubItemVo"/>
+        and order_sub_id in
+        <foreach item="orderSubId" collection="subIds" open="(" separator="," close=")">
+            #{orderSubId}
+        </foreach>
+    </select>
+    <select id="inCompleteList" resultMap="SalYtOrderSubItemResult"
+            parameterType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+--         select
+--             syosi.*,
+--             pyp.code as productCode,
+--             COALESCE(confirm.total_confirm_number, 0) as confirmNumber
+--         from
+--             sal_yt_order_sub_item as syosi
+--         left join
+--             pro_yt_product as pyp on pyp.id = syosi.product_id
+--         left join (
+--             select
+--                 confirm_item_id,
+--                 SUM(number) as total_confirm_number
+--             from
+--                 sal_yt_order_sub_item
+--             where
+--         confirm_item_id is not null
+--                 and is_deleted = 0
+--             group by
+--         confirm_item_id
+--         ) as confirm on confirm.confirm_item_id = syosi.id
+--         where
+--             syosi.is_deleted = 0
+--             and syosi.specification_id is null
+        select
+        syosi.*,
+        pyp.code as productCode,
+        COALESCE(confirm.total_confirm_number, 0) as confirmNumber
+        from
+        sal_yt_order_sub a right join
+        sal_yt_order_sub_item as syosi on a.id=syosi.order_sub_id
+        left join
+        pro_yt_product as pyp on pyp.id = syosi.product_id
+        left join (
+        select
+        confirm_item_id,
+        SUM(number) as total_confirm_number
+        from
+        sal_yt_order_sub_item
+        where
+        confirm_item_id is not null
+        and is_deleted = 0
+        group by
+        confirm_item_id
+        ) as confirm on confirm.confirm_item_id = syosi.id
+        where
+        syosi.is_deleted = 0
+        and syosi.specification_id is null
+        <if test="orderId!=null">
+            and a.order_id = #{orderId}
+        </if>
+        <if test="orderSubId != null">
+            and syosi.order_sub_id = #{orderSubId}
+        </if>
+        <if test="status ==0">
+            and syosi.number &lt; COALESCE(confirm.total_confirm_number, 0)
+        </if>
+        <if test="status ==1">
+            and syosi.number = COALESCE(confirm.total_confirm_number, 0)
+        </if>
+        <if test="productCodeOrOrderSubCode != null">
+            and (pyp.code like concat('%',#{productCodeOrOrderSubCode},'%') or syosi.order_sub_id = #{productCodeOrOrderSubCode})
+        </if>
+    </select>
+
+
+    <update id="updateSalYtOrderSubItemStatus" parameterType="map">
+        update sal_yt_order_sub_item
+        set status = #{status}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSalYtOrderSubItemById" parameterType="Long">
+        update sal_yt_order_sub_item set is_deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteSalYtOrderSubItemByIds" parameterType="List">
+        update sal_yt_order_sub_item set is_deleted = 1 where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSalYtOrderSubItemByOrderSubId" parameterType="Long">
+        update sal_yt_order_sub_item set is_deleted = 1 where order_sub_id = #{orderSubId}
+    </delete>
+
+    <select id="selectByConfirmItemId" parameterType="Long" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        where syosi.is_deleted = 0
+        and syosi.confirm_item_id = #{confirmItemId}
+    </select>
+
+    <select id="selectOccupyTransitSpecification" parameterType="Long" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        inner join sal_yt_order_sub as syos on syos.id = syosi.order_sub_id and syos.is_deleted = 0
+        inner join sal_yt_order as syo on syo.id = syos.order_id and syo.is_deleted = 0
+        where syosi.is_deleted = 0
+        and syosi.specification_id = #{specificationId}
+        and (syosi.occupy_transit_number - COALESCE(syosi.occupy_transit_enter_number, 0)) > 0
+        and (syosi.number - COALESCE(syosi.enter_number, 0)) > 0
+        order by syo.delivery_time,syo.order_time,syo.create_time
+    </select>
+
+    <select id="selectByCustomerAndSpecificationAndEnterNumberLessThanNumber" parameterType="map" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        left join sal_yt_order_sub as syos on syosi.order_sub_id = syos.id
+        left join sal_yt_order as syo on syos.order_id = syo.id
+        where syosi.is_deleted = 0
+        and syos.is_deleted = 0
+        and syo.is_deleted = 0
+        and syo.customer_id = #{customerId}
+        and syosi.specification_id = #{specificationId}
+        and ( syosi.number > syosi.enter_number )
+    </select>
+
+    <select id="selectByOrderSubIdAndProductIdAndSpecificationNotNull" parameterType="map" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        where syosi.is_deleted = 0
+        and syosi.order_sub_id = #{orderSubId}
+        and syosi.product_id = #{productId}
+        and syosi.specification_id is not null
+    </select>
+
+    <select id="selectByOrderSubIdAndSpecificationId" parameterType="map" resultMap="SalYtOrderSubItemResult">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        where syosi.is_deleted = 0
+        and syosi.order_sub_id = #{orderSubId}
+        and syosi.specification_id = #{specificationId}
+        and syosi.specification_id is not null
+    </select>
+
+    <!-- 查询指定规格ID的库存占用详情 -->
+    <select id="selectStoreOccupyDetail" parameterType="com.qiaomoyun.param.sto.yt.StoYtStoreRecordQueryParams" resultMap="SalYtOrderSubItemResult">
+        select syosi.*,
+               COALESCE(current_bind.currentBindNumber, 0) as currentBindNumber,
+               COALESCE(total_bind.totalBindNumber, 0) as totalBindNumber,
+               (syosi.occupy_transit_number - COALESCE(syosi.occupy_transit_enter_number, 0)) as occupyTransitNumber,
+               syos.sub_code as order_sub_code,
+               syc.name as customer_name,
+               syo.code as orderCode,
+               (select nick_name from sys_user where user_id = syo.sale_employee_id) as salesEmployeeName,
+               syo.delivery_time as deliveryTime
+        from sal_yt_order_sub_item as syosi
+        left join (
+            select
+                pypi.order_sub_item_id as order_sub_item_id,
+                sum(greatest(least(coalesce(pap.number, pypi.number), syso.total_number) - syso.enter_number, 0)) as currentBindNumber
+            from sto_yt_store_order as syso
+            inner join pur_yt_purchase_item as pypi on pypi.id = syso.purchase_item_id and pypi.is_deleted = 0
+            left join pur_yt_apply_purchase as pap on pap.id = pypi.apply_purchase_id
+            where syso.is_deleted = 0
+            <choose>
+                <when test="storeOrderIdList != null and storeOrderIdList.size() > 0">
+                    and syso.id in
+                    <foreach collection="storeOrderIdList" item="storeOrderId" open="(" separator="," close=")">
+                        #{storeOrderId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 = 0
+                </otherwise>
+            </choose>
+            group by pypi.order_sub_item_id
+        ) as current_bind on current_bind.order_sub_item_id = syosi.id
+        left join (
+            select
+                pypi.order_sub_item_id as order_sub_item_id,
+                sum(greatest(least(coalesce(pap.number, pypi.number), syso.total_number) - syso.enter_number, 0)) as totalBindNumber
+            from sto_yt_store_order as syso
+            inner join pur_yt_purchase_item as pypi on pypi.id = syso.purchase_item_id and pypi.is_deleted = 0
+            left join pur_yt_apply_purchase as pap on pap.id = pypi.apply_purchase_id
+            where syso.is_deleted = 0
+            group by pypi.order_sub_item_id
+        ) as total_bind on total_bind.order_sub_item_id = syosi.id
+        left join sal_yt_order_sub as syos on syosi.order_sub_id = syos.id and syos.is_deleted = 0
+        left join sal_yt_order as syo on syos.order_id = syo.id and syo.is_deleted = 0
+        left join sal_yt_customer as syc on syo.customer_id = syc.id and syc.is_deleted = 0
+        where syosi.is_deleted = 0
+        and syosi.specification_id = #{specificationId}
+        and syosi.number > 0
+        and syosi.status &lt; 4
+          and syosi.status >= 1
+        <if test="customerName !=null and customerName !=''">
+            and syc.name like concat('%',#{customerName},'%')
+        </if>
+    </select>
+
+    <!-- 查询指定规格ID的在途占用详情 -->
+<!--  and syosi.occupy_transit_enter_number > 0-->
+    <select id="selectTransitOccupyDetail" parameterType="com.qiaomoyun.param.sto.yt.StoYtStoreRecordQueryParams" resultMap="SalYtOrderSubItemResult">
+        select syosi.*,
+               COALESCE(current_bind.currentBindNumber, 0) as currentBindNumber,
+               COALESCE(total_bind.totalBindNumber, 0) as totalBindNumber,
+               (syosi.number - COALESCE(syosi.enter_number, 0)) as totalOccupyTransitNumber,
+               syos.sub_code as order_sub_code,
+               syo.code as orderCode,
+               syc.name as customer_name,
+               (select nick_name from sys_user where user_id = syo.sale_employee_id) as salesEmployeeName,
+               syo.delivery_time as deliveryTime
+        from sal_yt_order_sub_item as syosi
+        left join (
+            select
+                pypi.order_sub_item_id as order_sub_item_id,
+                sum(greatest(least(coalesce(pap.number, pypi.number), syso.total_number) - syso.enter_number, 0)) as currentBindNumber
+            from sto_yt_store_order as syso
+            inner join pur_yt_purchase_item as pypi on pypi.id = syso.purchase_item_id and pypi.is_deleted = 0
+            left join pur_yt_apply_purchase as pap on pap.id = pypi.apply_purchase_id
+            where syso.is_deleted = 0
+            <choose>
+                <when test="storeOrderIdList != null and storeOrderIdList.size() > 0">
+                    and syso.id in
+                    <foreach collection="storeOrderIdList" item="storeOrderId" open="(" separator="," close=")">
+                        #{storeOrderId}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and 1 = 0
+                </otherwise>
+            </choose>
+            group by pypi.order_sub_item_id
+        ) as current_bind on current_bind.order_sub_item_id = syosi.id
+        left join (
+            select
+                pypi.order_sub_item_id as order_sub_item_id,
+                sum(greatest(least(coalesce(pap.number, pypi.number), syso.total_number) - syso.enter_number, 0)) as totalBindNumber
+            from sto_yt_store_order as syso
+            inner join pur_yt_purchase_item as pypi on pypi.id = syso.purchase_item_id and pypi.is_deleted = 0
+            left join pur_yt_apply_purchase as pap on pap.id = pypi.apply_purchase_id
+            where syso.is_deleted = 0
+            group by pypi.order_sub_item_id
+        ) as total_bind on total_bind.order_sub_item_id = syosi.id
+        left join sal_yt_order_sub as syos on syosi.order_sub_id = syos.id and syos.is_deleted = 0
+        left join sal_yt_order as syo on syos.order_id = syo.id and syo.is_deleted = 0
+        left join sal_yt_customer as syc on syo.customer_id = syc.id and syc.is_deleted = 0
+        where syosi.is_deleted = 0
+          and syos.is_deleted=0
+          and syo.is_deleted=0
+        and syosi.specification_id = #{specificationId}
+        and syosi.status &lt; 4
+          and syosi.status >= 0
+        and (syosi.number - COALESCE(syosi.enter_number, 0)) > 0
+        <if test="customerName !=null and customerName !=''">
+            and syc.name like concat('%',#{customerName},'%')
+        </if>
+        <if test="labelId!=null ">
+            and syosi.label_id =#{labelId}
+        </if>
+    </select>
+
+    <!-- 查询指定规格在时间段内的订单统计 -->
+    <select id="countOrderAndProductBySpecificationId"  resultType="java.util.Map">
+        select
+            count(distinct syo.id) as orderCount,
+            sum(syosi.number) as productCount
+        from
+            sal_yt_order_sub_item as syosi
+        left join sal_yt_order_sub as syos on syosi.order_sub_id = syos.id and syos.is_deleted = 0
+        left join sal_yt_order as syo on syos.order_id = syo.id and syo.is_deleted = 0
+        where
+            syosi.is_deleted = 0
+            and syosi.specification_id = #{specificationId}
+            and syo.create_time >= DATE_SUB(NOW(), INTERVAL #{months} MONTH)
+    </select>
+    <select id="countOrderAndItemByCustomerId" resultType="java.util.HashMap">
+        SELECT
+            COUNT(DISTINCT t.order_id) AS orderCount,
+            SUM(t.item_num) AS itemCount,
+            -- 汇总总金额：商品总价 + 符合条件的运费 - 优惠
+            SUM(t.goods_total_price + t.shipping_fee - t.discount_fee) AS orderTotalPrice
+        FROM (
+                 SELECT
+                     syos.order_id,
+                     SUM(syosi.number) AS item_num,
+                     SUM(syosi.number * syosi.price) AS goods_total_price,
+                     CASE
+                         WHEN syos.is_collected_shipping_cost = 1 THEN COALESCE(syos.shipping_cost, 0)
+                         ELSE 0
+                         END AS shipping_fee,
+                     COALESCE(syos.discount_amount, 0) AS discount_fee
+                 FROM sal_yt_order_sub_item AS syosi
+                          LEFT JOIN sal_yt_order_sub AS syos
+                                    ON syosi.order_sub_id = syos.id AND syos.is_deleted = 0
+                          LEFT JOIN sal_yt_order AS syo
+                                    ON syos.order_id = syo.id AND syo.is_deleted = 0
+                 WHERE
+                     syosi.is_deleted = 0
+                   AND syo.customer_id = #{customerId}
+                   AND syo.create_time >= DATE_SUB(NOW(), INTERVAL #{customerLevelMonthRangeA} MONTH)
+                 GROUP BY syos.id, syos.order_id, syos.is_collected_shipping_cost, syos.shipping_cost, syos.discount_amount
+             ) AS t
+    </select>
+    <select id="selectOrderSubCompletedItemByOrderSubId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem"
+            parameterType="java.lang.Long">
+        select syosi.*,pyp.code as productCode
+        from sal_yt_order_sub_item as syosi
+                 left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        where syosi.is_deleted = 0 and syosi.specification_id is not null
+          and order_sub_id = #{orderSubId}
+    </select>
+    <select id="getMinStatus" resultType="java.lang.String">
+        SELECT min(a.`status`) FROM sal_yt_order_sub_item as a left join sal_yt_order_sub as b on
+            a.order_sub_id=b.id
+        where b.order_id=#{orderId} and a.is_deleted=0
+    </select>
+    <select id="selectSalYtOrderSubItemLists" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select syosi.*
+        from sal_yt_order_sub_item as syosi
+        left join sal_yt_order_sub as syos on syosi.order_sub_id = syos.id and syos.is_deleted = 0
+      --  left join sal_yt_order as syo on syos.order_id   = syo.id and syo.is_deleted = 0
+        left join pro_yt_product_specification as a on syosi.specification_id=a.id
+        <where>
+            syosi.is_deleted=0
+        <if test="orderId != null">and syos.order_id = #{orderId}</if>
+        <if test="orderSubId != null">and syosi.order_sub_id = #{orderSubId}</if>
+        <if test="productId != null">and syosi.product_id = #{productId}</if>
+        <if test="specificationId != null">and syosi.specification_id = #{specificationId}</if>
+        <if test="status != null and status != ''">and syosi.status = #{status}</if>
+        <if test="supplierId != null">and syosi.supplier_id = #{supplierId}</if>
+        <if test="productCode != null and productCode != ''">and syosi.product_id in  (select id from pro_yt_product where code like concat('%',#{productCode},'%'))</if>
+<!--        <if test="specificationName != null and specificationName != ''">and syosi.specification_id in  (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where `value` like concat('%',#{specificationName},'%')) and is_deleted=0)</if>-->
+        <if test="specificationName != null and specificationName != ''">
+            and a.name like concat('%',#{specificationName},'%')
+        </if>
+        </where>
+    </select>
+    <select id="selectOrderReturnItemInfo" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select a.* from sal_yt_order_sub_item as a left join sal_yt_order_sub as b on a.order_sub_id=b.id
+        <where>
+         b.order_id=#{orderId}
+          and a.product_id=#{productId} and a.price=#{price} and a.is_deleted=0
+          <if test="labelId != null and labelId != ''" >and a.label_id=#{labelId}</if>
+          <if test="remark != null and remark != ''">and a.remark =#{remark}</if>
+          <if test="specificationId != null and specificationId != ''">and a.specification_id = #{specificationId}</if>
+          <if test="supplierPrice != null and supplierPrice != ''">and a.supplier_price = #{supplierPrice}</if>
+        </where>
+    </select>
+    <select id="selectSalYtOrderSubItemByOrderSubIdList" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select syosi.*,pyp.code as productCode
+        from sal_yt_order_sub_item as syosi
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        where syosi.is_deleted = 0
+        and order_sub_id in
+        <foreach item="orderSubId" collection="orderSubIds" open="(" separator="," close=")">
+            #{orderSubId}
+        </foreach>
+    </select>
+    <select id="selectOrderById" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select * from sal_yt_order as syo
+        left join sal_yt_order_sub as syso on syso.order_id = syo.id
+        where syso.is_deleted=0 and syo.is_deleted=0 and syso.id = (select order_sub_id from sal_yt_order_sub_item where id = #{id})
+
+    </select>
+    <select id="selectEnterNumberBySpecificationIdAndDeliveryId" resultType="java.lang.Integer">
+        select sum(b.enter_number) from sto_yt_delivery_item a left join  sal_yt_order_sub_item b on a.order_sub_item_id =b.id
+        where a.delivery_id=#{deliveryId} and b.specification_id=#{specificationId} and a.is_deleted=0
+        group by a.delivery_id
+    </select>
+    <select id="selectSalYtOrderSubItemListByOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select a.* from sal_yt_order_sub_item a left join sal_yt_order_sub b on a.order_sub_id=b.id
+                                                left join sal_yt_order c on b.order_id=c.id
+        where a.is_deleted=0 and c.id=#{orderId}
+    </select>
+</mapper>

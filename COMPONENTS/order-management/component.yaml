@@ -1,0 +1,115 @@
+name: order-management
+display_name: 订单管理
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/OrdersController.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Orders.java
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service
+    - RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtOrderController.java
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtOrderManager.java
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/pur/yt/PurYtApplyPurchaseManager.java
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/yt
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pur/yt/PurYtApplyPurchase.java
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/pur/yt/PurYtApplyPurchaseMapper.xml
+    - RAW/PROJECTs/qmy-admin/src/views/admin/sales/order
+    - RAW/PROJECTs/qmy-admin/src/api/admin/sales/order.ts
+    - RAW/PROJECTs/qmy-admin/src/constant/yitang/sales.ts
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_订单管理.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+    - customer-management
+    - product-material
+    - quote-management
+  optional:
+    - purchase-supplier
+    - warehouse-delivery
+    - finance
+    - file-oss
+entrypoints:
+  backend:
+    legacy_crud:
+      controllers:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/OrdersController.java
+      services:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/OrdersService.java
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/impl/OrdersServiceImpl.java
+      entity:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Orders.java
+      mapper:
+        - backend/zhongsheng-AI/erp-backend/src/main/java/com/erp/mapper/OrdersMapper.java
+    yt_complex_flow:
+      controllers:
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtOrderController.java
+        - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java
+      services:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/yt/SalYtOrderService.java
+      managers:
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtOrderManager.java
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtOrderSubItemOperationManager.java
+        - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/pur/yt/PurYtApplyPurchaseManager.java
+      mapper:
+        - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/yt
+        - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/pur/yt
+        - backend/qmy-java/dao/src/main/resources/mapper/sal/yt
+        - backend/qmy-java/dao/src/main/resources/mapper/pur/yt
+      entity_param_vo:
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pur/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/yt
+        - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/pur/yt
+      enum:
+        - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/admin/sales/order.ts
+      - frontend/qmy-admin/src/api/admin/sales/customer.ts
+      - frontend/qmy-admin/src/api/admin/auth/org.ts
+      - frontend/qmy-admin/src/api/admin/product/index.ts
+    views:
+      - frontend/qmy-admin/src/views/admin/sales/order
+    router:
+      - frontend/qmy-admin/src/views/admin/router/async-modules/sales.ts
+    constants:
+      - frontend/qmy-admin/src/constant/yitang/sales.ts
+      - frontend/qmy-admin/src/constant/yitang/finance.ts
+  db:
+    schema:
+      - db/zhongsheng-AI/init-order.sql
+      - db/qmy-java/sal-yt-order-schema-notes.md
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+  evidence: docs/acceptance/REVIEW_EVIDENCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 组件当前为 reference，适合作为订单链路和复杂订单流方案参考。
+  - zhongsheng-AI 仅覆盖 orders/order_item 基础 CRUD；qmy-java/qmy-admin 覆盖 YT 复杂订单流。
+  - qmy-java 未提供完整建表 SQL，数据契约依据实体、Mapper XML 和前端字段整理。
+  - 采购申请、仓储发货和财务回款只作为边界证据，不并入订单组件默认能力。

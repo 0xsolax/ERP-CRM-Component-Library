@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtOrderMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtOrder" id="SalYtOrderResult">
+        <id property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="sourcePlatform" column="source_platform"/>
+        <result property="platformOrderCode" column="platform_order_code"/>
+        <result property="currency" column="currency"/>
+        <result property="customerId" column="customer_id"/>
+        <result property="customerAddress" column="customer_address"/>
+        <result property="followEmployeeId" column="follow_employee_id"/>
+        <result property="followRatio" column="follow_ratio"/>
+        <result property="saleEmployeeId" column="sale_employee_id"/>
+        <result property="saleRatio" column="sale_ratio"/>
+        <result property="status" column="status"/>
+        <result property="auditOpinion" column="audit_opinion"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="isDeleted" column="is_deleted"/>
+        <result property="shippingMethod" column="shipping_method"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="deliveryTime" column="delivery_time"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="remark" column="remark"/>
+        <result property="isInboundDelivery" column="is_inbound_delivery"/>
+        <result property="isCollectedShippingCost" column="is_collected_shipping_cost"/>
+        <result property="shippingCost" column="shipping_cost"/>
+        <result property="orderFinishTime" column="order_finish_time"/>
+        <result property="receiveStatus" column="receive_status"/>
+        <result property="receiveFinishTime" column="receive_finish_time"/>
+        <result property="shippingReceiveStatus" column="shipping_receive_status"/>
+        <result property="shippingReceiveFinishTime" column="shipping_receive_finish_time"/>
+        <result property="exchangeRate" column="exchange_rate"/>
+        <result property="endOtherAmount" column="end_other_amount"/>
+        <result property="endAmount" column="end_amount"/>
+        <result property="submitOrderTime" column="submit_order_time"/>
+    </resultMap>
+
+    <sql id="selectSalYtOrderVo">
+        select id, code, source_platform, platform_order_code, currency, customer_id, customer_address,
+        follow_employee_id, follow_ratio, sale_employee_id, sale_ratio, create_user, create_time,
+        update_user, update_time, tenant_id, is_deleted ,shipping_method, order_time, delivery_time, discount_amount,
+               remark, is_inbound_delivery, is_collected_shipping_cost, shipping_cost, order_finish_time,receive_status,
+        receive_finish_time, exchange_rate, end_other_amount, end_amount,submit_order_time
+        from sal_yt_order where is_deleted = 0
+    </sql>
+
+    <select id="selectSalYtOrderById" parameterType="Long" resultMap="SalYtOrderResult">
+        select syo.*
+        from sal_yt_order as syo where is_deleted = 0
+        and id = #{id}
+    </select>
+
+    <select id="selectSalYtOrderList" parameterType="com.qiaomoyun.param.sal.yt.SalYtOrderQueryParams" resultType="com.qiaomoyun.vo.sal.yt.SalYtOrderVo">
+        select syo.*,
+               (select nick_name from sys_user where user_id = syo.sale_employee_id) as salesEmployeeName,
+               (select nick_name from sys_user where user_id = syo.follow_employee_id) as followEmployeeName,
+               (select count(*) from sal_yt_order_sub where order_id = syo.id and is_deleted = 0) as subOrderCount,
+               (select sum((select sum(syosi.price * syosi.number) from sal_yt_order_sub_item syosi where syosi.order_sub_id = syos.id and syosi.is_deleted = 0) + (case when syo.is_collected_shipping_cost = 1 then coalesce(syo.shipping_cost, 0) else 0 end))
+                from sal_yt_order_sub syos where syos.order_id = syo.id and syos.is_deleted = 0) as amount,
+               syc.name as customerName,
+               syc.code as customerCode
+        from sal_yt_order as syo
+        left join sal_yt_customer as syc on syc.id = syo.customer_id
+        <where>
+            syo.is_deleted=0
+            <if test="code != null and code != ''">and syo.code like concat('%', #{code}, '%')</if>
+            <if test="platformOrderCode != null and platformOrderCode != ''">and platform_order_code = #{platformOrderCode}</if>
+            <if test="currency != null and currency != ''">and currency = #{currency}</if>
+            <if test="customerId != null">and customer_id = #{customerId}</if>
+            <if test="customerName != null and customerName != ''">and syc.name like concat('%', #{customerName}, '%')</if>
+            <if test="followEmployeeId != null">and syo.follow_employee_id = #{followEmployeeId}</if>
+            <if test="saleEmployeeId != null">and sale_employee_id = #{saleEmployeeId}</if>
+            <if test="subCode != null and subCode != ''">and syo.id in (select order_id from sal_yt_order_sub where sub_code like concat('%',#{subCode},'%'))</if>
+            <if test="orderType != null and orderType != ''">and syo.id in (select order_id from sal_yt_order_sub as syob where order_type = #{orderType} and syob.is_deleted=0)</if>
+            <if test="status != null and status != ''">and syo.status = #{status}</if>
+            <if test="orderStatus != null and orderStatus != ''">and syo.order_status = #{orderStatus}</if>
+            <if test="itemStatus != null and itemStatus != ''">and syo.id in ( select order_id from sal_yt_order_sub where id in (select order_sub_id  from  sal_yt_order_sub_item group by order_sub_id having min(status) = #{itemStatus})) </if>
+            <!-- 新增：产品编号过滤逻辑 -->
+            <if test="productCode != null and productCode != ''">
+                and syo.id in (
+                select distinct syos.order_id
+                from sal_yt_order_sub syos
+                inner join sal_yt_order_sub_item syosi on syos.id = syosi.order_sub_id
+                inner join pro_yt_product pyp on syosi.product_id = pyp.id
+                where syos.is_deleted = 0
+                and syosi.is_deleted = 0
+                and pyp.code like concat('%', #{productCode}, '%')
+                )
+            </if>
+        </where>
+        order by syo.submit_order_time desc, syo.id desc
+    </select>
+
+    <select id="detail" resultType="com.qiaomoyun.vo.sal.yt.SalYtOrderVo">
+        select syo.*,
+        (select nick_name from sys_user where user_id = syo.sale_employee_id) as salesEmployeeName,
+        (select nick_name from sys_user where user_id = syo.follow_employee_id) as followEmployeeName,
+        (select count(*) from sal_yt_order_sub where order_id = syo.id and is_deleted = 0) as subOrderCount,
+        (select sum((select sum(syosi.price * syosi.number) from sal_yt_order_sub_item syosi where syosi.order_sub_id = syos.id and syosi.is_deleted = 0) + (case when syos.is_collected_shipping_cost = 1 then coalesce(syos.shipping_cost, 0) else 0 end))
+        from sal_yt_order_sub syos where syos.order_id = syo.id and syos.is_deleted = 0) as amount,
+        syc.name as customerName
+        from sal_yt_order as syo
+        left join sal_yt_customer as syc on syc.id = syo.customer_id
+        where
+        syo.is_deleted=0 and syo.id = #{id}
+
+    </select>
+
+
+    <update id="deleteSalYtOrderById" parameterType="Long">
+        update sal_yt_order set is_deleted = 1 where id = #{id}
+    </update>
+
+    <delete id="deleteSalYtOrderByIds" parameterType="List">
+        update sal_yt_order set is_deleted = 1 where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="getYearOrderAmountByCustomerId" parameterType="Long" resultType="java.math.BigDecimal">
+        select COALESCE(
+            sum(
+                (select sum(syosi.price * syosi.number)
+                 from sal_yt_order_sub_item syosi
+                 where syosi.order_sub_id = syos.id and syosi.is_deleted = 0)
+                +
+                (case when syos.is_collected_shipping_cost = 1 then COALESCE(syos.shipping_cost, 0) else 0 end)
+            ), 0
+        ) as total_amount
+        from sal_yt_order as syo
+        left join sal_yt_order_sub syos on syos.order_id = syo.id and syos.is_deleted = 0
+        where syo.is_deleted = 0
+        and syo.customer_id = #{customerId}
+        and syo.create_time >= DATE_SUB(NOW(), INTERVAL 1 YEAR)
+        and syo.status>=5
+    </select>
+
+    <select id="getLastOrderTimeByCustomerId" parameterType="Long" resultType="java.time.LocalDateTime">
+        select MAX(syo.create_time) as last_order_time
+        from sal_yt_order as syo
+        where syo.is_deleted = 0
+        and syo.customer_id = #{customerId}
+        and syo.status>=5
+    </select>
+
+    <select id="getMonthlyConsumptionByCustomerId" resultType="java.util.Map">
+        select
+            DATE_FORMAT(syo.create_time, '%Y-%m') as month,
+            COALESCE(
+                sum(
+                    (select sum(syosi.price * syosi.number)
+                     from sal_yt_order_sub_item syosi
+                     where syosi.order_sub_id = syos.id and syosi.is_deleted = 0)
+                    +
+                    (case when syos.is_collected_shipping_cost = 1 then COALESCE(syos.shipping_cost, 0) else 0 end)
+                ), 0
+            ) as amount
+        from sal_yt_order as syo
+        left join sal_yt_order_sub syos on syos.order_id = syo.id and syos.is_deleted = 0
+        where syo.is_deleted = 0
+        and syo.customer_id = #{customerId}  and syo.status>=5
+        <if test="startTime != null">
+            and syo.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and syo.create_time &lt;= #{endTime}
+        </if>
+        group by DATE_FORMAT(syo.create_time, '%Y-%m')
+        order by month
+    </select>
+
+    <select id="getConsumptionRatioByCustomerId" resultType="java.util.Map">
+        select
+            pc.name as categoryName,
+            COALESCE(
+                sum(
+                    syosi.price * syosi.number
+                ), 0
+            ) as amount
+        from sal_yt_order as syo
+        left join sal_yt_order_sub syos on syos.order_id = syo.id and syos.is_deleted = 0
+        left join sal_yt_order_sub_item syosi on syosi.order_sub_id = syos.id and syosi.is_deleted = 0
+        left join pro_yt_product p on p.id = syosi.product_id and p.is_deleted = 0
+        left join pro_yt_product_category pc on pc.id = p.category_id and pc.is_deleted = 0
+        where syo.is_deleted = 0
+        and syo.customer_id = #{customerId} and syo.status>=5
+        <if test="startTime != null">
+            and syo.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            and syo.create_time &lt;= #{endTime}
+        </if>
+        and pc.name is not null
+        group by pc.id, pc.name
+        order by amount desc
+    </select>
+    <select id="getOrderNoByThirdPlatform" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select * from sal_yt_order where source_platform=#{platform} and is_deleted=0
+    </select>
+    <select id="selectBySalesIdAndDataBelongTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+            select *
+            from sal_yt_order
+            where (sale_employee_id=#{saleEmployeeId} or follow_employee_id= #{followEmployeeId})
+            and submit_order_time is not null
+            and submit_order_time >= #{dataBelongTime}
+            and submit_order_time &lt;= #{dataBelongTimeEnd}
+            and is_deleted=0
+    </select>
+    <select id="selectSalYtOrderSubByOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSub">
+            select *
+            from sal_yt_order_sub
+            where order_id=#{orderId}
+            and is_deleted=0
+    </select>
+    <select id="selectBySalesIdAndDataBelongTime2" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+            select *
+            from sal_yt_order
+            where is_deleted = 0
+            and (sale_employee_id = #{saleEmployeeId} or follow_employee_id = #{followEmployeeId})
+            and order_finish_time is not null
+            and receive_finish_time is not null
+            and shipping_receive_finish_time is not null
+            and greatest(order_finish_time, receive_finish_time, shipping_receive_finish_time) >= #{dataBelongTime}
+            and greatest(order_finish_time, receive_finish_time, shipping_receive_finish_time) &lt;= #{dataBelongTimeEnd}
+    </select>
+    <select id="selectOrderListByTimeAndUserId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where (sale_employee_id=#{saleEmployeeId} or follow_employee_id= #{followEmployeeId})
+          and create_time is not null
+          and create_time >= #{yearTime}
+          and create_time &lt;= #{yesterdayTime}
+          and is_deleted=0
+    </select>
+    <select id="selectOrderListByTimeAndUserIds" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and create_time is not null
+          and (
+            sale_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            or follow_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+          )
+          and create_time >= #{yearTime}
+          and create_time &lt;= #{yesterdayTime}
+    </select>
+    <select id="selectOrderListByFinishTimeAndUserId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and (sale_employee_id = #{saleEmployeeId} or follow_employee_id = #{followEmployeeId})
+          and create_time is not null
+          and create_time >= #{yearTime}
+          and create_time &lt;= #{yesterdayTime}
+          and (order_finish_time is not null or receive_finish_time is not null or shipping_receive_finish_time is not null)
+    </select>
+    <select id="selectOrderListByFinishTimeAndUserIds" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and create_time is not null
+          and (
+            sale_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            or follow_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+          )
+          and create_time >= #{yearTime}
+          and create_time &lt;= #{yesterdayTime}
+          and (order_finish_time is not null or receive_finish_time is not null or shipping_receive_finish_time is not null)
+    </select>
+    <select id="selectOrderListByCustomerIdAndTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+           select *
+           from sal_yt_order
+           where customer_id = #{customerId}
+             and submit_order_time is not null
+             and submit_order_time >= #{yesterdayTime1}
+             and submit_order_time &lt;= #{yesterdayTime}
+             and is_deleted=0
+           order by submit_order_time desc
+    </select>
+    <select id="selectByOrderItemId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select syo.*
+        from sal_yt_order as syo
+        inner join sal_yt_order_sub as syos on syos.order_id = syo.id and syos.is_deleted = 0
+        inner join sal_yt_order_sub_item as syosi on syosi.order_sub_id = syos.id
+        where syosi.id = #{orderItemId} and syosi.is_deleted = 0 and syo.is_deleted = 0
+    </select>
+
+    <select id="selectBySalesIdAndTimeRange" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+        and (sale_employee_id = #{saleEmployeeId} or follow_employee_id = #{followEmployeeId})
+        and create_time >= #{startTime}
+        and create_time &lt;= #{endTime}
+    </select>
+    <select id="selectOrderByStatus1AndTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+     select *
+     from sal_yt_order
+      where is_deleted = 0 and
+            (sale_employee_id = #{salesmanId} or follow_employee_id = #{followEmployeeId})
+     and create_time >= #{startDate}
+     and create_time &lt;= #{nowDate}
+        and is_deleted=0
+    </select>
+    <select id="selectOrderByStatus1AndUserIdsAndTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and create_time is not null
+          and (
+            sale_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            or follow_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+          )
+          and create_time >= #{startDate}
+          and create_time &lt;= #{nowDate}
+    </select>
+    <select id="selectOrderByStatus2AndTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and (sale_employee_id = #{salesmanId} or follow_employee_id = #{followEmployeeId})
+          and create_time is not null
+          and create_time >= #{startDate}
+          and create_time &lt;= #{nowDate}
+          and (order_finish_time is not null or receive_finish_time is not null or shipping_receive_finish_time is not null)
+        and is_deleted=0
+    </select>
+    <select id="selectOrderByStatus2AndUserIdsAndTime" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and create_time is not null
+          and (
+            sale_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            or follow_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+          )
+          and create_time >= #{startDate}
+          and create_time &lt;= #{nowDate}
+          and (order_finish_time is not null or receive_finish_time is not null or shipping_receive_finish_time is not null)
+    </select>
+    <select id="selectOrderListBySalesIdAndTimeRange" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and (sale_employee_id = #{salesmanId} or follow_employee_id = #{followEmployeeId})
+          and create_time >= #{startDate}
+          and create_time &lt;= #{nowDate}
+        and is_deleted=0
+    </select>
+    <select id="selectOrderListBySalesIdsAndTimeRange" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select *
+        from sal_yt_order
+        where is_deleted = 0
+          and create_time is not null
+          and (
+            sale_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+            or follow_employee_id in
+            <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+                #{userId}
+            </foreach>
+          )
+          and create_time >= #{startDate}
+          and create_time &lt;= #{nowDate}
+    </select>
+    <select id="selectOrderListByCustomerId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+            select *
+            from sal_yt_order
+            where customer_id = #{customerId}
+            and create_time is not null
+            and is_deleted=0
+    </select>
+    <select id="selectSalYtOrderBySubOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        select syo.*
+        from sal_yt_order as syo
+        left join sal_yt_order_sub as syos on syos.order_id = syo.id
+        where syos.id = #{subOrderId}
+        and syos.is_deleted=0
+        limit 1
+    </select>
+    <select id="selectByDeliveryId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrder">
+        SELECT  a.* FROM sal_yt_order a left join sal_yt_order_sub b on a.id=b.order_id
+                                        left join sto_yt_delivery_item c on b.id=c.order_sub_id
+        where a.is_deleted=0 and b.is_deleted=0 and c.is_deleted=0
+          and c.delivery_id=#{deliveryId}
+        GROUP BY a.id
+        order by a.id
+    </select>
+
+
+</mapper>

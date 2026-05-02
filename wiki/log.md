@@ -2,6 +2,9 @@
 
 ## 2026-05-02
 
+- 启动并完成 Multica `SOL-49` 本地组件抽取：生成 `COMPONENTS/order-management`，覆盖 `zhongsheng-AI` 基础订单 CRUD、qmy-java YT 复杂订单后端、qmy-admin 订单页面/API、订单状态、采购申请、退货、发货、完结、关闭和导出边界。
+- `SOL-49` 快照明确基础 `orders/order_item` 与复杂 `sal_yt_order*` 差异，标注 qmy-java 缺完整 DDL、多个详情/退货/关闭/物流接口权限缺口，以及状态变更 GET 接口接入前需收口。
+- 更新 `wiki/COMP_订单管理.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将订单组件纳入组件快照资产入口。
 - 启动并完成 Multica `SOL-48` 本地组件抽取：生成 `COMPONENTS/quote-management`，覆盖 `zhongsheng-AI` 基础报价 CRUD、qmy-java SED 复杂报价后端、qmy-admin 报价页面/API、成本明细、历史报价、审核、导出和转订单边界。
 - `SOL-48` 快照明确基础 CRUD 与复杂报价流差异，标注 legacy `Quote.products` 与 `quote` SQL 不一致、qmy-java 缺完整 DDL、复杂流数据权限需接入前补齐。
 - 更新 `wiki/COMP_报价管理.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将报价组件纳入组件快照资产入口。

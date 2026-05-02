@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtOrderSubReceiveMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sal.yt.SalYtOrderSubReceive">
+        <id column="id" property="id" />
+        <result column="order_sub_id" property="orderSubId" />
+        <result column="amount" property="amount" />
+        <result column="currency" property="currency" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="order_id" property="orderId" />
+        <result column="third_receive_time" property="thirdReceiveTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, order_sub_id, amount, currency, create_user, create_time, update_user, update_time, tenant_id, is_deleted,order_id,third_receive_time
+    </sql>
+
+    <!-- 根据条件查询子订单回款列表 -->
+    <select id="list" resultMap="BaseResultMap" parameterType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubReceive">
+        SELECT <include refid="Base_Column_List" />
+        FROM sal_yt_order_sub_receive
+        WHERE is_deleted = 0
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="orderSubId != null">
+            AND order_sub_id = #{orderSubId}
+        </if>
+        <if test="amount != null">
+            AND amount = #{amount}
+        </if>
+        <if test="currency != null">
+            AND currency = #{currency}
+        </if>
+    </select>
+
+    <!-- 根据子订单ID查询回款总金额 -->
+    <select id="getTotalReceiveAmountByOrderSubId" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        SELECT SUM(amount) FROM sal_yt_order_sub_receive
+        WHERE is_deleted = 0 AND order_sub_id = #{orderSubId}
+    </select>
+
+    <!-- 查询订单收款列表 -->
+    <select id="selectOrderReceiveList" resultType="java.util.Map" parameterType="com.qiaomoyun.param.fin.yt.FinYtReceiveQueryParams">
+        SELECT
+            -- sos.id as id,
+            so.id as id,
+            so.currency as currency,
+           -- sos.sub_code as subCode,
+            so.code as orderCode,
+            so.platform_order_code as platformOrderCode,
+            so.source_platform as sourcePlatform,
+            so.sale_employee_id as saleEmployeeId,
+            -- sos.receive_status as receiveStatus,
+            so.receive_status as receiveStatus,
+            so.receive_finish_time as receiveFinishTime,
+            -- coalesce((SELECT SUM(amount) FROM sal_yt_order_sub_receive WHERE order_sub_id = sos.id AND is_deleted = 0),0) as totalReceiveAmount,
+            coalesce((SELECT SUM(amount) FROM sal_yt_order_sub_receive WHERE order_id = so.id AND is_deleted = 0),0) as totalReceiveAmount,
+            (select nick_name from sys_user where user_id = so.sale_employee_id) as saleEmployeeName,
+            (
+                (select sum(price*number) from sal_yt_order_sub_item where order_sub_id = sos.id and is_deleted = 0)
+                +
+                (case when sos.is_collected_shipping_cost = 1 then coalesce(sos.shipping_cost, 0) else 0 end)
+            ) as orderSubAmount
+        FROM sal_yt_order_sub sos
+        LEFT JOIN sal_yt_order so ON sos.order_id = so.id
+        WHERE sos.is_deleted = 0 AND so.is_deleted = 0 and so.status=5 -- 只要已经申购的订单的
+        <if test="orderCode != null and orderCode != ''">
+            AND so.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        <if test="platformOrderCode != null and platformOrderCode != ''">
+            AND so.platform_order_code LIKE CONCAT('%', #{platformOrderCode}, '%')
+        </if>
+        <if test="platform != null and platform != ''">
+            AND so.source_platform = #{platform}
+        </if>
+        <if test="salesEmployeeName != null and salesEmployeeName != ''">
+            AND so.sale_employee_id in(select user_id from sys_user where nick_name  LIKE CONCAT('%', #{salesEmployeeName}, '%') )
+        </if>
+        <if test="receiveStatus != null">
+            AND so.receive_status = #{receiveStatus}
+        </if>
+        ORDER BY sos.create_time DESC
+    </select>
+
+    <!-- 根据条件查询子订单回款明细列表 -->
+    <select id="listByParams" resultMap="BaseResultMap" parameterType="com.qiaomoyun.param.fin.yt.FinYtReceiveQueryParams">
+--         SELECT s.*,
+--                (select nick_name from sys_user where user_id = s.create_user ) as createUserName
+--         FROM sal_yt_order_sub_receive s
+--         LEFT JOIN sal_yt_order_sub sos ON s.order_sub_id = sos.id
+--         LEFT JOIN sal_yt_order so ON sos.order_id = so.id
+--         WHERE s.is_deleted = 0 AND sos.is_deleted = 0 AND so.is_deleted = 0 and s.order_sub_id={orderSubId}
+        SELECT s.*,
+        (select nick_name from sys_user where user_id = s.create_user ) as createUserName
+        FROM sal_yt_order_sub_receive s
+        LEFT JOIN sal_yt_order so ON s.order_id = so.id
+        WHERE s.is_deleted = 0  AND so.is_deleted = 0 and s.order_id=#{orderSubId}
+        <if test="subCode != null and subCode != ''">
+            AND so.code LIKE CONCAT('%', #{subCode}, '%')
+        </if>
+        <if test="platformOrderCode != null and platformOrderCode != ''">
+            AND so.platform_order_code LIKE CONCAT('%', #{platformOrderCode}, '%')
+        </if>
+        <if test="platform != null and platform != ''">
+            AND so.platform = #{platform}
+        </if>
+        <if test="salesEmployeeName != null and salesEmployeeName != ''">
+            AND so.sales_employee_name LIKE CONCAT('%', #{salesEmployeeName}, '%')
+        </if>
+        ORDER BY s.create_time DESC
+    </select>
+    <select id="selectBySalYtOrderSubReceive" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubReceive">
+            select *
+            from sal_yt_order_sub_receive
+            where order_id=#{orderId}
+            and amount=#{receiveAmount}
+            and third_receive_time=#{receiveTime}
+            and currency=#{currency}
+            and create_user=#{createUser}
+            and is_deleted=0
+    </select>
+    <select id="selectByOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubReceive">
+            select   *
+            from sal_yt_order_sub_receive
+            where order_id=#{orderId}
+            and is_deleted=0
+            limit 1
+    </select>
+
+</mapper>

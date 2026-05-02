@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.pur.yt.PurYtApplyPurchaseMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.pur.yt.PurYtApplyPurchase">
+        <id column="id" property="id" />
+        <result column="product_id" property="productId" />
+        <result column="product_specification_id" property="productSpecificationId" />
+        <result column="supplier_id" property="supplierId" />
+        <result column="sales_employee_id" property="salesEmployeeId" />
+        <result column="customer_id" property="customerId" />
+        <result column="number" property="number" />
+        <result column="category_label_id" property="categoryLabelId" />
+        <result column="order_sub_id" property="orderSubId" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+        <!-- 新增自定义字段映射 -->
+        <result column="product_code" property="productCode" />
+        <result column="customer_name" property="customerName" />
+        <result column="supplier_specification" property="supplierSpecification" />
+        <result column="supplier_price" property="supplierPrice" />
+        <result column="supplier_min_order_quantity" property="minNumber" />
+    </resultMap>
+
+    <!-- 采购申请列表结果映射 -->
+    <resultMap id="ApplyPurchaseListResultMap" type="com.qiaomoyun.vo.pur.yt.PurYtApplyPurchaseListVo">
+        <result column="supplier_id" property="supplierId" />
+        <result column="supplier_name" property="supplierName" />
+        <result column="is_inbound_delivery" property="isInboundDelivery" />
+        <result column="purchase_total_count" property="purchaseTotalCount" />
+        <result column="purchase_total_amount" property="purchaseTotalAmount" />
+    </resultMap>
+
+    <!-- 通用查询条件列 -->
+    <sql id="Base_Where_Clause">
+        <where>
+            <if test="id != null"> AND id = #{id}</if>
+            <if test="productId != null"> AND product_id = #{productId}</if>
+            <if test="productSpecificationId != null"> AND product_specification_id = #{productSpecificationId}</if>
+            <if test="supplierId != null"> AND supplier_id = #{supplierId}</if>
+            <if test="salesEmployeeId != null"> AND sales_employee_id = #{salesEmployeeId}</if>
+            <if test="customerId != null"> AND customer_id = #{customerId}</if>
+            <if test="number != null"> AND number = #{number}</if>
+            <if test="categoryLabelId != null"> AND category_label_id = #{categoryLabelId}</if>
+            <if test="orderSubId != null"> AND order_sub_id = #{orderSubId}</if>
+            AND is_deleted = 0
+        </where>
+    </sql>
+
+    <!-- 根据条件查询 -->
+    <select id="selectByMap" parameterType="map" resultMap="BaseResultMap">
+        SELECT * FROM pur_yt_apply_purchase
+        <where>
+            <foreach collection="paramMap" item="value" index="key" separator="AND">
+                <if test="value != null">
+                    ${key} = #{value}
+                </if>
+            </foreach>
+            AND is_deleted = 0
+        </where>
+    </select>
+
+    <!-- 根据产品ID查询 -->
+    <select id="selectByProductId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM pur_yt_apply_purchase
+        WHERE product_id = #{productId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据供应商ID查询 -->
+    <select id="selectBySupplierId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM pur_yt_apply_purchase
+        WHERE supplier_id = #{supplierId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 根据客户ID查询 -->
+    <select id="selectByCustomerId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT * FROM pur_yt_apply_purchase
+        WHERE customer_id = #{customerId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 批量插入 -->
+    <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO pur_yt_apply_purchase (
+            product_id, product_specification_id, supplier_id, sales_employee_id,
+            customer_id, number, category_label_id, order_sub_id,
+            create_user, create_time, update_user, update_time,
+            tenant_id, is_deleted
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.productId}, #{item.productSpecificationId}, #{item.supplierId}, #{item.salesEmployeeId},
+                #{item.customerId}, #{item.number}, #{item.categoryLabelId}, #{item.orderSubId},
+                #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime},
+                #{item.tenantId}, #{item.isDeleted}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 批量更新 -->
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE pur_yt_apply_purchase
+            <set>
+                <if test="item.productId != null">product_id = #{item.productId},</if>
+                <if test="item.productSpecificationId != null">product_specification_id = #{item.productSpecificationId},</if>
+                <if test="item.supplierId != null">supplier_id = #{item.supplierId},</if>
+                <if test="item.salesEmployeeId != null">sales_employee_id = #{item.salesEmployeeId},</if>
+                <if test="item.customerId != null">customer_id = #{item.customerId},</if>
+                <if test="item.number != null">number = #{item.number},</if>
+                <if test="item.categoryLabelId != null">category_label_id = #{item.categoryLabelId},</if>
+                <if test="item.orderSubId != null">order_sub_id = #{item.orderSubId},</if>
+                <if test="item.updateUser != null">update_user = #{item.updateUser},</if>
+                <if test="item.updateTime != null">update_time = #{item.updateTime},</if>
+                <if test="item.tenantId != null">tenant_id = #{item.tenantId},</if>
+                <if test="item.isDeleted != null">is_deleted = #{item.isDeleted}</if>
+            </set>
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
+
+    <!-- 根据条件查询采购申请列表（按供应商分组） -->
+    <select id="list" parameterType="com.qiaomoyun.param.sal.yt.PurYtApplyPurchaseQueryParams" resultMap="ApplyPurchaseListResultMap">
+        SELECT
+            pap.supplier_id,
+            ps.name AS supplier_name,
+            SUM(pap.number) AS purchase_total_count,
+            COALESCE(a.is_inbound_delivery, 1) AS is_inbound_delivery
+        FROM
+            pur_yt_apply_purchase pap
+        LEFT JOIN
+            pur_yt_supplier ps ON pap.supplier_id = ps.id
+        LEFT JOIN
+            sal_yt_order_sub sos ON pap.order_sub_id = sos.id
+        left join
+                sal_yt_order a on sos.order_id=a.id and a.is_inbound_delivery is not null
+        LEFT JOIN
+            pro_yt_product_specification pps ON pap.product_specification_id = pps.id
+        LEFT JOIN
+            pro_yt_product pp ON pap.product_id = pp.id
+        LEFT JOIN
+            sal_yt_customer sc ON pap.customer_id = sc.id
+        WHERE
+            pap.is_deleted = 0 and pap.number>0
+        <if test="orderCode !=null and orderCode!=''">
+            AND a.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        <if test="orderSubCode != null and orderSubCode != ''">
+            AND sos.sub_code LIKE CONCAT('%', #{orderSubCode}, '%')
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pp.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="specificationName != null and specificationName != ''">
+            AND pps.name LIKE CONCAT('%', #{specificationName}, '%')
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND ps.name LIKE CONCAT('%', #{supplierName}, '%')
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND sc.name LIKE CONCAT('%', #{customerName}, '%')
+        </if>
+        <if test="salesEmployeeId != null">
+            AND pap.sales_employee_id = #{salesEmployeeId}
+        </if>
+        GROUP BY
+            pap.supplier_id, ps.name,COALESCE(a.is_inbound_delivery, 1)
+        ORDER BY
+           max( pap.create_time) DESC
+    </select>
+    <select id="selectBySupplierIdAndIsInboundDelivery"
+            parameterType="com.qiaomoyun.param.sal.yt.PurYtApplyPurchaseQueryParams"
+            resultType="com.qiaomoyun.entity.pur.yt.PurYtApplyPurchase">
+        SELECT pap.*,
+            (select nick_name from sys_user as su  where su.user_id=pap.sales_employee_id) as salesEmployeeName,
+            (select name from sal_yt_customer as syc where syc.id = pap.customer_id) as customerName,
+            (select code from pro_yt_product where id = pap.product_id) as productCode,
+            sos.delivery_time,sos.order_time,sos.sub_code as orderSubCode,a.code as orderCode,a.remark as orderNote
+        FROM pur_yt_apply_purchase as pap
+        LEFT JOIN sal_yt_order_sub sos ON pap.order_sub_id = sos.id
+        left join sal_yt_order a on sos.order_id=a.id
+        LEFT JOIN pro_yt_product pp ON pap.product_id = pp.id
+        LEFT JOIN pro_yt_product_specification pps ON pap.product_specification_id = pps.id
+        LEFT JOIN sal_yt_customer sc ON pap.customer_id = sc.id
+        LEFT JOIN sys_user su ON pap.sales_employee_id = su.user_id
+        LEFT JOIN pur_yt_purchase_item ppi ON pap.id = ppi.apply_purchase_id
+        WHERE pap.is_deleted = 0
+        AND pap.supplier_id = #{supplierId}
+        AND (a.is_inbound_delivery = #{isInboundDelivery}
+            <if test="isInboundDelivery==1">
+                or a.is_inbound_delivery is null
+            </if>
+            )and pap.number>0
+        <if test="orderSubCode != null and orderSubCode != ''">
+            AND sos.sub_code LIKE CONCAT('%', #{orderSubCode}, '%')
+        </if>
+        <if test="orderCode !=null and orderCode!=''">
+            AND a.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        <if test="productCode != null and productCode != ''">
+            AND pp.code LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <if test="specificationName != null and specificationName != ''">
+            AND pps.name LIKE CONCAT('%', #{specificationName}, '%')
+        </if>
+        <if test="supplierName != null and supplierName != ''">
+            AND (select name from pur_yt_supplier where id = pap.supplier_id) LIKE CONCAT('%', #{supplierName}, '%')
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND sc.name LIKE CONCAT('%', #{customerName}, '%')
+        </if>
+        <if test="salesEmployeeId != null">
+            AND pap.sales_employee_id = #{salesEmployeeId}
+        </if>
+        <if test="applyPurchaseIdList != null and applyPurchaseIdList.size() > 0">
+            AND pap.id IN
+            <foreach collection="applyPurchaseIdList" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </if>
+        <if test="purchaseId != null">
+            AND ppi.purchase_id = #{purchaseId}
+        </if>
+        ORDER BY pap.create_time DESC
+    </select>
+
+    <!-- 根据ID列表查询采购申请，并获取产品Code、客户名称、供应商规格、供应商单价、供应商起订量 -->
+    <select id="selectByIdsWithDetails" parameterType="java.util.List" resultType="com.qiaomoyun.entity.pur.yt.PurYtApplyPurchase">
+        SELECT
+            pap.*,
+            pp.code AS product_code,
+            sc.name AS customer_name,
+            ppss.supplier_specification AS supplier_specification,
+            ppss.supplier_price,
+            ppss.min_number AS minNumber,
+            (select is_inbound_delivery from sal_yt_order_sub where id = pap.order_sub_id) as is_inbound_delivery,
+            (select sub_code from sal_yt_order_sub where id = pap.order_sub_id) as orderSubCode,
+            (select b.code from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id where a.id=pap.order_sub_id) as orderCode,
+            (select value from pro_yt_product_label where id = category_label_id) as categoryLabelName,
+            (select b.remark from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id where a.id=pap.order_sub_id) as orderNote,
+            (select hand_product_level from pro_yt_product_specification where id = pap.product_specification_id) as handProductLevel
+        FROM
+            pur_yt_apply_purchase pap
+        LEFT JOIN
+            pro_yt_product pp ON pap.product_id = pp.id
+        LEFT JOIN
+            sal_yt_customer sc ON pap.customer_id = sc.id
+        LEFT JOIN
+            pro_yt_product_specification_supplier ppss ON pap.product_specification_id = ppss.specification_id AND pap.supplier_id = ppss.supplier_id
+        WHERE
+            pap.id IN
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+            AND pap.is_deleted = 0
+    </select>
+    <select id="selectByOrderSubItemId" resultType="com.qiaomoyun.entity.pur.yt.PurYtApplyPurchase">
+        SELECT pap.*
+        FROM pur_yt_apply_purchase as pap
+        WHERE order_sub_item_id = #{orderSubItemId}
+          AND pap.is_deleted = 0
+    </select>
+    <select id="sumActiveNumberByOrderSubItemIds" resultType="java.util.Map">
+        SELECT pap.order_sub_item_id AS orderSubItemId, COALESCE(SUM(pap.number), 0) AS totalNumber
+        FROM pur_yt_apply_purchase pap
+        WHERE pap.is_deleted = 0
+          AND pap.order_sub_item_id IN
+          <foreach collection="orderSubItemIds" item="orderSubItemId" open="(" close=")" separator=",">
+              #{orderSubItemId}
+          </foreach>
+        GROUP BY pap.order_sub_item_id
+    </select>
+    <select id="selectByProductSpecificationId" resultType="com.qiaomoyun.entity.pur.yt.PurYtApplyPurchase">
+        SELECT * FROM `pur_yt_apply_purchase` where product_specification_id=#{productSpecificationId}
+        and is_deleted=0
+    </select>
+    <select id="getOrderCodeByOrderSubId" resultType="java.lang.String">
+        select b.`code` from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id
+        where a.id=#{orderSubId}
+    </select>
+    <select id="getOrderNoteByOrderSubId" resultType="java.lang.String">
+        select b.`remark` from sal_yt_order_sub a left join sal_yt_order b on a.order_id=b.id
+        where a.id=#{orderSubId}
+    </select>
+</mapper>

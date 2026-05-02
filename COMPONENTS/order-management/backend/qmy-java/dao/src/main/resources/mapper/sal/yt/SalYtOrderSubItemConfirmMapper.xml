@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtOrderSubItemConfirmMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItemConfirm" id="SalYtOrderSubItemConfirmResult">
+        <id property="id" column="id"/>
+        <result property="salYtOrderSubItemId" column="sal_yt_order_sub_item_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="specificationId" column="specification_id"/>
+        <result property="number" column="number"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <sql id="selectSalYtOrderSubItemConfirmVo">
+        select id, sal_yt_order_sub_item_id, product_id, specification_id, number,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+        from sal_yt_order_sub_item_confirm where is_deleted = 0
+    </sql>
+
+    <select id="selectSalYtOrderSubItemConfirmById" parameterType="Long" resultMap="SalYtOrderSubItemConfirmResult">
+        select syosic.*
+        from sal_yt_order_sub_item_confirm as syosic where is_deleted = 0
+        and id = #{id}
+    </select>
+
+    <select id="selectSalYtOrderSubItemConfirmList" parameterType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItemConfirm" resultMap="SalYtOrderSubItemConfirmResult">
+        select syosic.*
+        from sal_yt_order_sub_item_confirm as syosic
+        <where>
+        is_deleted=0
+            <if test="salYtOrderSubItemId != null">and sal_yt_order_sub_item_id = #{salYtOrderSubItemId}</if>
+            <if test="productId != null">and product_id = #{productId}</if>
+            <if test="specificationId != null">and specification_id = #{specificationId}</if>
+        </where>
+    </select>
+
+    <select id="selectByOrderSubItemId" parameterType="Long" resultMap="SalYtOrderSubItemConfirmResult">
+        select syosic.*
+        from sal_yt_order_sub_item_confirm as syosic
+        where syosic.sal_yt_order_sub_item_id = #{salYtOrderSubItemId}
+        and syosic.is_deleted = 0
+    </select>
+
+    <insert id="batchInsert" parameterType="java.util.List">
+        insert into sal_yt_order_sub_item_confirm
+        (sal_yt_order_sub_item_id, product_id, specification_id, number,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.salYtOrderSubItemId}, #{item.productId}, #{item.specificationId}, #{item.number},
+            #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime},
+            #{item.tenantId}, #{item.isDeleted})
+        </foreach>
+    </insert>
+
+    <update id="deleteByOrderSubItemId" parameterType="Long">
+        update sal_yt_order_sub_item_confirm
+        set is_deleted = 1, update_time = now()
+        where sal_yt_order_sub_item_id = #{salYtOrderSubItemId}
+        and is_deleted = 0
+    </update>
+</mapper>

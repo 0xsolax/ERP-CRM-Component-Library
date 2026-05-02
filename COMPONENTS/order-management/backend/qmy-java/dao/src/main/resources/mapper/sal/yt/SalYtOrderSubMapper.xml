@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtOrderSubMapper">
+    <resultMap type="com.qiaomoyun.entity.sal.yt.SalYtOrderSub" id="SalYtOrderSubResult">
+        <id property="id" column="id"/>
+        <result property="orderId" column="order_id"/>
+        <result property="orderType" column="order_type"/>
+        <result property="sourcePlatform" column="source_platform"/>
+        <result property="platformOrderCode" column="platform_order_code"/>
+        <result property="shippingMethod" column="shipping_method"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="deliveryTime" column="delivery_time"/>
+        <result property="discountAmount" column="discount_amount"/>
+        <result property="remark" column="remark"/>
+        <result property="isInboundDelivery" column="is_inbound_delivery"/>
+        <result property="isCollectedShippingCost" column="is_collected_shipping_cost"/>
+        <result property="shippingCost" column="shipping_cost"/>
+        <result property="createUser" column="create_user"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateUser" column="update_user"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="tenantId" column="tenant_id"/>
+        <result property="isDeleted" column="is_deleted"/>
+    </resultMap>
+
+    <sql id="selectSalYtOrderSubVo">
+        select id, order_id, order_type,source_platform, platform_order_code, shipping_method, order_time, delivery_time, discount_amount,
+        remark, is_inbound_delivery, is_collected_shipping_cost, shipping_cost, create_user, create_time,
+        update_user, update_time, tenant_id, is_deleted
+        from sal_yt_order_sub where is_deleted = 0
+    </sql>
+
+    <select id="selectSalYtOrderSubById" parameterType="Long" resultMap="SalYtOrderSubResult">
+        select syob.*
+        from sal_yt_order_sub as syob where is_deleted = 0
+        and id = #{id}
+    </select>
+
+    <select id="selectSalYtOrderSubList" parameterType="com.qiaomoyun.entity.sal.yt.SalYtOrderSub" resultMap="SalYtOrderSubResult">
+        select syob.*
+        from sal_yt_order_sub as syob
+        <where>
+         is_deleted=0
+            <if test="orderId != null">and order_id = #{orderId}</if>
+            <if test="orderType != null and orderType != ''">and order_type = #{orderType}</if>
+            <if test="shippingMethod != null and shippingMethod != ''">and shipping_method = #{shippingMethod}</if>
+            <if test="orderTime != null">and order_time = #{orderTime}</if>
+            <if test="deliveryTime != null">and delivery_time = #{deliveryTime}</if>
+            <if test="isInboundDelivery != null">and is_inbound_delivery = #{isInboundDelivery}</if>
+            <if test="isCollectedShippingCost != null">and is_collected_shipping_cost = #{isCollectedShippingCost}</if>
+        </where>
+    </select>
+
+    <select id="selectSalYtOrderSubByOrderId" parameterType="Long" resultMap="SalYtOrderSubResult">
+        <include refid="selectSalYtOrderSubVo"/>
+        and order_id = #{orderId}
+    </select>
+
+    <delete id="deleteSalYtOrderSubById" parameterType="Long">
+        update sal_yt_order_sub set is_deleted = 1 where id = #{id}
+    </delete>
+
+    <delete id="deleteSalYtOrderSubByIds" parameterType="List">
+        update sal_yt_order_sub set is_deleted = 1 where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSalYtOrderSubByOrderId" parameterType="java.lang.Long">
+        update sal_yt_order_sub set is_deleted = 1 where order_id = #{orderId}
+    </delete>
+
+    <!-- 获取子订单下商品项的最小状态 -->
+    <select id="selectMinStatusByOrderSubId" parameterType="java.lang.Long" resultType="java.lang.String">
+        select min(status) as minStatus
+        from sal_yt_order_sub_item
+        where order_sub_id = #{orderSubId} and is_deleted = 0
+    </select>
+
+    <!-- 计算子订单总金额（商品总金额） -->
+    <select id="calculateOrderSubAmount" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select sum(price * number) as totalAmount
+        from sal_yt_order_sub_item
+        where order_sub_id = #{orderSubId} and is_deleted = 0
+    </select>
+    <select id="selectOrderProfitList" resultType="com.qiaomoyun.vo.fin.yt.FinYtProfitOrderProfitListVo"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+            base.*,
+            -- 利润：base.totalOrderPrice 已经是换算后的值，直接减去成本
+            (base.totalOrderPrice - base.totalOrderCost) AS profit,
+            -- 利润率：base.totalOrderPrice 已经是换算后的值
+            CASE
+                WHEN base.totalOrderPrice > 0
+                    THEN ((base.totalOrderPrice - base.totalOrderCost) / base.totalOrderPrice) * 100
+                ELSE 0
+            END as profitRate
+        FROM (
+            SELECT
+                so.id,
+                so.code ,
+                so.create_time AS create_time,
+                so.receive_status as receiveStatus,
+                so.currency,
+                so.exchange_rate,
+                -- 运费：当已收取运费时取主表shipping_cost，未收取时从子订单的receive_shipping字段累加
+                CASE WHEN so.is_collected_shipping_cost = 0
+                    THEN COALESCE(SUM(sos.receive_shipping), 0)
+                    ELSE so.shipping_cost
+                END AS totalShippingPrice,
+                -- 优惠金额（从主表）
+                so.discount_amount as discountAmount,
+                so.is_collected_shipping_cost,
+                so.status,
+                -- 商品收入：美元订单需要乘以汇率换算为人民币
+                CASE
+                    WHEN so.currency = '1' THEN SUM(sosi.price * sosi.number) * so.exchange_rate
+                    ELSE SUM(sosi.price * sosi.number)
+                END AS totalItemPrice,
+                -- 订单总收入 = 商品收入 + 运费 - 优惠金额：美元订单需要乘以汇率换算为人民币
+                -- 当未收取运费时，运费从子订单的receive_shipping字段累加
+                CASE
+                    WHEN so.currency = '1' THEN
+                        (SUM(sosi.price * sosi.number)
+                            + CASE WHEN so.is_collected_shipping_cost = 0
+                                THEN COALESCE(SUM(sos.receive_shipping), 0)
+                                ELSE so.shipping_cost
+                            END
+                            - so.discount_amount) * so.exchange_rate
+                    ELSE
+                        SUM(sosi.price * sosi.number)
+                            + CASE WHEN so.is_collected_shipping_cost = 0
+                                THEN COALESCE(SUM(sos.receive_shipping), 0)
+                                ELSE so.shipping_cost
+                            END
+                            - so.discount_amount
+                END AS totalOrderPrice,
+                SUM(sosi.supplier_price * sosi.number) AS totalItemCost,
+                -- 运费成本：从子订单的payment_shipping字段累加
+                COALESCE(SUM(sos.payment_shipping), 0) AS totalShippingCost,
+                SUM(sosi.supplier_price * sosi.number) + COALESCE(SUM(sos.payment_shipping), 0) AS totalOrderCost,
+                so.follow_employee_id,
+                so.sale_employee_id,
+                so.follow_ratio,
+                so.sale_ratio,
+                (select nick_name from sys_user where user_id = so.follow_employee_id) as follow_employee_name,
+                (select nick_name from sys_user where user_id = so.sale_employee_id) as sale_employee_name,
+                c.name as customerName
+            FROM sal_yt_order so
+            LEFT JOIN sal_yt_order_sub sos ON so.id = sos.order_id AND sos.is_deleted = 0
+            LEFT JOIN sal_yt_order_sub_item sosi ON sos.id = sosi.order_sub_id AND sosi.is_deleted = 0
+            LEFT JOIN sal_yt_customer c ON so.customer_id = c.id AND c.is_deleted = 0
+            WHERE so.is_deleted = 0
+            <if test="orderCode != null and orderCode != ''">
+                AND so.code LIKE CONCAT('%', #{orderCode}, '%')
+            </if>
+            <if test="saleEmployeeId != null">
+                AND so.sale_employee_id = #{saleEmployeeId}
+            </if>
+            <if test="followEmployeeId != null">
+                AND so.follow_employee_id = #{followEmployeeId}
+            </if>
+            <if test="customerName != null and customerName != ''">
+                AND c.name LIKE CONCAT('%', #{customerName}, '%')
+            </if>
+            <if test="customerId != null ">
+                AND c.id = #{customerId}
+            </if>
+            GROUP BY so.id
+        ) AS base
+        WHERE 1=1
+        <if test="profitRateMin != null">
+            AND CASE
+                WHEN base.totalOrderPrice > 0
+                    THEN ((base.totalOrderPrice - base.totalOrderCost) / base.totalOrderPrice) * 100
+                ELSE 0
+            END >= #{profitRateMin}
+        </if>
+        <if test="profitRateMax != null">
+            AND CASE
+                WHEN base.totalOrderPrice > 0
+                    THEN ((base.totalOrderPrice - base.totalOrderCost) / base.totalOrderPrice) * 100
+                ELSE 0
+            END &lt;= #{profitRateMax}
+        </if>
+        and base.`status`!=3
+        order by base.create_time desc
+    </select>
+
+    <select id="selectOrderProfitDetail" resultType="com.qiaomoyun.vo.fin.yt.FinYtProfitOrderProfitListVo"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+            base.*,
+            -- 利润：考虑币种，美元订单需要换算
+            CASE
+                WHEN base.currency = '1' THEN (base.totalOrderPrice - base.totalOrderCost )
+                ELSE base.totalOrderPrice - base.totalOrderCost
+            END AS profit,
+            -- 利润率：考虑币种，美元订单需要换算
+            CASE
+                WHEN base.totalOrderPrice > 0
+                    THEN CASE
+                        WHEN base.currency = '1'
+                            THEN ((base.totalOrderPrice  - base.totalOrderCost ) / (base.totalOrderPrice )) * 100
+                        ELSE ((base.totalOrderPrice - base.totalOrderCost) / base.totalOrderPrice) * 100
+                    END
+                ELSE 0
+            END as profitRate
+        FROM (
+            SELECT
+                so.id,
+                so.code ,
+                so.create_time AS create_time,
+                so.receive_status as receiveStatus,
+                so.currency,
+                so.exchange_rate,
+        -- 运费：当已收取运费时取主表shipping_cost，未收取时从子订单的receive_shipping字段累加
+        CASE WHEN so.is_collected_shipping_cost = 0
+        THEN COALESCE(SUM(sos.receive_shipping), 0)
+        ELSE so.shipping_cost
+        END AS totalShippingPrice,
+                -- 优惠金额（从主表）
+                so.discount_amount as discountAmount,
+                so.is_collected_shipping_cost,
+                -- 商品收入：美元订单需要乘以汇率换算为人民币
+                CASE
+                    WHEN so.currency = '1' THEN SUM(sosi.price * sosi.number) * so.exchange_rate
+                    ELSE SUM(sosi.price * sosi.number)
+                END AS totalItemPrice,
+        -- 订单总收入 = 商品收入 + 运费 - 优惠金额：美元订单需要乘以汇率换算为人民币
+        -- 当未收取运费时，运费从子订单的receive_shipping字段累加
+        CASE
+        WHEN so.currency = '1' THEN
+        (SUM(sosi.price * sosi.number)
+        + CASE WHEN so.is_collected_shipping_cost = 0
+        THEN COALESCE(SUM(sos.receive_shipping), 0)
+        ELSE so.shipping_cost
+        END
+        - so.discount_amount) * so.exchange_rate
+        ELSE
+        SUM(sosi.price * sosi.number)
+        + CASE WHEN so.is_collected_shipping_cost = 0
+        THEN COALESCE(SUM(sos.receive_shipping), 0)
+        ELSE so.shipping_cost
+        END
+        - so.discount_amount
+        END AS totalOrderPrice,
+                SUM(sosi.supplier_price * sosi.number) AS totalItemCost,
+                -- 运费成本：从子订单的payment_shipping字段累加
+                COALESCE(SUM(sos.payment_shipping), 0) AS totalShippingCost,
+                SUM(sosi.supplier_price * sosi.number) + COALESCE(SUM(sos.payment_shipping), 0) AS totalOrderCost,
+                so.follow_employee_id,
+                so.sale_employee_id,
+                so.follow_ratio,
+                so.sale_ratio,
+                (select nick_name from sys_user where user_id = so.follow_employee_id) as follow_employee_name,
+                (select nick_name from sys_user where user_id = so.sale_employee_id) as sale_employee_name,
+                c.name as customerName,
+                so.customer_address
+            FROM sal_yt_order so
+            LEFT JOIN sal_yt_order_sub sos ON so.id = sos.order_id AND sos.is_deleted = 0
+            LEFT JOIN sal_yt_order_sub_item sosi ON sos.id = sosi.order_sub_id AND sosi.is_deleted = 0
+            LEFT JOIN sal_yt_customer c ON so.customer_id = c.id AND c.is_deleted = 0
+            WHERE so.is_deleted = 0
+            <if test="orderId != null">
+               -- AND so.id IN (SELECT order_id FROM sal_yt_order_sub WHERE id = {subId})
+                AND so.id = #{orderId}
+            </if>
+            <if test="subCode != null and subCode != ''">
+                AND so.code LIKE CONCAT('%', #{subCode}, '%')
+            </if>
+            GROUP BY so.id
+        ) AS base
+    </select>
+
+    <select id="calculateReceiveShipping" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        SELECT COALESCE(SUM(delivery_proportion * total_delivery_receive), 0) AS receiveShipping
+        FROM (
+            SELECT
+                delivery_id,
+                (number / total_delivery_number) AS delivery_proportion
+            FROM (
+                SELECT
+                    sydi.order_sub_id,
+                    sydi.delivery_id,
+                    sydi.number,
+                    (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sydi.delivery_id AND is_deleted = 0) AS total_delivery_number
+                FROM sto_yt_delivery_item sydi
+                WHERE sydi.order_sub_id = #{orderSubId} AND sydi.is_deleted = 0
+            ) AS order_sub_delivery
+            WHERE total_delivery_number > 0
+        ) AS delivery_proportions
+        LEFT JOIN (
+            SELECT delivery_id, SUM(amount) AS total_delivery_receive
+            FROM sto_yt_delivery_receive
+            WHERE is_deleted = 0
+            GROUP BY delivery_id
+        ) AS delivery_receives ON delivery_proportions.delivery_id = delivery_receives.delivery_id
+    </select>
+
+    <select id="calculatePaymentShipping" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        SELECT COALESCE(SUM(delivery_proportion * delivery_amount), 0) AS paymentShipping
+        FROM (
+            SELECT
+                delivery_id,
+                (number / total_delivery_number) AS delivery_proportion,
+                (SELECT delivery_amount FROM sto_yt_delivery WHERE id = order_sub_delivery.delivery_id AND is_deleted = 0) AS delivery_amount
+            FROM (
+                SELECT
+                    sydi.order_sub_id,
+                    sydi.delivery_id,
+                    sydi.number,
+                    (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sydi.delivery_id AND is_deleted = 0) AS total_delivery_number
+                FROM sto_yt_delivery_item sydi
+                WHERE sydi.order_sub_id = #{orderSubId} AND sydi.is_deleted = 0
+            ) AS order_sub_delivery
+            WHERE total_delivery_number > 0
+        ) AS delivery_proportions
+    </select>
+
+    <!-- 查询订单利润产品列表 -->
+    <select id="selectOrderProfitProduct" resultType="com.qiaomoyun.vo.fin.yt.FinYtOrderProfitProductVo" parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+            (select code from pro_yt_product where id = sosi.product_id) as productCode,
+            SUM(sosi.number) AS number,
+--             sosi.price as unitPrice,
+--             sosi.supplier_price as unitCost,
+               MAX(sosi.price) as unitPrice,
+               MAX(so.currency) as currency,
+               MAX(so.exchange_rate) as exchangeRate,
+               MAX(sosi.supplier_price) as unitCost,
+            SUM(sosi.price * sosi.number) AS totalPrice,
+            SUM(sosi.supplier_price * sosi.number) AS totalCost,
+            SUM((sosi.price - sosi.supplier_price) * sosi.number) AS totalProfit,
+           -- ((SUM((sosi.price - sosi.supplier_price) * sosi.number) / NULLIF(SUM(sosi.price * sosi.number), 0)) * 100) AS profitRate,
+        ((SUM(CASE WHEN so.currency = '1' THEN sosi.price * sosi.number * so.exchange_rate ELSE sosi.price * sosi.number END) - SUM(sosi.supplier_price * sosi.number)) / NULLIF(SUM(CASE WHEN so.currency = '1' THEN sosi.price * sosi.number * so.exchange_rate ELSE sosi.price * sosi.number END), 0) * 100) AS profitRate,
+            sosi.specification_id
+        FROM sal_yt_order_sub_item sosi
+        LEFT JOIN sal_yt_order_sub sos ON sosi.order_sub_id = sos.id AND sos.is_deleted = 0
+        LEFT JOIN sal_yt_order so ON sos.order_id = so.id AND so.is_deleted = 0
+        WHERE sosi.is_deleted = 0 and sosi.specification_id is not null
+        <if test="orderId != null">
+            AND so.id = #{orderId}
+        </if>
+        <if test="productCode != null">
+            AND sosi.product_id in( select id from pro_yt_product where code like concat('%',#{productCode},'%'))
+        </if>
+        <if test="specificationName != null and specificationName!=''">
+            AND sosi.specification_id in( select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where  value like concat('%',#{specificationName},'%')) and is_deleted=0 )
+        </if>
+        <if test="subCode != null and subCode != ''">
+            AND sos.sub_code LIKE CONCAT('%', #{subCode}, '%')
+        </if>
+        group by sosi.specification_id, sosi.product_id
+        ORDER BY sosi.product_id
+    </select>
+    <select id="customerProfitList" resultType="com.qiaomoyun.vo.fin.yt.FinYtCustomerProfitVo"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+            base.customerIncome,
+            base.customerExpense,
+            base.customerIncome - IFNULL(base.customerExpense, 0) AS customerProfit,
+            CASE WHEN base.customerIncome = 0 THEN 0
+            ELSE (base.customerIncome - IFNULL(base.customerExpense, 0))/base.customerIncome
+            END AS customerProfitRate,
+            base.customerId,
+            base.customerCode,
+            base.customerName,
+            base.saleEmployeeName
+        FROM (
+                 SELECT
+                     -- IFNULL(SUM(syosi.price * syosi.number), 0) +
+                     IFNULL(SUM(syosi.base_price * syosi.number), 0) +
+                     IFNULL(SUM(CASE WHEN syo.is_collected_shipping_cost = 1
+                                         THEN CASE WHEN syo.currency = '1' THEN syo.shipping_cost * syo.exchange_rate ELSE syo.shipping_cost END
+                                     ELSE syos.receive_shipping_base_price
+                                END), 0) -
+                     IFNULL(SUM(CASE WHEN syo.currency = '1' THEN syo.discount_amount * syo.exchange_rate ELSE syo.discount_amount END), 0) AS customerIncome,
+                     IFNULL(SUM(syosi.supplier_price * syosi.number), 0) + IFNULL(SUM(syos.payment_shipping), 0) AS customerExpense,
+                     syo.customer_id as customerId,
+--                      (select nick_name from sys_user where user_id =syo.sale_employee_id) as saleEmployeeName,
+        MAX((select nick_name from sys_user where user_id = syo.sale_employee_id)) as saleEmployeeName,
+                    syc.name as customerName,
+                    syc.code as customerCode
+                 FROM sal_yt_customer as syc
+                        left join sal_yt_order AS syo on syo.customer_id = syc.id
+                          LEFT JOIN sal_yt_order_sub AS syos ON syo.id = syos.order_id
+                          LEFT JOIN sal_yt_order_sub_item AS syosi ON syosi.order_sub_id = syos.id
+                 WHERE
+                     syo.is_deleted = 0
+                   AND syos.is_deleted = 0
+                   AND syosi.is_deleted = 0
+                 <if test="customerName!=null and customerName !=''">
+                    and syc.name like concat('%',#{customerName},'%')
+                 </if>
+                <if test="customerCode!=null and customerCode !=''">
+                    and syc.code like concat('%',#{customerCode},'%')
+                </if>
+        <if test="startTime!=null ">
+            and syo.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null ">
+            and syo.create_time &lt;= #{endTime}
+        </if>
+        <if test="saleEmployeeId!=null ">
+            and syo.sale_employee_id = #{saleEmployeeId}
+        </if>
+        group by  syc.id, syc.name, syc.code, syo.customer_id
+             ) AS base
+        WHERE 1=1
+        <if test="profitRateMin != null">
+            AND
+            CASE WHEN base.customerIncome = 0 THEN 0
+            ELSE (base.customerIncome - IFNULL(base.customerExpense, 0))/base.customerIncome
+            END >= #{profitRateMin}
+        </if>
+        <if test="profitRateMax != null">
+            AND
+            CASE WHEN base.customerIncome = 0 THEN 0
+            ELSE (base.customerIncome - IFNULL(base.customerExpense, 0))/base.customerIncome
+            END &lt;= #{profitRateMax}
+        </if>
+    </select>
+    <select id="customerProfitDetail" resultType="com.qiaomoyun.vo.fin.yt.FinYtCustomerProfitVo"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+        base.customerIncome,
+        base.customerExpense,
+        base.customerIncome - IFNULL(base.customerExpense, 0) AS customerProfit,
+        CASE WHEN base.customerIncome = 0 THEN 0
+        ELSE (base.customerIncome - IFNULL(base.customerExpense, 0))/base.customerIncome
+        END AS customerProfitRate,
+        base.customerId,
+        base.customerCode,
+        base.customerName,
+        base.saleEmployeeName,
+        base.customerOrderIncome,
+        base.customerShippingIncome,
+        base.customerOrderExpense,
+        base.customerShippingExpense,
+        base.customerDiscount
+        FROM (
+            SELECT
+        IFNULL(SUM(syosi.base_price * syosi.number), 0) +
+        IFNULL(SUM(CASE WHEN syo.is_collected_shipping_cost = 1
+        THEN CASE WHEN syo.currency = '1' THEN syo.shipping_cost * syo.exchange_rate ELSE syo.shipping_cost END
+        ELSE syos.receive_shipping_base_price
+        END), 0) -
+        IFNULL(SUM(CASE WHEN syo.currency = '1' THEN syo.discount_amount * syo.exchange_rate ELSE syo.discount_amount END), 0) AS customerIncome,
+            IFNULL(SUM(syosi.supplier_price * syosi.number), 0) + IFNULL(SUM(syos.payment_shipping), 0) AS customerExpense,
+            syo.customer_id as customerId,
+            (select nick_name from sys_user where user_id =syo.sale_employee_id) as saleEmployeeName,
+            syc.name as customerName,
+            syc.code as customerCode,
+            SUM(syosi.base_price * syosi.number) as customerOrderIncome,
+            SUM(CASE WHEN syo.is_collected_shipping_cost = 1
+                     THEN CASE WHEN syo.currency = '1' THEN syo.shipping_cost * syo.exchange_rate ELSE syo.shipping_cost END
+                     ELSE syos.receive_shipping_base_price
+                END) as customerShippingIncome,
+        SUM(syosi.supplier_price * syosi.number) as customerOrderExpense,
+        SUM(syos.payment_shipping) as customerShippingExpense,
+        SUM(CASE WHEN syo.currency = '1' THEN syo.discount_amount * syo.exchange_rate ELSE syo.discount_amount END) as customerDiscount
+                FROM sal_yt_customer as syc
+                left join sal_yt_order AS syo on syo.customer_id = syc.id
+                LEFT JOIN sal_yt_order_sub AS syos ON syo.id = syos.order_id
+                LEFT JOIN sal_yt_order_sub_item AS syosi ON syosi.order_sub_id = syos.id
+            WHERE
+            syo.is_deleted = 0
+            AND syos.is_deleted = 0
+            AND syosi.is_deleted = 0
+            And syc.id= #{customerId}
+            <if test="customerName!=null and customerName !=''">
+                and syc.name like concat('%',#{customerName},'%')
+            </if>
+            <if test="customerCode!=null and customerCode !=''">
+                and syc.code like concat('%',#{customerCode},'%')
+            </if>
+            <if test="startTime!=null ">
+                and syo.create_time >= #{startTime}
+            </if>
+            <if test="endTime!=null ">
+                and syo.create_time &lt;= #{endTime}
+            </if>
+            <if test="saleEmployeeId!=null ">
+                and syo.sale_employee_id = #{saleEmployeeId}
+            </if>
+        GROUP BY syc.id, syo.customer_id, syo.sale_employee_id
+        ) AS base
+    </select>
+    <select id="customerProductProfit" resultType="com.qiaomoyun.vo.fin.yt.CustomerProductProfitVo"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+        base.categoryName,
+        base.orderNumber,
+        CASE WHEN base.customerOrderIncome = 0 THEN 0
+        ELSE (base.customerOrderIncome - base.customerOrderExpense)/base.customerOrderIncome
+        END AS profitRate,
+        (base.customerOrderIncome - base.customerOrderExpense) as profit,
+        base.categoryId
+        FROM (
+        SELECT
+            (select name from pro_yt_product_category where id = pyp.category_id) as categoryName,
+            pyp.category_id as categoryId,
+            sum(syosi.number) as orderNumber,
+            SUM(syosi.price * syosi.number) as customerOrderIncome,
+            SUM(syosi.supplier_price * syosi.number) as customerOrderExpense
+        FROM sal_yt_customer as syc
+        left join sal_yt_order AS syo on syo.customer_id = syc.id
+        LEFT JOIN sal_yt_order_sub AS syos ON syo.id = syos.order_id
+        LEFT JOIN sal_yt_order_sub_item AS syosi ON syosi.order_sub_id = syos.id
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        WHERE
+        syo.is_deleted = 0
+        AND syos.is_deleted = 0
+        AND syosi.is_deleted = 0
+        And syc.id= #{customerId}
+        <if test="customerName!=null and customerName !=''">
+            and syc.name like concat('%',#{customerName},'%')
+        </if>
+        <if test="customerCode!=null and customerCode !=''">
+            and syc.code like concat('%',#{customerCode},'%')
+        </if>
+        <if test="startTime!=null ">
+            and syo.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null ">
+            and syo.create_time &lt;= #{endTime}
+        </if>
+        <if test="saleEmployeeId!=null ">
+            and syo.sale_employee_id = #{saleEmployeeId}
+        </if>
+        group by pyp.category_id
+        ) AS base
+    </select>
+    <select id="customerProductTotalProfit" resultType="java.math.BigDecimal"
+            parameterType="com.qiaomoyun.param.fin.yt.FinYtProfitQueryParams">
+        SELECT
+        (base.customerOrderIncome - base.customerOrderExpense) as profit
+        FROM (
+        SELECT
+        SUM(syosi.price * syosi.number) as customerOrderIncome,
+        SUM(syosi.supplier_price * syosi.number) as customerOrderExpense
+        FROM sal_yt_customer as syc
+        left join sal_yt_order AS syo on syo.customer_id = syc.id
+        LEFT JOIN sal_yt_order_sub AS syos ON syo.id = syos.order_id
+        LEFT JOIN sal_yt_order_sub_item AS syosi ON syosi.order_sub_id = syos.id
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        WHERE
+        syo.is_deleted = 0
+        AND syos.is_deleted = 0
+        AND syosi.is_deleted = 0
+        And syc.id= #{customerId}
+        <if test="customerName!=null and customerName !=''">
+            and syc.name like concat('%',#{customerName},'%')
+        </if>
+        <if test="customerCode!=null and customerCode !=''">
+            and syc.code like concat('%',#{customerCode},'%')
+        </if>
+        <if test="startTime!=null ">
+            and syo.create_time >= #{startTime}
+        </if>
+        <if test="endTime!=null ">
+            and syo.create_time &lt;= #{endTime}
+        </if>
+        <if test="saleEmployeeId!=null ">
+            and syo.sale_employee_id = #{saleEmployeeId}
+        </if>
+        ) AS base
+    </select>
+    <select id="selectConfirmedItemMinStatusByOrderSubId" resultType="java.lang.String"
+            parameterType="java.lang.Long">
+        select min(status) as minStatus
+        from sal_yt_order_sub_item
+        where order_sub_id = #{orderSubId} and is_deleted = 0 and specification_id is not null
+    </select>
+
+    <select id="selectOrderSubByOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select b.* from sal_yt_order_sub a right join sal_yt_order_sub_item b on a.id=b.order_sub_id
+        where a.order_id=#{orderId} and b.is_deleted=0 and a.is_deleted=0
+    </select>
+    <select id="selectNotDeliveredOrderSubByOrderId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSubItem">
+        select a.*
+        from sal_yt_order_sub_item a left join sal_yt_order_sub b on a.order_sub_id=b.id
+        where b.order_id = #{orderId}
+          and a.is_deleted = 0 and b.is_deleted=0
+         and a.order_sub_id != #{orderSubId}
+    </select>
+    <select id="selectByOrderIdExcludeOrderSubId" resultType="com.qiaomoyun.entity.sal.yt.SalYtOrderSub">
+            select *
+            from sal_yt_order_sub
+            where order_id = #{orderId}
+            and id != #{orderSubId}
+            and is_deleted = 0
+    </select>
+
+</mapper>

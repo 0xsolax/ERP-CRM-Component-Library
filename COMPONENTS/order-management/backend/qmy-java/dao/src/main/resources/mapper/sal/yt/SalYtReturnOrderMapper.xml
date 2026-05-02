@@ -1,0 +1,441 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sal.yt.SalYtReturnOrderMapper">
+
+    <sql id="Base_Column_List">
+        id, type, order_sub_item_id, before_return_number, return_number,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="selectByOrderSubItemId" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            sal_yt_return_order.*,
+            (select nick_name from sys_user where user_id = sal_yt_return_order.create_user) as returnUserName
+        FROM sal_yt_return_order
+        WHERE order_sub_item_id = #{orderSubItemId}
+        AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectByTypeAndOrderSubId" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            syro.*,syosi.specification_id,syosi.product_id, pyp.code as productCode
+        FROM sal_yt_return_order as syro
+        left join sal_yt_order_sub_item as syosi on syosi.id= syro.order_sub_item_id
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        WHERE type = #{type}
+        AND order_sub_item_id =#{orderSubItemId}
+        AND syro.is_deleted = 0
+        ORDER BY syro.create_time DESC
+    </select>
+
+    <select id="selectByTypeAndPurchaseItemId" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            syro.*,syosi.specification_id,syosi.product_id, pyp.code as productCode
+        FROM sal_yt_return_order as syro
+        left join sal_yt_order_sub_item as syosi on syosi.id= syro.order_sub_item_id
+        left join pro_yt_product as pyp on pyp.id = syosi.product_id
+        WHERE type = #{type}
+        AND syro.purchase_item_id = #{purchaseItemId}
+        AND syro.is_deleted = 0
+        ORDER BY syro.create_time DESC
+    </select>
+
+    <select id="sumReturnNumberByOrderSubItemId" resultType="java.lang.Integer">
+        SELECT
+        COALESCE(SUM(return_number), 0)
+        FROM sal_yt_return_order
+        WHERE order_sub_item_id = #{orderSubItemId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 获取退货统计信息的结果映射 -->
+    <resultMap id="ReturnStatsResultMap" type="com.qiaomoyun.vo.sal.yt.SalYtReturnStatsVo">
+        <result property="specificationId" column="specification_id"/>
+        <result property="productId" column="product_id"/>
+        <result property="productCode" column="productCode"/>
+        <result property="initialNumber" column="initial_number"/>
+        <result property="totalReturnNumber" column="total_return_number"/>
+        <result property="remainingNumber" column="remaining_number"/>
+        <collection property="returnOrderList" ofType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+            <id property="id" column="ro_id"/>
+            <result property="type" column="ro_type"/>
+            <result property="orderSubItemId" column="ro_order_sub_item_id"/>
+            <result property="beforeReturnNumber" column="ro_before_return_number"/>
+            <result property="returnNumber" column="ro_return_number"/>
+            <result property="reason" column="ro_reason"/>
+            <result property="createTime" column="ro_create_time"/>
+            <result property="returnUserName" column="returnUserName"/>
+        </collection>
+    </resultMap>
+
+    <!-- 获取退货统计信息的结果映射 -->
+    <resultMap id="ReturnStatsResultMap1" type="com.qiaomoyun.vo.sal.yt.SalYtReturnStatsVo">
+        <result property="specificationId" column="specification_id"/>
+        <result property="orderSubId" column="orderSubId"/>
+        <result property="labelId" column="labelId"/>
+        <result property="price" column="price"/>
+        <result property="supplierPrice" column="supplierPrice"/>
+        <result property="remark" column="remark"/>
+        <result property="productId" column="productId"/>
+        <result property="productCode" column="productCode"/>
+        <result property="initialNumber" column="initial_number"/>
+        <result property="totalReturnNumber" column="total_return_number"/>
+        <result property="remainingNumber" column="remaining_number"/>
+        <collection property="returnOrderList" ofType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+            <id property="id" column="ro_id"/>
+            <result property="type" column="ro_type"/>
+            <result property="orderSubItemId" column="ro_order_sub_item_id"/>
+            <result property="beforeReturnNumber" column="ro_before_return_number"/>
+            <result property="returnNumber" column="ro_return_number"/>
+            <result property="reason" column="ro_reason"/>
+            <result property="createTime" column="ro_create_time"/>
+            <result property="returnUserName" column="returnUserName"/>
+        </collection>
+    </resultMap>
+
+    <!-- 根据子订单ID查询所有规格的退货统计信息 -->
+    <select id="getReturnStatsByOrderSubItemId" resultMap="ReturnStatsResultMap">
+        SELECT
+            syosi.specification_id,
+            syosi.product_id,
+            pyp.code as productCode,
+            -- 获取最早的退货记录的before_return_number作为初始数量
+            (SELECT before_return_number FROM sal_yt_return_order
+             WHERE order_sub_item_id = #{orderSubItemId} AND is_deleted = 0
+             ORDER BY create_time ASC LIMIT 1) as initial_number,
+            -- 统计总退货数量
+            COALESCE(SUM(syro.return_number), 0) as total_return_number,
+            -- 计算剩余数量 = 初始数量 - 总退货数量
+            ((SELECT before_return_number FROM sal_yt_return_order
+              WHERE order_sub_item_id = #{orderSubItemId} AND is_deleted = 0
+              ORDER BY create_time ASC LIMIT 1) -
+             COALESCE(SUM(syro.return_number), 0)) as remaining_number,
+            -- 关联退货记录详情
+            syro.id as ro_id,
+            syro.type as ro_type,
+            syro.order_sub_item_id as ro_order_sub_item_id,
+            syro.before_return_number as ro_before_return_number,
+            syro.return_number as ro_return_number,
+            syro.reason as ro_reason,
+            syro.create_time as ro_create_time
+        FROM sal_yt_order_sub_item syosi
+        LEFT JOIN pro_yt_product pyp ON pyp.id = syosi.product_id
+        LEFT JOIN sal_yt_return_order syro ON syro.order_sub_item_id = syosi.id
+        WHERE syosi.id = #{orderSubItemId}
+        AND syosi.is_deleted = 0
+        AND (syro.is_deleted = 0 OR syro.is_deleted IS NULL)
+        GROUP BY syosi.specification_id
+        ORDER BY syosi.specification_id
+    </select>
+
+    <!-- 根据子订单ID和规格ID查询退货记录 -->
+    <select id="getReturnOrdersByOrderSubItemAndSpec" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            syro.*
+        FROM sal_yt_return_order syro
+        JOIN sal_yt_order_sub_item syosi ON syro.order_sub_item_id = syosi.id
+        WHERE syro.order_sub_item_id = #{orderSubItemId}
+        AND syosi.specification_id = #{specificationId}
+        AND syro.is_deleted = 0
+        AND syosi.is_deleted = 0
+        ORDER BY syro.create_time DESC
+    </select>
+
+    <!-- 新增：根据参数查询退货统计信息 -->
+    <select id="getReturnStats" resultMap="ReturnStatsResultMap">
+        SELECT
+            syosi.specification_id,
+            pyp.id as productId,
+            pyp.code as productCode,
+            -- 统计总退货数量
+            COALESCE(SUM(syro.return_number), 0) as total_return_number,
+            -- 获取第一笔退货记录的beforeReturnNumber作为初始数量
+            first_return.before_return_number as initial_number,
+            -- 计算剩余数量 = 初始数量(第一笔退货的beforeReturnNumber) - 总退货数量
+            (first_return.before_return_number - COALESCE(SUM(syro.return_number), 0)) as remaining_number,
+            -- 关联退货记录详情
+            syro.id as ro_id,
+            syro.type as ro_type,
+            syro.order_sub_item_id as ro_order_sub_item_id,
+            syro.before_return_number as ro_before_return_number,
+            syro.return_number as ro_return_number,
+            syro.reason as ro_reason,
+            syro.create_time as ro_create_time,
+        (select nick_name from sys_user where user_id = syro.create_user) as returnUserName
+        FROM
+            sal_yt_order_sub_item syosi
+        LEFT JOIN
+            sal_yt_return_order syro ON syro.order_sub_item_id = syosi.id
+        LEFT JOIN
+            pro_yt_product pyp ON pyp.id = syosi.product_id
+        LEFT JOIN (
+            SELECT
+                order_sub_item_id,
+                before_return_number
+            FROM (
+                SELECT
+                    order_sub_item_id,
+                    before_return_number,
+                    ROW_NUMBER() OVER (PARTITION BY order_sub_item_id ORDER BY create_time ASC) as rn
+                FROM
+                    sal_yt_return_order
+                WHERE
+                    is_deleted = 0
+            ) t
+            WHERE
+                rn = 1
+        ) first_return ON first_return.order_sub_item_id = syosi.id
+        WHERE
+            syosi.order_sub_id = #{params.orderSubId}
+            AND syosi.is_deleted = 0
+            <if test="params.productId != null">
+                AND syosi.product_id = #{params.productId}
+            </if>
+        <if test="params.productCode != null">
+            AND pyp.code like concat('%',#{params.productCode},'%')
+        </if>
+            <if test="params.specificationName != null and params.specificationName != ''">
+                AND syosi.specification_id in (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{params.specificationName}, '%')))
+            </if>
+        GROUP BY
+        syosi.order_sub_id,syosi.specification_id
+        ORDER BY
+            syosi.specification_id
+    </select>
+
+    <!-- 新增：根据多参数查询退货记录 -->
+    <select id="getReturnOrdersByParams" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            ryro.*,
+            syosi.specification_id as specificationId,
+            syosi.product_id as productId,
+            (select nick_name from sys_user where user_id = ryro.create_user) as returnUserName
+        FROM
+            sal_yt_return_order ryro
+        LEFT JOIN
+            sal_yt_order_sub_item syosi ON ryro.order_sub_item_id = syosi.id
+        left join
+                sal_yt_order_sub  a on a.id =syosi.order_sub_id
+        WHERE
+          --  syosi.order_sub_id = [params.orderSubId] and ryro.is_deleted=0
+            a.order_id = #{params.orderId} and ryro.is_deleted=0
+            <if test="params.productId != null">
+                AND syosi.product_id = #{params.productId}
+            </if>
+        <if test="params.productCode != null">
+            AND syosi.product_id in (select id from pro_yt_product where code like concat('%',#{params.productCode},'%'))
+        </if>
+            <if test="params.specificationId != null">
+                AND ryro.specification_id = #{params.specificationId}
+            </if>
+            <if test="params.specificationName != null and params.specificationName != ''">
+                AND ryro.order_sub_item_id in (select id from sal_yt_order_sub_item where specification_id in (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{params.specificationName}, '%'))) )
+            </if>
+            <if test="params.startTime != null">
+                AND ryro.create_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null">
+                AND #{params.endTime} >= ryro.create_time
+            </if>
+        ORDER BY
+            ryro.create_time DESC
+    </select>
+
+    <!-- 新增：根据采购项ID查询所有规格的退货统计信息 -->
+    <select id="getReturnStatsByPurchaseItemId" resultType="com.qiaomoyun.vo.sal.yt.SalYtReturnStatsVo">
+        SELECT
+            pyri.id as purchaseItemId,
+            pyri.specification_id as specificationId,
+            pyri.product_id as productId,
+            (select code from pro_yt_product where id = pyri.product_id )as productCode,
+            COUNT(ryro.id) as totalReturnCount,
+            SUM(ryro.return_number) as totalReturnNumber,
+            MAX(first_return.before_return_number) as initialNumber,
+            (MAX(first_return.before_return_number) - SUM(ryro.return_number)) as currentNumber
+        FROM
+            pur_yt_purchase_item pyri
+        LEFT JOIN
+            sal_yt_return_order ryro ON pyri.id = ryro.purchase_item_id AND ryro.is_deleted = 0
+        LEFT JOIN (
+            SELECT
+                purchase_item_id,
+                before_return_number,
+                ROW_NUMBER() OVER (PARTITION BY purchase_item_id ORDER BY create_time ASC) as rn
+            FROM
+                sal_yt_return_order
+            WHERE
+                is_deleted = 0 AND type = 2
+        ) first_return ON first_return.purchase_item_id = pyri.id AND first_return.rn = 1
+        WHERE
+            pyri.id = #{purchaseItemId}
+            AND pyri.is_deleted = 0
+        GROUP BY
+            pyri.id, pyri.specification_id
+        ORDER BY
+            pyri.specification_id
+    </select>
+
+    <!-- 根据采购单ID查询所有规格的退货统计信息 -->
+    <select id="getReturnStatsByPurchaseId" resultType="com.qiaomoyun.vo.sal.yt.SalYtReturnStatsVo" parameterType="com.qiaomoyun.param.sal.yt.SalYtReturnOrderQueryParams">
+        SELECT
+            pyri.id as purchaseItemId,
+            pyri.specification_id as specificationId,
+            pyri.product_id as productId,
+        (select code from pro_yt_product where id = pyri.product_id )as productCode,
+            COUNT(ryro.id) as totalReturnCount,
+            SUM(ryro.return_number) as totalReturnNumber,
+            MAX(first_return.before_return_number) as initialNumber,
+            (MAX(first_return.before_return_number) - SUM(ryro.return_number)) as currentNumber
+        FROM
+            pur_yt_purchase_item pyri
+        LEFT JOIN
+            sal_yt_return_order ryro ON pyri.id = ryro.purchase_item_id AND ryro.is_deleted = 0
+        LEFT JOIN (            SELECT
+                purchase_item_id,
+                before_return_number,
+                ROW_NUMBER() OVER (PARTITION BY purchase_item_id ORDER BY create_time ASC) as rn
+            FROM
+                sal_yt_return_order
+            WHERE
+                is_deleted = 0 AND type = 2
+        ) first_return ON first_return.purchase_item_id = pyri.id AND first_return.rn = 1
+        WHERE
+            pyri.purchase_id = #{params.purchaseId}
+            AND pyri.is_deleted = 0
+            <if test="params.specificationName != null and params.specificationName != ''">
+                AND pyri.specification_id in (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{params.specificationName}, '%')))
+            </if>
+            <if test="params.productCode != null and params.productCode != ''">
+                AND pyri.product_id in (select id from pro_yt_product  where code LIKE CONCAT('%', #{params.productCode}, '%'))
+            </if>
+            <if test="params.startTime != null">
+                AND ryro.create_time >= #{params.startTime}
+            </if>
+            <if test="params.endTime != null">
+                AND ryro.create_time &lt;= #{params.endTime}
+            </if>
+        GROUP BY
+            pyri.id, pyri.specification_id
+        ORDER BY
+            pyri.specification_id
+    </select>
+
+    <!-- 新增：根据采购项ID或子订单项ID查询退货记录 -->
+    <select id="selectByPurchaseItemIdOrOrderSubItemId" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder">
+        SELECT
+            ryro.*,
+            syosi.specification_id as specificationId,
+            syosi.product_id as productId,
+            (select nick_name from sys_user where user_id = ryro.create_user) as returnUserName
+        FROM
+            sal_yt_return_order ryro
+        LEFT JOIN
+            sal_yt_order_sub_item syosi ON ryro.order_sub_item_id = syosi.id
+        WHERE
+            ryro.is_deleted = 0
+            AND (
+                (ryro.type = 2 AND ryro.purchase_item_id = #{purchaseItemId})
+                OR (ryro.type = 1 AND ryro.order_sub_item_id = #{orderSubItemId})
+            )
+        ORDER BY
+            ryro.create_time DESC
+    </select>
+
+    <!-- 新增：根据采购单ID查询退货记录 -->
+    <select id="getReturnByPurchaseId" resultType="com.qiaomoyun.entity.sal.yt.SalYtReturnOrder" parameterType="com.qiaomoyun.param.sal.yt.SalYtReturnOrderQueryParams">
+        SELECT
+            ryro.*,
+            pyri.id as purchaseItemId,
+            pyri.specification_id as specificationId,
+            pyri.product_id as productId,
+            (select code from pro_yt_product where id = pyri.product_id) as productCode,
+            (select nick_name from sys_user where user_id = ryro.create_user) as returnUserName
+        FROM
+            pur_yt_purchase_item pyri
+        INNER JOIN
+            sal_yt_return_order ryro ON pyri.id = ryro.purchase_item_id AND ryro.is_deleted = 0
+        WHERE
+            pyri.purchase_id = #{returnOrderParams.purchaseId}
+            AND pyri.is_deleted = 0
+            <if test="returnOrderParams.specificationName != null and returnOrderParams.specificationName != ''">
+                AND pyri.specification_id in (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{returnOrderParams.specificationName}, '%')))
+            </if>
+            <if test="returnOrderParams.productCode != null and returnOrderParams.productCode != ''">
+                AND pyri.product_id in (select id from pro_yt_product where code LIKE CONCAT('%', #{returnOrderParams.productCode}, '%'))
+            </if>
+            <if test="returnOrderParams.startTime != null">
+                AND ryro.create_time >= #{returnOrderParams.startTime}
+            </if>
+            <if test="returnOrderParams.endTime != null">
+                AND ryro.create_time &lt;= #{returnOrderParams.endTime}
+            </if>
+        ORDER BY
+            ryro.create_time DESC
+    </select>
+
+
+    <select id="getReturnStats1" resultMap="ReturnStatsResultMap1">
+        SELECT ANY_VALUE(syosi.order_sub_id) as orderSubId,
+               ANY_VALUE(syosi.label_id) as labelId,
+               ANY_VALUE(syosi.price) as price,
+               ANY_VALUE(syosi.supplier_price) as supplierPrice,
+               ANY_VALUE(syosi.remark) as remark,
+               syosi.specification_id,
+               ANY_VALUE(pyp.id) as productId,
+               ANY_VALUE(pyp.code) as productCode,
+               COALESCE(SUM(syro.return_number), 0) as total_return_number,
+               ANY_VALUE(first_return.before_return_number) as initial_number,
+               (ANY_VALUE(first_return.before_return_number) - COALESCE(SUM(syro.return_number), 0)) as remaining_number,
+               ANY_VALUE(ro_detail.ro_id) as ro_id,
+               ANY_VALUE(ro_detail.ro_type) as ro_type,
+               ANY_VALUE(ro_detail.ro_order_sub_item_id) as ro_order_sub_item_id,
+               ANY_VALUE(ro_detail.ro_before_return_number) as ro_before_return_number,
+               ANY_VALUE(ro_detail.ro_return_number) as ro_return_number,
+               ANY_VALUE(ro_detail.ro_reason) as ro_reason,
+               ANY_VALUE(ro_detail.ro_create_time) as ro_create_time,
+               ANY_VALUE(ro_detail.returnUserName) as returnUserName
+        FROM sal_yt_order_sub_item syosi
+        INNER JOIN sal_yt_order_sub syos ON syos.id = syosi.order_sub_id
+        LEFT JOIN sal_yt_return_order syro ON syro.order_sub_item_id = syosi.id
+        LEFT JOIN pro_yt_product pyp ON pyp.id = syosi.product_id
+        LEFT JOIN (
+            SELECT order_sub_item_id,
+                   before_return_number
+            FROM (
+                SELECT order_sub_item_id,
+                       before_return_number,
+                       ROW_NUMBER() OVER (PARTITION BY order_sub_item_id ORDER BY create_time ASC) as rn
+                FROM sal_yt_return_order
+                WHERE is_deleted = 0
+            ) t
+            WHERE rn = 1
+        ) first_return ON first_return.order_sub_item_id = syosi.id
+        LEFT JOIN (
+            SELECT syro_inner.id as ro_id,
+                   syro_inner.type as ro_type,
+                   syro_inner.order_sub_item_id as ro_order_sub_item_id,
+                   syro_inner.before_return_number as ro_before_return_number,
+                   syro_inner.return_number as ro_return_number,
+                   syro_inner.reason as ro_reason,
+                   syro_inner.create_time as ro_create_time,
+                   (SELECT nick_name FROM sys_user WHERE user_id = syro_inner.create_user) as returnUserName
+            FROM sal_yt_return_order syro_inner
+            WHERE syro_inner.is_deleted = 0
+        ) ro_detail ON ro_detail.ro_order_sub_item_id = syosi.id
+        WHERE syos.order_id = #{params.orderId}
+          AND syosi.is_deleted = 0
+          AND syos.is_deleted = 0
+        <if test="params.productId != null">
+            AND syosi.product_id = #{params.productId}
+        </if>
+        <if test="params.productCode != null">
+            AND pyp.code like concat('%',#{params.productCode},'%')
+        </if>
+        <if test="params.specificationName != null and params.specificationName != ''">
+            AND syosi.specification_id in (select product_specification_id from pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{params.specificationName}, '%')))
+        </if>
+        GROUP BY syosi.specification_id
+        ORDER BY syosi.specification_id
+    </select>
+</mapper>

@@ -136,6 +136,43 @@
 - `RAW/PROJECTs/qmy-admin/src/interface/table.ts`
 - `RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts`
 
+#### 订单管理组件关键路径
+
+- `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/controller/OrdersController.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/entity/Orders.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/mapper/OrdersMapper.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/OrdersService.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/java/com/erp/service/impl/OrdersServiceImpl.java`
+- `RAW/PROJECTs/zhongsheng-AI/erp-backend/src/main/resources/init.sql`
+- `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sal/yt/SalYtOrderController.java`
+- `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt/PurYtApplyPurchaseController.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/service/sal/yt/SalYtOrderService.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtOrderManager.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/yt/SalYtOrderSubItemOperationManager.java`
+- `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/pur/yt/PurYtApplyPurchaseManager.java`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/yt`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/pur/yt/PurYtApplyPurchase.java`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/yt`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/yt`
+- `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/vo/pur/yt/PurYtApplyPurchaseListVo.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/yt`
+- `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/pur/yt/PurYtApplyPurchaseMapper.java`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/yt`
+- `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/pur/yt/PurYtApplyPurchaseMapper.xml`
+- `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/OrderSubItemStatusEnum.java`
+- `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/ShippingMethodEnum.java`
+- `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/ReturnOrderTypeEnum.java`
+- `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/DeliveryOrderStatusEnum.java`
+- `RAW/PROJECTs/qmy-admin/src/views/admin/sales/order`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/sales/order.ts`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/product/index.ts`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/auth/org.ts`
+- `RAW/PROJECTs/qmy-admin/src/constant/yitang/sales.ts`
+- `RAW/PROJECTs/qmy-admin/src/constant/yitang/finance.ts`
+- `RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/sales.ts`
+
 ### 调研资料
 
 - `RAW/docs/zhongsheng/第一次调研（2026.02.11）/第一次会议.md`
