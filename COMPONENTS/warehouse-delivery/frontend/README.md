@@ -65,5 +65,6 @@ frontend/qmy-admin/src/
 - `@/layout/admin/index.vue`、路由注册、权限守卫、按钮权限来自 qmy-admin 基座。
 - `@/utils/axios`、`@/utils/validate`、`@/utils/print` 来自前端基座。
 - `@/views/admin/store/modules/tags`、`@/views/admin/store/modules/permission` 来自 qmy-admin 全局 store。
+- `@/hooks/handle/use-handle` 来自 qmy-admin 共享确认 hook，仅 legacy `delivery/record` 使用。
 - `@/components/footer-actions/index.vue` 和 `@/components/product-selector/index.vue` 属于共享组件，不作为仓储私有实现复制。
 - 产品、客户、订单、采购、财务完整页面不属于本组件。

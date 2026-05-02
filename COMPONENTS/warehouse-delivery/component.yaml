@@ -12,6 +12,7 @@ source_layer:
     - RAW/PROJECTs/qmy-admin/src/api/admin/delivery/index.ts
     - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/warehouse.ts
     - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/delivery.ts
+    - RAW/PROJECTs/qmy-admin/src/hooks/handle/use-handle.ts
     - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt
     - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sto/yt
     - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sto/yt
@@ -93,7 +94,8 @@ entrypoints:
       - RAW/PROJECTs/qmy-admin/src/components/product-selector
       - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts
       - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/permission/index.ts
-      - RAW/PROJECTs/qmy-admin/src/utils/axios.ts
+      - RAW/PROJECTs/qmy-admin/src/hooks/handle/use-handle.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/axios
       - RAW/PROJECTs/qmy-admin/src/utils/validate.ts
       - RAW/PROJECTs/qmy-admin/src/utils/print.ts
       - RAW/PROJECTs/qmy-admin/src/layout/admin/index.vue

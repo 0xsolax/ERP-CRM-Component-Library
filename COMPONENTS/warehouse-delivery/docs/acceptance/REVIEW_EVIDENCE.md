@@ -54,6 +54,12 @@ multica issue status SOL-51 in_review --output json
 - qmy-admin `delivery` 路由当前整体注释，默认接入不应启用 legacy 发货入口。
 - qmy-java 中仓储发货接口存在权限注释、缺数据范围和破坏性 GET，已写入权限契约和接入前清单。
 
+## Subagent 严格复核
+
+- 结论：通过，无 P1/P2 阻塞。
+- 已采纳 P3：补充 legacy `delivery/record` 使用的 `@/hooks/handle/use-handle` 到共享依赖清单。
+- 已采纳 P3：在 API 契约中补充 `StoYtLocationController` 的库位下拉和新增 API 小节。
+
 ## 静态验证记录
 
 | 验证项 | 结果 |

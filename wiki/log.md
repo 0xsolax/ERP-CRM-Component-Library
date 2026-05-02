@@ -2,6 +2,9 @@
 
 ## 2026-05-02
 
+- 启动并完成 Multica `SOL-52` 装配演练：用 `customer-management`、`quote-management`、`order-management`、`file-oss` 验证客户 -> 报价 -> 订单 + 文件上传的人工装配路径。
+- `SOL-52` 结论：组件库能指导复制代码、补表、接接口和识别缺口；实际复杂装配还必须显式纳入 `base-data`、`product-material`，并补报价/订单正式 DDL、数据范围和状态机。
+- 新增 `wiki/SYNTH_SOL52客户报价订单文件装配演练.md`，并同步四张组件卡、`wiki/SOURCE_INDEX.md`、`wiki/index.md` 与本地 pdoc 报告。
 - 启动并完成 Multica `SOL-51` 本地组件草稿抽取：生成 `COMPONENTS/warehouse-delivery`，覆盖 qmy-admin 仓储/发货页面和 API、qmy-java YT 库存/入库/箱规/物流/发货后端、库存事件、预警任务、导出模板和跨组件边界。
 - `SOL-51` 按验收要求保持 `status: draft`，明确 qmy-java 有后端代码证据但缺正式 DDL、数据范围权限、破坏性 GET 收口、库存扣减规则和运行验收。
 - 更新 `wiki/COMP_仓储发货.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将仓储发货组件纳入组件快照资产入口。

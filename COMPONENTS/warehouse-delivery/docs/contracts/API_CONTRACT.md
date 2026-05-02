@@ -47,6 +47,15 @@
 | `returnWaitPackage` | POST | `/sto/yt/delivery/returnWaitPackage` | 退回待打包 |
 | `getDeliveryOrderDetail` | POST | `/sto/yt/delivery/orderDetail` | 发货单订单详情 |
 
+## qmy-java 库位 controller API
+
+`StoYtLocationController` 目前没有对应 qmy-admin API 封装集中调用，但后端 controller 已带出，接入时需补权限和前端调用边界。
+
+| Controller 方法 | 方法 | 路径 | 能力 | 权限现状 |
+| :--- | :--- | :--- | :--- | :--- |
+| `getLocationDropdown` | GET | `/api/sto/yt/location/locationSelect` | 库位下拉选择 | 权限注释 |
+| `getLocationIdByName` | POST | `/api/sto/yt/location/location/add` | 按名称新增或获取库位 | 权限注释 |
+
 ## legacy delivery API
 
 `api/admin/delivery/index.ts` 对应 `views/admin/delivery`，但 `delivery.ts` 路由已整体注释，默认不启用。

@@ -241,6 +241,7 @@
 - `RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts`
 - `RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/permission/index.ts`
 - `RAW/PROJECTs/qmy-admin/src/layout/admin/index.vue`
+- `RAW/PROJECTs/qmy-admin/src/hooks/handle/use-handle.ts`
 - `RAW/PROJECTs/qmy-admin/src/utils/axios`
 - `RAW/PROJECTs/qmy-admin/src/utils/validate.ts`
 - `RAW/PROJECTs/qmy-admin/src/utils/print.ts`
@@ -260,6 +261,28 @@
 - `RAW/PROJECTs/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/StoreEnterOutTypeEnum.java`
 - `RAW/PROJECTs/qmy-java/web/src/main/resources/excel-template/yitang-deliveryExport.xlsx`
 - `RAW/PROJECTs/qmy-java/web/src/main/resources/excel-template/ytiang-customerDeliveryCostImport.xlsx`
+
+#### SOL-52 装配演练关键路径
+
+- `COMPONENTS/customer-management`
+- `COMPONENTS/quote-management`
+- `COMPONENTS/order-management`
+- `COMPONENTS/file-oss`
+- `COMPONENTS/customer-management/README.md`
+- `COMPONENTS/quote-management/README.md`
+- `COMPONENTS/order-management/README.md`
+- `COMPONENTS/file-oss/README.md`
+- `COMPONENTS/customer-management/docs/contracts`
+- `COMPONENTS/quote-management/docs/contracts`
+- `COMPONENTS/order-management/docs/contracts`
+- `COMPONENTS/file-oss/docs/contracts`
+- `COMPONENTS/customer-management/docs/acceptance/ACCEPTANCE.md`
+- `COMPONENTS/quote-management/docs/acceptance/ACCEPTANCE.md`
+- `COMPONENTS/order-management/docs/acceptance/ACCEPTANCE.md`
+- `COMPONENTS/file-oss/docs/acceptance/ACCEPTANCE.md`
+- `wiki/SYNTH_SOL52客户报价订单文件装配演练.md`
+- `pdoc/report/REPORT_0502_SOL52装配演练报告.md`
+- `pdoc/report/REPORT_0502_SOL52装配缺口清单.md`
 
 ### 调研资料
 

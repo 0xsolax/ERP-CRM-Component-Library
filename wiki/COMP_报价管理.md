@@ -87,3 +87,10 @@
 - `zhongsheng-AI` `Quote` 实体存在 `products` 字段，但 legacy SQL 未定义该列，且 `quote_item` 未在 CRUD 中形成完整子表保存。
 - qmy-java 未提供完整报价 DDL，只能按实体与 Mapper XML 反推。
 - SED 成本公式是伞业场景口径，新行业必须重新确认公式。
+
+## SOL-52 装配演练结论
+
+- 报价组件可作为“客户 -> 报价 -> 订单”中间层，但复杂流必须先接 `base-data`、`product-material` 和 `customer-management`。
+- `file-oss` 应承接微信审核图片、报价附件和产品/包材图片，不应把文件访问策略写死在报价组件。
+- 复杂报价流接入前必须补正式 DDL，并补详情、成本、历史、导出、转订单的数据范围守卫。
+- 报价转订单必须冻结报价时点字段并做幂等校验，不能只依赖前端按钮隐藏。

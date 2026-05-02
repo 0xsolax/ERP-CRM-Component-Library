@@ -12,6 +12,7 @@
 | 前端路由 | `RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/delivery.ts` | 注释状态的 legacy 发货路由 | 复制并标注停用 |
 | 前端依赖 | `api/admin/product/index.ts`、`api/admin/sales/customer.ts` | 仓储页面实际使用的产品、客户 API | 裁剪后复制 |
 | 前端依赖 | `constant/yitang/warehouse.ts`、`delivery.ts`、`sales.ts`、`product.ts`、`file-type.ts`、`interface/table.ts` | 状态、发货形式、产品状态、上传类型和表格类型 | 复制或裁剪后复制 |
+| 前端共享依赖 | `RAW/PROJECTs/qmy-admin/src/hooks/handle/use-handle.ts` | legacy 交货记录删除确认 hook | 未复制，写入依赖边界 |
 | 后端 controller | `RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt` | 仓储、入库、发货、箱规、物流、库位接口 | 复制到 `backend/qmy-java/` |
 | 后端 manager | `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sto/yt` | 库存、入库、发货、包裹、运费逻辑 | 复制到 `backend/qmy-java/` |
 | 后端数据 | `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sto/yt` | 仓储发货实体模型 | 复制到 `backend/qmy-java/` |
@@ -35,7 +36,7 @@
 
 - qmy-java 完整 DDL、索引、唯一键和迁移脚本，当前只写 schema notes。
 - 订单、采购、客户、产品、财务模块完整实现。
-- qmy-admin 全局布局、请求封装、权限守卫、标签页 store、打印工具、校验工具和共享组件。
+- qmy-admin 全局布局、请求封装、权限守卫、标签页 store、确认 hook、打印工具、校验工具和共享组件。
 - 真实运行环境、账号、数据库和接口回归结果。
 
 ## 事实与推断

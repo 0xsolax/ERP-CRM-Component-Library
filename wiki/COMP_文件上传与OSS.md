@@ -53,7 +53,7 @@
 | 表/对象 | 关键字段 | 说明 |
 | :--- | :--- | :--- |
 | `system_file` | `main_type`、`sub_type`、`master_id`、`url`、`endpoint`、`file_key`、`name`、`type`、`size` | 文件存储记录 |
-| `tenant_config` | `tenant.oss.*` | OSS/STs 配置来源 |
+| `tenant_config` | `tenant.oss.*` | OSS/STS 配置来源 |
 | `StorageDTO` | `url`、`name`、`type`、`size` | 保存文件记录入参 |
 | `OssStsTokenVO` | 临时凭证、bucket、endpoint、过期时间 | 前端直传可用 |
 
@@ -94,3 +94,10 @@
 - 业务表保存 URL 还是文件 ID 需要项目统一，否则后续迁移 OSS 域名会有成本。
 - 文件记录复用必须限定 `main_type/sub_type/master_id/url` 业务域，不能只按 URL 全局去重。
 - 当前快照未覆盖私有文件签名下载和 OSS 对象删除，需要后续按业务补齐。
+
+## SOL-52 装配演练结论
+
+- `file-oss` 应在客户、报价、订单页面之前完成基础装配，至少提供 STS、上传组件和 `system_file` 记录。
+- 客户附件、报价审核图片、产品/包材图片、订单附件都应优先保存 `system_file.id`。
+- 目标项目必须提供真实 OSS/STS 配置和测试 bucket 后才能完成运行验收。
+- 文件访问权限仍由客户、报价、订单等业务模块决定，不能只依赖 URL 隐蔽性。
