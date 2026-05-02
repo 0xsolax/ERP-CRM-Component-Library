@@ -36,6 +36,8 @@ find RAW/PROJECTs/qmy-admin/src/views/admin/purchase -maxdepth 5 -type f
 find RAW/PROJECTs/qmy-admin/src/api/admin/purchase -maxdepth 5 -type f
 find RAW/PROJECTs/qmy-java -type f | rg 'PurYt|Supplier|Purchase|supplier|purchase'
 rg -n '@((Get|Post|Delete|Put)Mapping|RequiresPermissions|RequiresDataPermissions)' RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/pur/yt
+rg -n "from '@/api/admin/(product|sales/customer|auth/org)'|from \"@/api/admin/(product|sales/customer|auth/org)\"|getSupplierSelect|getCustomerList|getAllEmployee" COMPONENTS/purchase-supplier/frontend/qmy-admin/src
+rg -n "export const|export function|export \{" COMPONENTS/purchase-supplier/frontend/qmy-admin/src/api/admin/product/index.ts COMPONENTS/purchase-supplier/frontend/qmy-admin/src/api/admin/sales/customer.ts COMPONENTS/purchase-supplier/frontend/qmy-admin/src/api/admin/auth/org.ts
 ```
 
 ## 复核结论
@@ -62,6 +64,7 @@ rg -n '@((Get|Post|Delete|Put)Mapping|RequiresPermissions|RequiresDataPermission
 | 精确敏感配置扫描 | 未发现数据库连接串、云访问密钥、私钥或口令赋值 |
 | 宽松 token 扫描 | 仅命中文档排除项 `secrets`、前端说明文字和请求头名 `qiaomoyun-token`，未发现真实密钥 |
 | 采购路由扫描 | 未发现销售订单、报价、仓库或财务页面路由引用 |
+| 裁剪 API 引用核对 | 采购页面引用与 `getSupplierSelect`、`getCustomerList`、`getAllEmployee` 三个导出一一对应 |
 | 关键文档 | `README.md`、`SOURCE_MAP.md`、`COMPONENT_SPEC.md`、`API_CONTRACT.md`、`DATA_CONTRACT.md`、`PERMISSION_CONTRACT.md`、`ACCEPTANCE.md` 均存在 |
 | 行尾空白扫描 | 本次范围无输出 |
 | 已跟踪文件 diff 检查 | `git diff --check` 对已跟踪修改无输出 |

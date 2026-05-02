@@ -60,6 +60,7 @@ rg -n "@((Get|Post|Delete|Put)Mapping|RequiresPermissions|RequiresDataPermission
 | 关键文档 | `README.md`、`SOURCE_MAP.md`、`COMPONENT_SPEC.md`、`API_CONTRACT.md`、`DATA_CONTRACT.md`、`PERMISSION_CONTRACT.md`、`ACCEPTANCE.md` 均存在 |
 | 来源 TODO 扫描 | 仅命中 qmy-java 历史源码原注释，作为来源事实保留，未新增待办占位 |
 | 依赖 API 裁剪 | `customer.ts` 仅保留 2 个订单函数，`org.ts` 仅保留 1 个订单函数，`product/index.ts` 仅保留 2 个订单函数 |
+| 依赖 API 路径复核 | `getCategoryLabelList` 已对齐 RAW 前端和 qmy-java 后端的 `/pro/yt/product/categoryLabelList` |
 | 行尾空白扫描 | 本次范围无输出 |
 | 已跟踪文件 diff 检查 | `git diff --check` 对已跟踪修改无输出 |
 

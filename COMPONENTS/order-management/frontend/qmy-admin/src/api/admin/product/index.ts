@@ -12,7 +12,7 @@ export const getProductDetail = (params: any) => {
 // 订单表单：获取产品分类标签
 export const getCategoryLabelList = (params: any) => {
   return axios.request<IResponseModel<any>>({
-    url: '/pro/yt/categoryLabel/list',
+    url: '/pro/yt/product/categoryLabelList',
     method: 'get',
     params
   })

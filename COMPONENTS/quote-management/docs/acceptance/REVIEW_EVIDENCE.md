@@ -61,4 +61,4 @@ rg -n "CREATE TABLE.*sal_sed_quotation|sal_sed_quotation\\s*\\(" RAW/PROJECTs/qm
 - 复核发现客户/包材依赖 API 原样复制过宽，已裁剪为报价页实际使用函数，避免带入客户删除、独立仓、完整包材维护等非报价入口。
 - 子代理复核发现 qmy-java 后端 `/getUserInfo` 未进入 API/权限契约；已补入 `API_CONTRACT.md`、`PERMISSION_CONTRACT.md`、`README.md` 和 `wiki/COMP_报价管理.md`，并标明当前前端未直接封装但仍属于客户敏感信息边界。
 - 子代理复核发现 `wiki/SOURCE_INDEX.md` 未同步 `file-type.ts`、`interface/table.ts`、报价路由和裁剪后的依赖 API 来源；已补齐。
-- 子代理关于 `interface/table.ts` untracked 的提醒有效但不在本轮执行 `git add`；当前需在提交前将 `COMPONENTS/quote-management/frontend/qmy-admin/src/interface/table.ts` 一并纳入。
+- 二次复核确认 `COMPONENTS/quote-management/frontend/qmy-admin/src/interface/table.ts` 已纳入 Git 跟踪，前轮关于 untracked 的风险已消除。
