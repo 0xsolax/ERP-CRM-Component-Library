@@ -7,6 +7,7 @@
 | 报价列表 | `sal:sed:quotation:quotation:list` |
 | 报价详情 | `sal:sed:quotation:quotationDetail` |
 | 新增/编辑/再次创建 | `sal:sed:quotation:saveOrUpdate` |
+| 业务员客户信息 | `sal:sed:quotation:getUserInfo` |
 | 采购成本详情 | `sal:sed:quotation:procurementDetail` |
 | 采购成本确认 | `sal:sed:quotation:procurementConfirm` |
 | 物流成本详情 | `sal:sed:quotation:logisticsDetail` |
@@ -39,6 +40,7 @@
 | 字段/信息 | 风险 | 控制建议 |
 | :--- | :--- | :--- |
 | 客户名称、收货地址 | 客户资料泄露 | 跟随客户数据范围 |
+| 业务员客户列表 | 客户资料泄露 | `/getUserInfo` 必须按业务员与当前用户数据范围过滤 |
 | 报价、基础报价、订单金额 | 商业价格泄露 | 后端权限控制，不只靠前端隐藏 |
 | 采购成本、物流成本、总成本 | 成本泄露 | 财务、采购、管理角色可见 |
 | 毛利率、均价、中位数 | 商业策略泄露 | 老板、财务或授权销售可见 |
@@ -48,7 +50,7 @@
 ## 来源风险
 
 - qmy-java 来源只有列表接口标注 `@RequiresDataPermissions`。
-- 详情、成本确认、保存、审核、历史报价、成本明细和转订单接口需要在目标项目补充按报价 ID 的数据范围校验。
+- 详情、成本确认、保存、审核、历史报价、成本明细、业务员客户信息和转订单接口需要在目标项目补充按报价 ID 或客户 ID 的数据范围校验。
 - 前端按钮权限只控制入口展示，不能作为安全边界。
 - 导出接口必须复用同一套数据范围，否则可能批量导出越权报价。
 

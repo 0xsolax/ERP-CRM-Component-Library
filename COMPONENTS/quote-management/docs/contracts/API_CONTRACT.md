@@ -23,6 +23,7 @@ legacy API 只适合基础报价单，不覆盖成本、审核、历史报价和
 | 报价列表 | POST | `/sal/sed/quotation/list` | `sal:sed:quotation:quotation:list` |
 | 报价详情 | GET | `/sal/sed/quotation/quotationDetail` | `sal:sed:quotation:quotationDetail` |
 | 新增/编辑/再次创建 | POST | `/sal/sed/quotation/saveOrUpdate` | `sal:sed:quotation:saveOrUpdate` |
+| 业务员客户信息 | GET | `/sal/sed/quotation/getUserInfo` | `sal:sed:quotation:getUserInfo` |
 | 采购成本详情 | GET | `/sal/sed/quotation/procurementDetail` | `sal:sed:quotation:procurementDetail` |
 | 采购成本确认 | POST | `/sal/sed/quotation/procurementConfirm` | `sal:sed:quotation:procurementConfirm` |
 | 物流成本详情 | GET | `/sal/sed/quotation/logisticsDetail` | `sal:sed:quotation:logisticsDetail` |
@@ -55,3 +56,4 @@ legacy API 只适合基础报价单，不覆盖成本、审核、历史报价和
 - 写接口必须先校验报价存在、租户一致、数据范围允许、状态允许，再修改主表或子表。
 - 历史报价接口必须限制客户敏感字段，跨客户趋势应按角色配置。
 - 转订单接口必须具备幂等或重复转换防护。
+- `/getUserInfo` 来源后端存在，但当前 qmy-admin 报价 API 未直接封装；接入时应按客户数据范围控制返回的 `SalSedCustomerVo` 列表。

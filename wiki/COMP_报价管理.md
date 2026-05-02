@@ -40,6 +40,7 @@
 | 复杂报价列表 | POST | `/sal/sed/quotation/list` | qmy-java/qmy-admin |
 | 报价详情 | GET | `/sal/sed/quotation/quotationDetail` | qmy-java/qmy-admin |
 | 保存/再次创建 | POST | `/sal/sed/quotation/saveOrUpdate` | qmy-java/qmy-admin |
+| 业务员客户信息 | GET | `/sal/sed/quotation/getUserInfo` | qmy-java 后端 reference |
 | 成本明细 | POST | `/sal/sed/quotation/getCostDetail` | qmy-java/qmy-admin |
 | 采购/物流成本确认 | POST | `/procurementConfirm`、`/logisticsConfirm` | qmy-java/qmy-admin |
 | 历史报价 | POST/GET | `/getHistoryQuotation*` | qmy-java/qmy-admin |
@@ -61,6 +62,7 @@
 - 报价应区分列表、详情、保存、采购成本、物流成本、提交审核、会签审核、历史报价、导出、转订单、微信审核。
 - 报价包含客户、地址、成本、毛利率和历史价格，前端按钮权限不能替代后端数据范围。
 - qmy-java 来源只有列表接口标注 `@RequiresDataPermissions`；详情、成本、审核、历史和转订单在目标项目接入前必须补报价归属与客户范围校验。
+- `/getUserInfo` 返回业务员客户信息，虽当前前端报价 API 未直接封装，也必须纳入客户敏感信息边界。
 - 历史报价跨客户趋势需要脱敏或限制角色，避免泄露客户价格策略。
 
 ## 接入步骤

@@ -18,24 +18,6 @@ export const getSedPackingTypeList = (data: any) => {
   })
 }
 
-// 保存或更新包材
-export const saveOrUpdatePacking = (data: any) => {
-  return axios.request<IResponseModel<any>>({
-    url: '/pro/sed/packing/saveOrUpdate',
-    method: 'post',
-    data
-  })
-}
-
-// 添加包材类型
-export const addPackingType = (params: any) => {
-  return axios.request<IResponseModel<any>>({
-    url: '/pro/sed/packing/add',
-    method: 'post',
-    params
-  })
-}
-
 // 新增包材名称
 export const addPackingName = (params: any) => {
   return axios.request<IResponseModel<any>>({

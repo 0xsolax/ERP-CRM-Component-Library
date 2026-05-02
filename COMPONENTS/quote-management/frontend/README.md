@@ -6,8 +6,9 @@
 | :--- | :--- | :--- |
 | 报价页面 | `src/views/sed/sales/quotation` | 报价列表和所有报价弹窗组件 |
 | 报价 API | `src/api/sed/sales/quotation.ts` | `/sal/sed/quotation/*` 前端封装 |
-| 依赖 API | `src/api/sed/product/packing.ts`、`src/api/admin/sales/customer.ts` | 包材选择、客户下拉和客户地址 |
+| 依赖 API | `src/api/sed/product/packing.ts`、`src/api/admin/sales/customer.ts` | 包材选择、新增包材名称和客户下拉，已裁剪到报价页实际使用函数 |
 | 常量 | `src/constant/sed/quotation.ts`、`src/constant/sed/sales.ts`、`src/constant/file-type.ts` | 报价状态、操作记录、币种、税、FOB、EXW、订单来源、图片类型 |
+| 类型 | `src/interface/table.ts` | `ColumnProps` 等表格类型 |
 | 路由 | `src/views/sed/router/async-modules/sales.ts` | 销售管理入口，快照已裁剪为报价路由 |
 
 ## 页面组件

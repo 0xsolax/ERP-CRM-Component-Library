@@ -21,9 +21,12 @@ source_layer:
     - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/sed
     - RAW/PROJECTs/qmy-admin/src/views/sed/sales/quotation
     - RAW/PROJECTs/qmy-admin/src/api/sed/sales/quotation.ts
+    - RAW/PROJECTs/qmy-admin/src/api/sed/product/packing.ts
+    - RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts
     - RAW/PROJECTs/qmy-admin/src/constant/sed/quotation.ts
     - RAW/PROJECTs/qmy-admin/src/constant/sed/sales.ts
     - RAW/PROJECTs/qmy-admin/src/constant/file-type.ts
+    - RAW/PROJECTs/qmy-admin/src/interface/table.ts
     - RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts
     - RAW/docs/zhongsheng
   wiki_pages:
@@ -81,6 +84,8 @@ entrypoints:
       - frontend/qmy-admin/src/constant/file-type.ts
       - frontend/qmy-admin/src/constant/sed/quotation.ts
       - frontend/qmy-admin/src/constant/sed/sales.ts
+    interfaces:
+      - frontend/qmy-admin/src/interface/table.ts
   db:
     schema:
       - db/zhongsheng-AI/init-quote.sql

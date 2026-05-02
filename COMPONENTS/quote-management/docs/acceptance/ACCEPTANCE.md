@@ -14,7 +14,7 @@
 
 - [x] `backend/zhongsheng-AI/` 包含 legacy `QuoteController`、`Quote`、`QuoteService`、`QuoteServiceImpl`、`QuoteMapper`。
 - [x] `backend/qmy-java/` 包含 SED 报价 controller、service、manager、entity、param、VO、Mapper 和 Mapper XML。
-- [x] `frontend/qmy-admin/` 包含 SED 报价页面、API、状态常量、销售路由入口和直接依赖 API。
+- [x] `frontend/qmy-admin/` 包含 SED 报价页面、API、状态常量、表格类型、销售路由入口和直接依赖 API。
 - [x] `db/` 包含 legacy `quote/quote_item` SQL 和 qmy-java 表结构说明。
 - [x] `docs/source/` 包含 PRD 和调研材料来源副本。
 - [x] `docs/contracts/` 覆盖 API、数据、权限契约。

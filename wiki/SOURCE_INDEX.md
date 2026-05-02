@@ -128,8 +128,13 @@
 - `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed/SalSedQuotationHistory.java`
 - `RAW/PROJECTs/qmy-admin/src/views/sed/sales/quotation`
 - `RAW/PROJECTs/qmy-admin/src/api/sed/sales/quotation.ts`
+- `RAW/PROJECTs/qmy-admin/src/api/sed/product/packing.ts`
+- `RAW/PROJECTs/qmy-admin/src/api/admin/sales/customer.ts`
 - `RAW/PROJECTs/qmy-admin/src/constant/sed/quotation.ts`
 - `RAW/PROJECTs/qmy-admin/src/constant/sed/sales.ts`
+- `RAW/PROJECTs/qmy-admin/src/constant/file-type.ts`
+- `RAW/PROJECTs/qmy-admin/src/interface/table.ts`
+- `RAW/PROJECTs/qmy-admin/src/views/sed/router/async-modules/sales.ts`
 
 ### 调研资料
 

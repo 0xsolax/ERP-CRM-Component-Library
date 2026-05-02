@@ -12,12 +12,15 @@
 | `RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sal/sed` | 成本明细、历史报价、导出、转订单和总成本计算 |
 | `RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sal/sed` | 报价和转订单 Mapper 接口 |
 | `RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sal/sed` | 报价列表、详情、历史报价、SKU、包材和订单明细 SQL |
-| `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/param/vo/sal/sed` | 报价主表、SKU、包材、历史、参数和视图对象 |
+| `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sal/sed` | 报价主表、SKU、包材和历史实体 |
+| `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/param/sal/sed` | 报价请求参数 |
+| `RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sal/sed` | 报价视图对象 |
 | `RAW/PROJECTs/qmy-admin/src/views/sed/sales/quotation` | SED 报价前端页面和弹窗 |
 | `RAW/PROJECTs/qmy-admin/src/api/sed/sales/quotation.ts` | SED 报价前端 API 封装 |
 | `RAW/PROJECTs/qmy-admin/src/constant/sed/quotation.ts` | 报价状态和操作类型 |
 | `RAW/PROJECTs/qmy-admin/src/constant/sed/sales.ts` | 币种、税、FOB、EXW、订单来源 |
 | `RAW/PROJECTs/qmy-admin/src/constant/file-type.ts` | 总裁微信审核图片文件类型 |
+| `RAW/PROJECTs/qmy-admin/src/interface/table.ts` | 报价列表、历史报价和合并转订单表格类型 |
 | `RAW/docs/zhongsheng` | 客户、报价、成本和销售流程调研材料 |
 
 ## 已复制范围
@@ -56,11 +59,12 @@
 | :--- | :--- | :--- |
 | `src/views/sed/sales/quotation` | `frontend/qmy-admin/src/views/sed/sales/quotation` | 报价列表、弹窗、抽屉和转订单页面 |
 | `src/api/sed/sales/quotation.ts` | `frontend/qmy-admin/src/api/sed/sales/quotation.ts` | 报价 API |
-| `src/api/sed/product/packing.ts` | `frontend/qmy-admin/src/api/sed/product/packing.ts` | 包材选择 API |
-| `src/api/admin/sales/customer.ts` | `frontend/qmy-admin/src/api/admin/sales/customer.ts` | 客户选择 API |
+| `src/api/sed/product/packing.ts` | `frontend/qmy-admin/src/api/sed/product/packing.ts` | 包材选择和新增包材名称 API，快照已裁剪到报价页实际使用函数 |
+| `src/api/admin/sales/customer.ts` | `frontend/qmy-admin/src/api/admin/sales/customer.ts` | 客户下拉 API，快照已裁剪到报价页实际使用函数 |
 | `src/constant/sed/quotation.ts` | `frontend/qmy-admin/src/constant/sed/quotation.ts` | 报价状态与操作常量 |
 | `src/constant/sed/sales.ts` | `frontend/qmy-admin/src/constant/sed/sales.ts` | 订单来源、币种、税、FOB、EXW |
 | `src/constant/file-type.ts` | `frontend/qmy-admin/src/constant/file-type.ts` | 图片上传类型 |
+| `src/interface/table.ts` | `frontend/qmy-admin/src/interface/table.ts` | `ColumnProps` 表格类型 |
 | `src/views/sed/router/async-modules/sales.ts` | `frontend/qmy-admin/src/views/sed/router/async-modules/sales.ts` | 来源销售管理路由，快照已裁剪为 `/sales/quotation` |
 
 ## 未复制或作为依赖处理
@@ -79,6 +83,7 @@
 - `zhongsheng-AI` PRD 与 `QuoteController` 是基础 CRUD 事实，适合最小报价单。
 - qmy-admin 报价页与 qmy-java `SalSedQuotationController` 路径匹配，是复杂报价流的主要事实来源。
 - 前端路由来源同时包含客户、报价和订单，快照只保留报价入口，客户和订单入口由对应组件提供。
+- 客户和包材依赖 API 已裁剪到报价页实际使用函数，完整客户 CRUD 和包材维护由对应组件提供。
 - 复杂流以 `sal_sed_quotation` 为主表，`sal_sed_quotation_sku` 保存每个产品/SKU 的报价时点，`sal_sed_quotation_sku_packing` 保存包材成本，`sal_sed_quotation_history` 保存操作记录。
 - 采购成本来自包材、配件和零件聚合；成本明细还会计算配件成本、工艺/油漆成本和包材单件成本。
 - 历史报价会按 SKU 和搭配计算均价、中位数、毛利率和趋势，美元报价参与均价/中位数时按汇率折算人民币。
