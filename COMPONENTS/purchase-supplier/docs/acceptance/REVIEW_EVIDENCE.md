@@ -5,7 +5,7 @@
 - 创建 `COMPONENTS/purchase-supplier` 标准组件快照。
 - 复制 `zhongsheng-AI` 供应商 CRUD 后端、`supplier` SQL 和 PRD。
 - 复制 qmy-java YT 采购复杂流后端证据：供应商、待采购、采购单、库存预警、采购跟进、退货、导出。
-- 复制 qmy-admin admin 采购页面、采购 API、采购路由、采购常量和直接依赖 API。
+- 复制 qmy-admin admin 采购页面、采购 API、采购路由、采购常量，并裁剪直接依赖 API。
 - 编写 README、SOURCE_MAP、组件规范、API/数据/权限契约和验收清单。
 - 更新 wiki 组件卡、组件索引、本地报告和记忆日志。
 
@@ -45,6 +45,13 @@ rg -n '@((Get|Post|Delete|Put)Mapping|RequiresPermissions|RequiresDataPermission
 - 组件仍保持 `draft`，因为正式采购 DDL、状态机、权限闭环和运行验收未完成。
 - 报价阶段不强绑定供应商、采购阶段按供应商聚合采购单的边界已写入规范。
 - 仓储入库、库存流水、财务付款和供应商对账已明确为跨组件边界。
+
+## Review 自查修正
+
+- 自查发现采购页面直接导入 `footer-actions`、`product-selector`、tags/permission store、download/auth/validate/utils 等 qmy-admin 共享依赖。
+- 这些共享文件未复制进草稿组件，已在 `component.yaml`、`SOURCE_MAP.md`、`frontend/README.md` 和 `wiki/SOURCE_INDEX.md` 标为基座/共享依赖，避免装配时误判为组件内文件。
+- Review 修正：`product/index.ts`、`customer.ts`、`org.ts` 从原始整文件复制改为只保留采购页面实际调用的 `getSupplierSelect`、`getCustomerList`、`getAllEmployee`。
+- Review 修正：`order-management`、`product-material` 从必选依赖改为复杂采购流建议依赖；简版供应商 CRUD 只要求 P0 基座与认证权限。
 
 ## 静态验证记录
 

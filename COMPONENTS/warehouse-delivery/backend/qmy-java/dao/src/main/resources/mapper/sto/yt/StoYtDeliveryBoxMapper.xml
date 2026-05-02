@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtDeliveryBoxMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBox" autoMapping="true">
+        <id column="id" property="id" />
+        <result column="delivery_id" property="deliveryId" />
+        <result column="box_id" property="boxId" />
+        <result column="box_weight" property="boxWeight" />
+        <result column="box_size" property="boxSize" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="height" property="box.height" />
+        <result column="width" property="box.width" />
+        <result column="length" property="box.length" />
+        <result column="weight" property="box.weight" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, delivery_id, box_id, box_weight, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+    <update id="deleteByDeliveryId">
+        update sto_yt_delivery_box set is_deleted = 1 where delivery_id=#{deliveryId}
+    </update>
+
+    <!-- 根据deliveryId集合查询发货箱列表 -->
+    <select id="selectByDeliveryIds" resultMap="BaseResultMap" parameterType="java.util.Set">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sto_yt_delivery_box
+        WHERE is_deleted = 0
+        AND delivery_id IN
+        <foreach collection="collection" item="deliveryId" open="(" separator="," close=")">
+            #{deliveryId}
+        </foreach>
+    </select>
+    <select id="selectByDeliveryId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBox">
+        SELECT
+            sydb.*,syb.length,syb.width,syb.height,syb.weight
+        FROM sto_yt_delivery_box as sydb
+        left join sto_yt_box as syb on sydb.box_id=syb.id
+        WHERE sydb.is_deleted = 0
+        AND sydb.delivery_id =#{deliveryId}
+    </select>
+
+</mapper>

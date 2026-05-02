@@ -1,0 +1,127 @@
+name: warehouse-delivery
+display_name: 仓储发货
+status: draft
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/qmy-admin/src/views/admin/warehouse
+    - RAW/PROJECTs/qmy-admin/src/views/admin/delivery
+    - RAW/PROJECTs/qmy-admin/src/api/admin/warehouse/index.ts
+    - RAW/PROJECTs/qmy-admin/src/api/admin/delivery/index.ts
+    - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/warehouse.ts
+    - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/delivery.ts
+    - RAW/PROJECTs/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/manager/sto/yt
+    - RAW/PROJECTs/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sto/yt
+    - RAW/PROJECTs/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sto/yt
+    - RAW/PROJECTs/qmy-java/dao/src/main/resources/mapper/sto/yt
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/event/yt
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/listener/yt
+    - RAW/PROJECTs/qmy-java/service/src/main/java/com/qiaomoyun/job/YtStoreWarningJob.java
+    - RAW/PROJECTs/qmy-java/web/src/main/resources/excel-template/yitang-deliveryExport.xlsx
+    - RAW/docs/zhongsheng
+  wiki_pages:
+    - wiki/COMP_仓储发货.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+  recommended:
+    - product-material
+    - order-management
+    - customer-management
+    - purchase-supplier
+  optional:
+    - file-oss
+    - finance
+entrypoints:
+  backend:
+    controllers:
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtStoreController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtStoreOrderController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtDeliveryController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtBoxController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtTransportCompanyController.java
+      - backend/qmy-java/web/src/main/java/com/qiaomoyun/controller/sto/yt/StoYtLocationController.java
+    managers:
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/manager/sto/yt
+    entity_param_vo:
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/entity/sto/yt
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/param/sto/yt
+      - backend/qmy-java/entity/src/main/java/com/qiaomoyun/vo/sto/yt
+    mapper:
+      - backend/qmy-java/dao/src/main/java/com/qiaomoyun/mapper/sto/yt
+      - backend/qmy-java/dao/src/main/resources/mapper/sto/yt
+    event_job_export:
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/event/yt/DeliveryEvent.java
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/event/yt/StoreChangeEvent.java
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/listener/yt/DeliveryEventListener.java
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/listener/yt/StoreEventListener.java
+      - backend/qmy-java/service/src/main/java/com/qiaomoyun/job/YtStoreWarningJob.java
+      - backend/qmy-java/web/src/main/resources/excel-template/yitang-deliveryExport.xlsx
+      - backend/qmy-java/web/src/main/resources/excel-template/ytiang-customerDeliveryCostImport.xlsx
+    enum:
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/DeliveryOrderStatusEnum.java
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/StoreEnterOutTypeEnum.java
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/OrderSubItemStatusEnum.java
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/ShippingMethodEnum.java
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/ReceiveStatusEnum.java
+      - backend/qmy-java/core/src/main/java/com/qiaomoyun/eunm/yt/ProductFilesTypeEnum.java
+  frontend:
+    api:
+      - frontend/qmy-admin/src/api/admin/warehouse/index.ts
+      - frontend/qmy-admin/src/api/admin/delivery/index.ts
+      - frontend/qmy-admin/src/api/admin/product/index.ts
+      - frontend/qmy-admin/src/api/admin/sales/customer.ts
+    views:
+      - frontend/qmy-admin/src/views/admin/warehouse
+      - frontend/qmy-admin/src/views/admin/delivery
+    router:
+      - frontend/qmy-admin/src/views/admin/router/async-modules/warehouse.ts
+      - frontend/qmy-admin/src/views/admin/router/async-modules/delivery.ts
+    constants:
+      - frontend/qmy-admin/src/constant/yitang/warehouse.ts
+      - frontend/qmy-admin/src/constant/yitang/delivery.ts
+      - frontend/qmy-admin/src/constant/yitang/sales.ts
+      - frontend/qmy-admin/src/constant/yitang/product.ts
+      - frontend/qmy-admin/src/constant/file-type.ts
+      - frontend/qmy-admin/src/interface/table.ts
+    shared_dependencies_not_copied:
+      - RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue
+      - RAW/PROJECTs/qmy-admin/src/components/product-selector
+      - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts
+      - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/permission/index.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/axios.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/validate.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/print.ts
+      - RAW/PROJECTs/qmy-admin/src/layout/admin/index.vue
+  db:
+    schema_notes:
+      - db/qmy-java/sto-yt-warehouse-schema-notes.md
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+  evidence: docs/acceptance/REVIEW_EVIDENCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - build/
+    - dist/
+    - application-local.yml
+    - application-dev.yml
+    - application-prod.yml
+    - secrets
+notes:
+  - 按 SOL-51 要求保持 draft；未确认库存扣减、库存占用释放、状态机和正式 DDL 前不得标记为可直接复用。
+  - qmy-java 已提供仓储发货 controller/manager/entity/mapper/event 证据，但缺少可直接迁移的建表 SQL。
+  - qmy-admin 的 admin delivery 路由文件整体注释，属于 legacy/停用入口；默认接入应以 warehouse 路由为主。
+  - 物流面单、运费导入、收付款和订单履约属于跨组件边界，接入时必须联动 order-management、purchase-supplier 和 finance。

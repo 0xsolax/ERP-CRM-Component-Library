@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtDeliveryItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem" autoMapping="true">
+        <id column="id" property="id" />
+        <result column="delivery_id" property="deliveryId" />
+        <result column="orderId" property="orderId" />
+        <result column="order_sub_id" property="orderSubId" />
+        <result column="order_sub_item_id" property="orderSubItemId" />
+        <result column="product_id" property="productId" />
+        <result column="specification_id" property="specificationId" />
+        <result column="location_id" property="locationId" />
+        <result column="number" property="number" />
+        <result column="shipped_number" property="shippedNumber" />
+        <result column="category_specification_item_id" property="categorySpecificationItemId" />
+        <result column="category_specification_item_name" property="categorySpecificationItemName" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, delivery_id, order_sub_id, order_sub_item_id, product_id, specification_id, location_id,
+        number, shipped_number, category_specification_item_id, category_specification_item_name,
+        create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据条件查询发货单条目列表 -->
+    <select id="list" resultMap="BaseResultMap" parameterType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem">
+        SELECT
+        *
+        FROM sto_yt_delivery_item
+        WHERE is_deleted = 0
+        <if test="deliveryId != null">
+            AND delivery_id = #{deliveryId}
+        </if>
+        <if test="orderSubId != null">
+            AND order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderSubItemId != null">
+            AND order_sub_item_id = #{orderSubItemId}
+        </if>
+        <if test="productId != null">
+            AND product_id = #{productId}
+        </if>
+        <if test="specificationId != null">
+            AND specification_id = #{specificationId}
+        </if>
+    </select>
+
+    <!-- 根据发货单ID查询条目列表 -->
+    <select id="listByDeliveryId" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        SELECT
+            sydi.*,
+            (select code from pro_yt_product where id = sydi.product_id) as productCode,
+            (select order_id from sal_yt_order_sub where is_deleted=0 and id = sydi.order_sub_id) as orderId
+
+        FROM sto_yt_delivery_item as sydi
+        WHERE sydi.delivery_id = #{deliveryId}
+        AND sydi.is_deleted = 0
+    </select>
+    <select id="listGroupItem" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem"
+            parameterType="com.qiaomoyun.param.sto.yt.StoYtDeliveryQueryParams">
+        SELECT * FROM (
+        select
+        syo.id as orderId,
+        syo.code as orderCode,
+        syo.shipping_method,
+        syo.remark as orderRemark,
+        syo.delivery_time as orderDeliveryTime,
+        (select nick_name from sys_user where user_id = syo.sale_employee_id) as sale_employee_name
+
+            from sto_yt_delivery_item as sydi
+            left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+            left join sal_yt_order as syo on syo.id = syos.order_id
+            where sydi.is_deleted=0
+            and sydi.delivery_id = #{id}
+            group by syo.id
+        ) as subquery
+        WHERE 1=1
+
+        -- 产品状态筛选
+        <if test="productComplete != null and productComplete!=''">
+            AND subquery.productComplete = #{productComplete}
+        </if>
+
+        -- 打包状态筛选
+        <if test="packageComplete != null and packageComplete!=''">
+            AND subquery.packageComplete = #{packageComplete}
+        </if>
+    </select>
+
+    <!-- 批量插入发货单条目 -->
+    <insert id="saveBatch" parameterType="java.util.List">
+        INSERT INTO sto_yt_delivery_item (
+            delivery_id, order_sub_id, order_sub_item_id, product_id, specification_id, location_id,
+            number, shipped_number, category_specification_item_id, category_specification_item_name,
+            create_user, create_time, update_user, update_time, tenant_id, is_deleted
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.deliveryId}, #{item.orderSubId}, #{item.orderSubItemId}, #{item.productId}, #{item.specificationId}, #{item.locationId},
+                #{item.number}, #{item.shippedNumber}, #{item.categorySpecificationItemId}, #{item.categorySpecificationItemName},
+                #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime}, #{item.tenantId}, #{item.isDeleted}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 根据发货单ID获取按产品分组的发货单条目 -->
+    <select id="getDeliveryItemsByProduct" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem" parameterType="com.qiaomoyun.param.sto.yt.StoYtDeliveryQueryParams">
+        SELECT
+            sum(sydi.number) as number,
+            (SELECT
+                COALESCE(SUM(syosi_inner.enter_number - IFNULL(committed.total, 0)), 0)
+             FROM sto_yt_delivery_item sydi_inner
+             LEFT JOIN sal_yt_order_sub_item syosi_inner ON syosi_inner.id = sydi_inner.order_sub_item_id
+             LEFT JOIN sal_yt_order_sub syos_inner ON syos_inner.id = sydi_inner.order_sub_id
+             LEFT JOIN (
+                 SELECT sydi_other.order_sub_item_id, SUM(sydi_other.number) as total
+                 FROM sto_yt_delivery_item sydi_other
+                 JOIN sto_yt_delivery sd_other ON sd_other.id = sydi_other.delivery_id
+                 WHERE sydi_other.order_sub_item_id IN (
+                     SELECT order_sub_item_id FROM sto_yt_delivery_item WHERE delivery_id = #{id} AND is_deleted = 0
+                 )
+                 AND sydi_other.delivery_id != #{id}
+                 AND sydi_other.is_deleted = 0
+                 AND sd_other.is_deleted = 0
+                 AND sd_other.status > 0
+                 GROUP BY sydi_other.order_sub_item_id
+             ) committed ON committed.order_sub_item_id = sydi_inner.order_sub_item_id
+             WHERE sydi_inner.delivery_id = #{id}
+               AND sydi_inner.is_deleted = 0
+               AND sydi_inner.product_id = sydi.product_id
+               AND sydi_inner.specification_id = sydi.specification_id
+               AND (sydi_inner.category_specification_item_id = sydi.category_specification_item_id OR (sydi_inner.category_specification_item_id IS NULL AND sydi.category_specification_item_id IS NULL))
+               AND (sydi_inner.location_id = sydi.location_id OR (sydi_inner.location_id IS NULL AND sydi.location_id IS NULL))
+               <if test="orderId != null">AND syos_inner.order_id = #{orderId}</if>
+            ) as enterNumber,
+            (SELECT COALESCE(SUM(sydbi.number), 0)
+             FROM sto_yt_delivery_box_item sydbi
+             JOIN sto_yt_delivery_box sydb ON sydb.id = sydbi.delivery_box_id
+             left join sal_yt_order_sub_item as syosi2 on syosi2.id = sydbi.order_item_id
+             left join sal_yt_order_sub as syos2 on syos2.id = syosi2.order_sub_id
+             WHERE sydb.delivery_id = #{id}
+             AND sydbi.specification_id = sydi.specification_id
+               and (sydbi.category_specification_item_id = sydi.category_specification_item_id OR (sydbi.category_specification_item_id IS NULL AND sydi.category_specification_item_id IS NULL))
+               and (sydbi.location_id = sydi.location_id OR (sydbi.location_id IS NULL AND sydi.location_id IS NULL))
+             AND sydbi.is_deleted = 0
+            <if test="orderId!=null">
+                and syos2.order_id = #{orderId}
+            </if>
+             ) as packageNumber,
+            pyp.code as productCode,
+            sydi.product_id,sydi.specification_id,sydi.location_id,
+            (select `description` from  pro_yt_product_specification where id = sydi.specification_id) as specificationDesc,
+            (select name from sto_yt_location where id= sydi.location_id) as locationName,
+        -- sydi.order_sub_id,
+        -- (select sub_code from sal_yt_order_sub where id = sydi.order_sub_id) as order_sub_code,
+        sydi.category_specification_item_id,sydi.category_specification_item_name
+        FROM sto_yt_delivery_item as sydi
+        left join pro_yt_product as pyp on pyp.id = sydi.product_id
+        left join sal_yt_order_sub_item as syosi on syosi.id = sydi.order_sub_item_id
+        left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+        WHERE delivery_id = #{id}
+        AND sydi.is_deleted = 0
+        <if test="orderId != null">
+            and syos.order_id = #{orderId}
+        </if>
+        <if test="orderSubId!=null and orderSubId!=''">
+            and order_sub_id=#{orderSubId}
+        </if>
+        <if test="specificationId!=null">
+            and sydi.specification_id=#{specificationId}
+        </if>
+        <if test="specificationName!=null and specificationName!=''">
+            and sydi.specification_id in (select id from pro_yt_product_specification_item where category_specification_item_id in(select id from pro_yt_category_specification_item where value like ('%',#{specificationName},'%') and is_deleted=0) and is_deleted=0) and is_deleted=0
+        </if>
+        <if test="productCode!=null and productCode!=''">
+            and pyp.code like concat('%',#{productCode},'%')
+        </if>
+        <if test="categorySpecificationItemId!=null">
+            and sydi.category_specification_item_id=#{categorySpecificationItemId}
+        </if>
+        GROUP BY product_id, specification_id, category_specification_item_id,category_specification_item_name,location_id
+--         ORDER BY sydi.create_time
+    </select>
+    <select id="selectBySubItemId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem"
+            parameterType="java.lang.Long">
+        SELECT
+            sydi.*
+        FROM sto_yt_delivery_item as sydi
+        WHERE order_sub_item_id = #{orderSubItemId}
+        AND is_deleted = 0
+    </select>
+    <select id="selectOrderSubByDeliveryId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem"
+            parameterType="com.qiaomoyun.param.sto.yt.StoYtDeliveryQueryParams">
+        SELECT
+            order_sub_id,
+            (select sub_code from sal_yt_order_sub where id = order_sub_id) as orderSubCode
+        FROM sto_yt_delivery_item as sydi
+        WHERE delivery_id = #{id}
+          AND is_deleted = 0
+        group by order_sub_id
+    </select>
+    <select id="selectGroupOrderSubItemByDeliveryId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem"
+            parameterType="java.lang.Long">
+        select sum(number) as number, order_sub_item_id
+        from sto_yt_delivery_item as sydi
+        WHERE delivery_id = #{id}
+          AND is_deleted = 0
+        group by order_sub_item_id
+    </select>
+    <select id="selectPackageNumberByOrderSubItemId" resultType="java.lang.Integer"
+            parameterType="java.lang.Long">
+        select sum(number) as number
+        from sto_yt_delivery_item as sydi
+        WHERE order_sub_item_id = #{id}
+          and delivery_id in(select id from sto_yt_delivery where status=1)
+          AND is_deleted = 0
+    </select>
+
+    <select id="selectPackagedAndDeliveredNumberByOrderSubItemId" resultType="java.lang.Integer"
+            parameterType="java.lang.Long">
+        select sum(number) as number
+        from sto_yt_delivery_item as sydi
+        WHERE order_sub_item_id = #{id}
+          and delivery_id in(select id from sto_yt_delivery where status>0)
+          AND is_deleted = 0
+    </select>
+    <select id="sumWaitDeliveryNumberByOrderSubItemIds" resultType="java.util.Map">
+        SELECT sydi.order_sub_item_id AS orderSubItemId, COALESCE(SUM(sydi.number), 0) AS totalNumber
+        FROM sto_yt_delivery_item sydi
+        INNER JOIN sto_yt_delivery syd ON syd.id = sydi.delivery_id
+        WHERE sydi.is_deleted = 0
+          AND syd.is_deleted = 0
+          AND syd.status = '1'
+          AND sydi.order_sub_item_id IN
+          <foreach collection="orderSubItemIds" item="orderSubItemId" open="(" close=")" separator=",">
+              #{orderSubItemId}
+          </foreach>
+        GROUP BY sydi.order_sub_item_id
+    </select>
+
+    <select id="selectOrderSubIdQuantityByDeliveryId" resultType="java.util.Map"
+            parameterType="java.lang.Long">
+        select order_sub_id as orderSubId, sum(number) as quantity,(select sub_code from sal_yt_order_sub where id = sydi.order_sub_id) as subCode
+        from sto_yt_delivery_item as sydi
+        WHERE delivery_id = #{deliveryId}
+          AND is_deleted = 0
+        group by order_sub_id
+    </select>
+    <select id="selectOrderIdQuantityByDeliveryId" resultType="java.util.Map"
+            parameterType="java.lang.Long">
+        select syo.id as orderId,
+               sum(sydi.number) as quantity,
+              -- (select sub_code from sal_yt_order_sub where id = sydi.order_sub_id) as subCode
+               MAX(syos.sub_code) as subCode,
+               MAX(syo.code) as orderCode
+        from sto_yt_delivery_item as sydi
+                 left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+                 left join sal_yt_order as syo on syo.id = syos.order_id
+        WHERE delivery_id = #{deliveryId}
+          AND sydi.is_deleted = 0
+          AND syos.is_deleted = 0
+          AND syo.is_deleted = 0
+          AND syo.is_collected_shipping_cost = 0
+        group by syo.id, syos.sub_code
+    </select>
+
+    <select id="selectReceiveOrderSubIdQuantityByDeliveryId" resultType="java.util.Map"
+            parameterType="java.lang.Long">
+        select order_sub_id, sum(number) as quantity,(select sub_code from sal_yt_order_sub where id = sydi.order_sub_id) as subCode
+        from sto_yt_delivery_item as sydi
+        JOIN sal_yt_order_sub sos ON sydi.order_sub_id = sos.id
+        join sal_yt_order so ON sos.order_id = so.id
+        WHERE delivery_id = #{deliveryId}
+          AND sydi.is_deleted = 0
+          AND so.is_collected_shipping_cost = 0
+          AND so.is_deleted = 0
+        group by order_sub_id
+    </select>
+
+    <!-- 根据子订单ID查询相关发货单信息 -->
+    <select id="selectDeliveryByOrderSubId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDelivery" parameterType="java.lang.Long">
+        SELECT
+            sd.id,
+            sd.code,
+            sd.delivery_time,
+            sd.status,
+            sd.delivery_amount,
+            sdi.order_sub_id,
+            SUM(sdi.number) as subOrderQuantity,
+            (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sd.id AND is_deleted = 0) as totalDeliveryQuantity,
+            (SUM(sdi.number) / (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sd.id AND is_deleted = 0)) as deliveryProportion,
+            (select name from sto_yt_transport_company where id = sd.transport_company_id) as transportCompanyName,
+            (select url from sys_storage where id=sd.transport_order_file_id) as transportOrderFileUrl
+        FROM sto_yt_delivery_item sdi
+        LEFT JOIN sto_yt_delivery sd ON sdi.delivery_id = sd.id
+        WHERE sdi.order_sub_id = #{subId}
+        AND sdi.is_deleted = 0
+        AND sd.is_deleted = 0
+        GROUP BY sdi.delivery_id
+    </select>
+
+    <!-- 根据订单ID列表查询发货单条目 -->
+    <select id="selectByOrderIds" resultMap="BaseResultMap" parameterType="java.util.List">
+        SELECT
+            sydi.*,
+            (select code from pro_yt_product where id = sydi.product_id) as productCode
+        FROM sto_yt_delivery_item as sydi
+        LEFT JOIN sal_yt_order_sub as syos ON syos.id = sydi.order_sub_id
+        WHERE syos.order_id IN
+        <foreach collection="list" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+        AND sydi.is_deleted = 0
+    </select>
+    <select id="selectOrderByDeliveryId" resultType="java.util.Map"
+            parameterType="com.qiaomoyun.param.sto.yt.StoYtDeliveryQueryParams">
+        SELECT
+            syo.id as orderId,
+            syo.code as orderCode
+        FROM sto_yt_delivery_item as sydi
+        left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+        left join sal_yt_order as syo on syo.id = syos.order_id
+        WHERE delivery_id = #{id}
+          AND sydi.is_deleted = 0
+        group by syo.id
+    </select>
+
+    <!-- 根据发货单ID分组查询涉及的订单 -->
+    <select id="listGroupOrderByDeliveryId" resultType="com.qiaomoyun.vo.sto.yt.StoYtDeliveryOrderVo"
+            parameterType="java.lang.Long">
+        SELECT
+            syo.id as orderId,
+            syo.code as orderCode,
+            syo.shipping_method as shippingMethod,
+            syo.remark as orderRemark,
+            syo.delivery_time as orderDeliveryTime,
+            (select nick_name from sys_user where user_id = syo.sale_employee_id) as saleEmployeeName,
+            -- 打包数量状态：如果入库数量-发货数量大于打包数量则为false，否则为true
+            (CASE
+                 WHEN (SELECT SUM(syosi.enter_number - syosi.delivery_number)
+                       FROM sal_yt_order_sub syos2
+                                JOIN sal_yt_order_sub_item syosi ON syosi.order_sub_id = syos2.id
+                       WHERE syos2.order_id = syo.id
+                         AND syosi.specification_id IS NOT NULL
+                         AND syosi.is_deleted = 0) >
+                      (SELECT COALESCE(SUM(sydbi.number), 0)
+                       FROM sto_yt_delivery_box_item sydbi
+                                JOIN sto_yt_delivery_box sydb ON sydb.id = sydbi.delivery_box_id
+                                JOIN sto_yt_delivery syd ON syd.id = sydb.delivery_id
+                                JOIN sto_yt_delivery_item sdi ON sdi.delivery_id = syd.id
+                                JOIN sal_yt_order_sub syos3 ON syos3.id = sdi.order_sub_id
+                       WHERE syd.id = #{deliveryId}
+                         AND syos3.order_id = syo.id
+                         AND sydbi.is_deleted = 0
+                         AND sdi.is_deleted = 0)
+                     THEN false
+                 ELSE true
+                END) as packageComplete
+        FROM sto_yt_delivery_item as sydi
+        left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+        left join sal_yt_order as syo on syo.id = syos.order_id
+        where sydi.is_deleted=0
+        and sydi.delivery_id = #{deliveryId}
+        group by syo.id
+    </select>
+    <select id="selectByOrderSubItemId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryItem">
+            select * from sto_yt_delivery_item where order_sub_item_id = #{orderSubItemId}
+    </select>
+    <select id="selectDeliveryByOrderSubIdAndNotPackage" resultType="com.qiaomoyun.entity.sto.yt.StoYtDelivery">
+        SELECT
+            sd.id,
+            sd.code,
+            sd.delivery_time,
+            sd.status,
+            sd.delivery_amount,
+            sdi.order_sub_id,
+            SUM(sdi.number) as subOrderQuantity,
+            (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sd.id AND is_deleted = 0) as totalDeliveryQuantity,
+            (SUM(sdi.number) / (SELECT SUM(number) FROM sto_yt_delivery_item WHERE delivery_id = sd.id AND is_deleted = 0)) as deliveryProportion,
+            (select name from sto_yt_transport_company where id = sd.transport_company_id) as transportCompanyName,
+            (select url from sys_storage where id=sd.transport_order_file_id) as transportOrderFileUrl
+        FROM sto_yt_delivery_item sdi
+                 LEFT JOIN sto_yt_delivery sd ON sdi.delivery_id = sd.id
+        WHERE sdi.order_sub_id = #{subId}
+          AND sdi.is_deleted = 0
+          AND sd.is_deleted = 0
+          and sd.status > 0
+        GROUP BY sdi.delivery_id
+    </select>
+    <select id="selectTotalNumbers" resultType="java.math.BigDecimal">
+        SELECT SUM(number)
+        FROM sto_yt_delivery_item
+        WHERE delivery_id = #{deliveryId}
+        AND is_deleted = 0
+    </select>
+    <select id="selectSubOrderTotalNumbers" resultType="java.math.BigDecimal">
+        select sum(number)
+        from sto_yt_delivery_item
+        where order_sub_id = #{orderSubId}
+          and delivery_id = #{deliveryId}
+        and is_deleted = 0
+    </select>
+    <select id="selectTotalNumbersNotReceive" resultType="java.math.BigDecimal">
+        select sum(a.number) from sto_yt_delivery_item a left join sal_yt_order_sub b on a.order_sub_id=b.id
+                                                         left join sal_yt_order c on b.order_id=c.id
+        where a.is_deleted=0 and b.is_deleted=0
+          and a.delivery_id=#{deliveryId}
+          and c.is_collected_shipping_cost =0
+    </select>
+
+</mapper>

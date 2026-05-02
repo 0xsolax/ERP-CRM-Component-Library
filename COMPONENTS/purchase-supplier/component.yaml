@@ -19,6 +19,16 @@ source_layer:
     - RAW/PROJECTs/qmy-admin/src/views/admin/purchase
     - RAW/PROJECTs/qmy-admin/src/api/admin/purchase
     - RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/purchase.ts
+    - RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue
+    - RAW/PROJECTs/qmy-admin/src/components/product-selector
+    - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts
+    - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/permission/index.ts
+    - RAW/PROJECTs/qmy-admin/src/layout/admin/index.vue
+    - RAW/PROJECTs/qmy-admin/src/utils/axios
+    - RAW/PROJECTs/qmy-admin/src/utils/download.ts
+    - RAW/PROJECTs/qmy-admin/src/utils/auth.ts
+    - RAW/PROJECTs/qmy-admin/src/utils/validate.ts
+    - RAW/PROJECTs/qmy-admin/src/utils/index.ts
     - RAW/docs/zhongsheng
   wiki_pages:
     - wiki/COMP_采购供应商.md
@@ -26,6 +36,7 @@ dependencies:
   required:
     - BASE/project-scaffold
     - auth-permission
+  recommended:
     - product-material
     - order-management
   optional:
@@ -86,6 +97,25 @@ entrypoints:
       - frontend/qmy-admin/src/constant/yitang/sales.ts
       - frontend/qmy-admin/src/constant/file-type.ts
       - frontend/qmy-admin/src/interface/table.ts
+    shared_dependencies_not_copied:
+      - RAW/PROJECTs/qmy-admin/src/components/footer-actions/index.vue
+      - RAW/PROJECTs/qmy-admin/src/components/product-selector
+      - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/tags/index.ts
+      - RAW/PROJECTs/qmy-admin/src/views/admin/store/modules/permission/index.ts
+      - RAW/PROJECTs/qmy-admin/src/layout/admin/index.vue
+      - RAW/PROJECTs/qmy-admin/src/utils/axios
+      - RAW/PROJECTs/qmy-admin/src/utils/download.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/auth.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/validate.ts
+      - RAW/PROJECTs/qmy-admin/src/utils/index.ts
+    external_packages:
+      - vue
+      - vue-router
+      - element-plus
+      - "@element-plus/icons-vue"
+      - "@bzlab/bz-core"
+      - dayjs
+      - echarts
   db:
     schema:
       - db/zhongsheng-AI/init-supplier.sql
@@ -114,4 +144,5 @@ notes:
   - 按 SOL-50 要求保持 draft；未补齐目标项目 DDL、状态机、权限和运行验收前不得标记可直接复用。
   - zhongsheng-AI 只提供 supplier 基础 CRUD；qmy-java/qmy-admin 提供采购复杂流参考证据。
   - 报价阶段不强绑定供应商，采购阶段按供应商聚合采购单，是本组件的关键业务边界。
+  - order-management 与 product-material 是复杂采购流建议依赖，不作为简版供应商 CRUD 的必选前置。
   - 入库、库存、财务付款和供应商对账仍需 warehouse-delivery 与 finance 组件承接。

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtLocationMapper">
+
+    <!-- 基础字段 -->
+    <sql id="Base_Column_List">
+        id, name, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 查询库位下拉框列表 -->
+    <select id="selectForDropdown" resultType="com.qiaomoyun.entity.sto.yt.StoYtLocation">
+        SELECT id, name
+        FROM sto_yt_location
+        WHERE is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 根据条件查询库位列表 -->
+    <select id="selectList" parameterType="com.qiaomoyun.entity.sto.yt.StoYtLocation" resultType="com.qiaomoyun.entity.sto.yt.StoYtLocation">
+        SELECT <include refid="Base_Column_List" />
+        FROM sto_yt_location
+        <where>
+            <if test="id != null">
+                AND id = #{id}
+            </if>
+            <if test="name != null and name != ''">
+                AND name = #{name}
+            </if>
+            AND is_deleted = 0
+        </where>
+        ORDER BY create_time DESC
+    </select>
+</mapper>

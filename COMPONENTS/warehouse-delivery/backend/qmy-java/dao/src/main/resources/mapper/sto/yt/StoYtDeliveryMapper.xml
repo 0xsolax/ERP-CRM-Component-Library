@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtDeliveryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtDelivery">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="customer_id" property="customerId" />
+        <result column="address_id" property="addressId" />
+        <result column="address" property="address" />
+        <result column="status" property="status" />
+        <result column="delivery_amount" property="deliveryAmount" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+        <result column="receive_finish_time" property="receiveFinishTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, code, customer_id, address_id, address, status, delivery_amount, create_user,
+        create_time, update_user, update_time, tenant_id, is_deleted,receive_finish_time
+    </sql>
+
+    <!-- 根据条件查询发货单列表 -->
+    <select id="list" resultType="com.qiaomoyun.vo.sto.yt.StoYtDeliveryVo" parameterType="com.qiaomoyun.param.sto.yt.StoYtDeliveryQueryParams">
+        SELECT
+        d.*,
+        (SELECT syc2.name
+         FROM sto_yt_delivery_item di2
+         LEFT JOIN sal_yt_order_sub syos2 ON syos2.id = di2.order_sub_id
+         LEFT JOIN sal_yt_order syo2 ON syo2.id = syos2.order_id
+         LEFT JOIN sal_yt_customer syc2 ON syc2.id = syo2.customer_id
+         WHERE di2.delivery_id = d.id AND di2.is_deleted = 0 LIMIT 1
+        ) as customerName,
+        (select name from sto_yt_transport_company where id = d.transport_company_id) as transportCompanyName,
+        (select url from sys_storage where id=d.transport_order_file_id) as transportOrderFileUrl,
+        (SELECT nick_name FROM sys_user WHERE user_id = (
+            SELECT syc3.belong_employee_id
+            FROM sto_yt_delivery_item di3
+            LEFT JOIN sal_yt_order_sub syos3 ON syos3.id = di3.order_sub_id
+            LEFT JOIN sal_yt_order syo3 ON syo3.id = syos3.order_id
+            LEFT JOIN sal_yt_customer syc3 ON syc3.id = syo3.customer_id
+            WHERE di3.delivery_id = d.id AND di3.is_deleted = 0 LIMIT 1
+        )) as salesEmployeeName
+        FROM sto_yt_delivery d
+        WHERE d.is_deleted = 0
+        AND EXISTS (
+            SELECT 1 FROM sto_yt_delivery_item di WHERE di.delivery_id = d.id AND di.is_deleted = 0
+        )
+        <if test="code != null and code != ''">
+            AND d.code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="isCollectedShippingCost != null ">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di4
+                LEFT JOIN sal_yt_order_sub syos4 ON syos4.id = di4.order_sub_id
+                LEFT JOIN sal_yt_order syo4 ON syo4.id = syos4.order_id
+                WHERE di4.delivery_id = d.id AND di4.is_deleted = 0
+                AND syo4.is_collected_shipping_cost = #{isCollectedShippingCost}
+            )
+        </if>
+        <if test="customerId != null">
+            AND d.customer_id = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di5
+                LEFT JOIN sal_yt_order_sub syos5 ON syos5.id = di5.order_sub_id
+                LEFT JOIN sal_yt_order syo5 ON syo5.id = syos5.order_id
+                LEFT JOIN sal_yt_customer syc5 ON syc5.id = syo5.customer_id
+                WHERE di5.delivery_id = d.id AND di5.is_deleted = 0
+                AND syc5.name LIKE CONCAT('%', #{customerName}, '%')
+            )
+        </if>
+        <if test="subCode != null and subCode != ''">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di6
+                LEFT JOIN sal_yt_order_sub syos6 ON syos6.id = di6.order_sub_id
+                WHERE di6.delivery_id = d.id AND di6.is_deleted = 0
+                AND syos6.sub_code LIKE CONCAT('%', #{subCode}, '%')
+            )
+        </if>
+        <if test="addressId != null">
+            AND d.address_id = #{addressId}
+        </if>
+        <if test="status != null and status != ''">
+            AND d.status = #{status}
+        </if>
+        <if test="receiveStatus != null">
+            AND d.receive_status = #{receiveStatus}
+        </if>
+        <if test="packageCode != null and packageCode != ''">
+            AND d.package_code like concat('%', #{packageCode} ,'%')
+        </if>
+        <if test="salesEmployeeName != null and salesEmployeeName != ''">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di7
+                LEFT JOIN sal_yt_order_sub syos7 ON syos7.id = di7.order_sub_id
+                LEFT JOIN sal_yt_order syo7 ON syo7.id = syos7.order_id
+                LEFT JOIN sal_yt_customer syc7 ON syc7.id = syo7.customer_id
+                WHERE di7.delivery_id = d.id AND di7.is_deleted = 0
+                AND syc7.belong_employee_id IN (SELECT user_id FROM sys_user WHERE nick_name LIKE CONCAT('%',#{salesEmployeeName},'%'))
+            )
+        </if>
+        <if test="transportCompanyName != null and transportCompanyName != ''">
+            AND d.transport_company_id in (select id from sto_yt_transport_company where name like concat('%',#{transportCompanyName},'%'))
+        </if>
+        <if test="orderId != null">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di8
+                LEFT JOIN sal_yt_order_sub syos8 ON syos8.id = di8.order_sub_id
+                LEFT JOIN sal_yt_order syo8 ON syo8.id = syos8.order_id
+                WHERE di8.delivery_id = d.id AND di8.is_deleted = 0
+                AND syo8.id = #{orderId}
+            )
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            AND EXISTS (
+                SELECT 1 FROM sto_yt_delivery_item di9
+                LEFT JOIN sal_yt_order_sub syos9 ON syos9.id = di9.order_sub_id
+                LEFT JOIN sal_yt_order syo9 ON syo9.id = syos9.order_id
+                WHERE di9.delivery_id = d.id AND di9.is_deleted = 0
+                AND syo9.code LIKE CONCAT('%', #{orderCode}, '%')
+            )
+        </if>
+        ORDER BY d.create_time DESC
+    </select>
+
+    <!-- 根据编号检查是否存在 -->
+    <select id="existsByCode" resultType="java.lang.Boolean">
+        SELECT COUNT(*) > 0
+        FROM sto_yt_delivery
+        WHERE code = #{code}
+        AND is_deleted = 0
+        <if test="excludeId != null and excludeId > 0">
+            AND id != #{excludeId}
+        </if>
+    </select>
+    <select id="selectMapByGroupOrder" resultType="java.util.HashMap" parameterType="java.lang.Long">
+        select GROUP_CONCAT(DISTINCT syo.code SEPARATOR ', ') as orderCode
+        FROM sto_yt_delivery_item as sydi
+                 left join sal_yt_order_sub as syos on syos.id = sydi.order_sub_id
+                 left join sal_yt_order as syo on syo.id = syos.order_id
+        WHERE sydi.delivery_id = #{id}
+          AND sydi.is_deleted = 0
+    </select>
+    <select id="selectOrderSubSales" resultType="java.lang.String" parameterType="java.lang.Long">
+        select nick_name
+        from sys_user
+        where user_id in
+              (select sale_employee_id from sal_yt_order where id in (
+                  select order_id from sal_yt_order_sub where id in( select order_sub_id from sto_yt_delivery_item where delivery_id=#{id})
+                  ))
+    </select>
+
+    <!-- 根据订单物流信息查询参数查询发货单 -->
+    <select id="selectByDeliveryIdsAndStatus" resultType="com.qiaomoyun.entity.sto.yt.StoYtDelivery" parameterType="com.qiaomoyun.param.sal.yt.SalYtOrderDeliveryParams">
+        SELECT DISTINCT
+        d.*,
+        (select url from sys_storage where id = transport_order_file_id) as transport_order_file_url,
+        (select name from sto_yt_transport_company where id= transport_company_id) as transport_company_name
+        FROM sto_yt_delivery d
+        LEFT JOIN sto_yt_delivery_item di ON d.id = di.delivery_id AND di.is_deleted = 0
+        WHERE d.is_deleted = 0
+        AND d.status = '2'
+        <!-- 订单子ID查询 -->
+        <if test="orderSubId != null">
+            AND di.order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderId != null">
+            AND di.order_sub_id in (select id from sal_yt_order_sub where is_deleted=0 and order_id = #{orderId})
+        </if>
+        <!-- 发货单编号查询 -->
+        <if test="deliveryCode != null and deliveryCode != ''">
+            AND d.code LIKE CONCAT('%', #{deliveryCode}, '%')
+        </if>
+        <!-- 发货时间查询 -->
+        <if test="deliveryTime != null">
+            AND DATE_FORMAT(d.delivery_time, '%Y-%m-%d') = DATE_FORMAT(#{deliveryTime}, '%Y-%m-%d')
+        </if>
+        <!-- 产品编号查询 -->
+        <if test="productCode != null and productCode != ''">
+            AND di.product_id in  (
+                SELECT id
+                FROM pro_yt_product p
+                WHERE p.code LIKE CONCAT('%', #{productCode}, '%') and p.is_deleted=0
+            )
+        </if>
+    </select>
+    <select id="selectDeliveryListBySubOrderId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDelivery">
+        select b.* from sto_yt_delivery_item a left join sto_yt_delivery b on a.delivery_id=b.id
+        where a.is_deleted=0 and b.is_deleted=0
+        and a.order_sub_id=#{orderSubId} and a.delivery_id !=#{deliveryId}
+    </select>
+    <select id="list1" resultType="com.qiaomoyun.vo.sto.yt.StoYtDeliveryVo">
+        SELECT DISTINCT
+        d.*,syc.name as customerName,
+        (select name from sto_yt_transport_company where id = d.transport_company_id) as transportCompanyName,
+        (select url from sys_storage where id=d.transport_order_file_id) as transportOrderFileUrl,
+        (select nick_name from sys_user where user_id = syc.belong_employee_id) as salesEmployeeName
+      --  syo.code as orderCode
+        FROM sto_yt_delivery d
+        LEFT JOIN sto_yt_delivery_item di ON d.id = di.delivery_id AND di.is_deleted = 0
+        LEFT JOIN sal_yt_order_sub syos ON di.order_sub_id = syos.id AND syos.is_deleted = 0
+        LEFT JOIN sal_yt_order syo ON syos.order_id = syo.id AND syo.is_deleted = 0
+        LEFT JOIN sal_yt_customer syc ON syo.customer_id = syc.id AND syc.is_deleted = 0
+        WHERE d.is_deleted = 0
+        AND di.id IS NOT NULL
+        <if test="code != null and code != ''">
+            AND d.code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="isCollectedShippingCost != null ">
+            AND syo.is_collected_shipping_cost = #{isCollectedShippingCost}
+        </if>
+        <if test="customerId != null">
+            AND d.customer_id = #{customerId}
+        </if>
+        <if test="customerName != null and customerName != ''">
+            AND syc.name LIKE CONCAT('%', #{customerName}, '%')
+        </if>
+        <if test="subCode != null and subCode != ''">
+            AND syos.sub_code LIKE CONCAT('%', #{subCode}, '%')
+        </if>
+        <if test="addressId != null">
+            AND d.address_id = #{addressId}
+        </if>
+        <if test="status != null and status != ''">
+            AND d.status = #{status}
+        </if>
+        <if test="receiveStatus != null">
+            AND d.receive_status = #{receiveStatus}
+        </if>
+        <if test="packageCode != null and packageCode != ''">
+            AND d.package_code like concat('%', #{packageCode} ,'%')
+        </if>
+        <if test="salesEmployeeName != null and salesEmployeeName != ''">
+            AND syc.belong_employee_id in (select user_id from sys_user where nick_name like concat('%',#{salesEmployeeName},'%'))
+        </if>
+        <if test="transportCompanyName != null and transportCompanyName != ''">
+            AND d.transport_company_id in (select id from sto_yt_transport_company where name like concat('%',#{transportCompanyName},'%'))
+        </if>
+        <if test="orderId != null">
+            AND syo.id = #{orderId}
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            AND syo.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        ORDER BY d.create_time DESC
+    </select>
+
+</mapper>

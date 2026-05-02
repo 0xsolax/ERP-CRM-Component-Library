@@ -2,8 +2,12 @@
 
 ## 2026-05-02
 
+- 启动并完成 Multica `SOL-51` 本地组件草稿抽取：生成 `COMPONENTS/warehouse-delivery`，覆盖 qmy-admin 仓储/发货页面和 API、qmy-java YT 库存/入库/箱规/物流/发货后端、库存事件、预警任务、导出模板和跨组件边界。
+- `SOL-51` 按验收要求保持 `status: draft`，明确 qmy-java 有后端代码证据但缺正式 DDL、数据范围权限、破坏性 GET 收口、库存扣减规则和运行验收。
+- 更新 `wiki/COMP_仓储发货.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将仓储发货组件纳入组件快照资产入口。
 - 启动并完成 Multica `SOL-50` 本地组件草稿抽取：生成 `COMPONENTS/purchase-supplier`，覆盖 `zhongsheng-AI` 供应商 CRUD、qmy-java YT 供应商/待采购/采购单/库存预警后端、qmy-admin 采购页面/API、采购状态、退货、通知、导出和跨组件边界。
 - `SOL-50` 按验收要求保持 `status: draft`，明确采购申请和采购单虽有 qmy-java 参考证据，但正式 DDL、权限闭环、状态机和运行验收仍未完成，不能标记可直接复用。
+- `SOL-50` review 修正：将 `order-management`、`product-material` 从必选依赖收口为复杂采购流建议依赖，并裁剪产品/客户/组织直接依赖 API 到采购页实际调用函数。
 - 更新 `wiki/COMP_采购供应商.md`、`wiki/SOURCE_INDEX.md`、`wiki/index.md`，将采购供应商组件纳入组件快照资产入口。
 - 启动并完成 Multica `SOL-49` 本地组件抽取：生成 `COMPONENTS/order-management`，覆盖 `zhongsheng-AI` 基础订单 CRUD、qmy-java YT 复杂订单后端、qmy-admin 订单页面/API、订单状态、采购申请、退货、发货、完结、关闭和导出边界。
 - `SOL-49` 快照明确基础 `orders/order_item` 与复杂 `sal_yt_order*` 差异，标注 qmy-java 缺完整 DDL、多个详情/退货/关闭/物流接口权限缺口，以及状态变更 GET 接口接入前需收口。

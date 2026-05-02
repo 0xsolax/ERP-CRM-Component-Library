@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtBoxMapper">
+
+    <resultMap type="com.qiaomoyun.entity.sto.yt.StoYtBox" id="BaseResultMap">
+        <id column="id" property="id"/>
+        <result column="code" property="code"/>
+        <result column="length" property="length"/>
+        <result column="width" property="width"/>
+        <result column="height" property="height"/>
+        <result column="weight" property="weight"/>
+        <result column="create_user" property="createUser"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_user" property="updateUser"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="is_deleted" property="isDeleted"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, code, length, width, height, weight, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 获取箱规列表 -->
+    <select id="list" parameterType="com.qiaomoyun.entity.sto.yt.StoYtBox" resultType="com.qiaomoyun.entity.sto.yt.StoYtBox">
+        SELECT <include refid="Base_Column_List" />
+        FROM sto_yt_box
+        WHERE is_deleted = 0
+        <if test="code != null and code != ''">
+            AND code LIKE CONCAT('%', #{code}, '%')
+        </if>
+        <if test="length != null">
+            AND length = #{length}
+        </if>
+        <if test="width != null">
+            AND width = #{width}
+        </if>
+        <if test="height != null">
+            AND height = #{height}
+        </if>
+        <if test="weight != null">
+            AND weight = #{weight}
+        </if>
+        ORDER BY create_time DESC
+    </select>
+
+    <!-- 检查箱规代码是否已存在 -->
+    <select id="existsByCode" resultType="java.lang.Boolean">
+        SELECT COUNT(1) > 0
+        FROM sto_yt_box
+        WHERE is_deleted = 0
+        AND code = #{code}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtStoreRecordMapper">
+
+    <sql id="Base_Column_List">
+        id, store_id, specification, product_id, purchase_id, order_sub_id, type, real_store_init,
+        real_store_change, enable_store_init, enable_store_change, occupy_store_init, occupy_store_change,
+        real_transit_init, real_transit_change, enable_transit_init, enable_transit_change, occupy_transit_init,
+        occupy_transit_change, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+
+    <select id="listByPage" resultType="com.qiaomoyun.entity.sto.yt.StoYtStoreRecord" >
+        select
+        sysr.*,
+        (select code from pur_yt_purchase where id = sysr.purchase_id) as purchaseCode,
+        ifnull(sysr.order_sub_code,syos.sub_code) as orderSubCode,
+        ifnull(sysr.order_code,ifnull(syo_by_order.code,syo.code)) as orderCode,
+        su.nick_name as createUserName,
+        syc.name as customerName,
+        pypr.code as productCode
+        from sto_yt_store_record as sysr
+        left join sal_yt_order_sub as syos on sysr.order_sub_id = syos.id and syos.is_deleted = 0
+        left join sal_yt_order as syo on syos.order_id = syo.id and syo.is_deleted = 0
+        left join sal_yt_order as syo_by_order on sysr.order_id = syo_by_order.id and syo_by_order.is_deleted = 0
+        left join sal_yt_customer as syc on ifnull(syo_by_order.customer_id, syo.customer_id) = syc.id and syc.is_deleted = 0
+        left join pur_yt_purchase as pyp on sysr.purchase_id = pyp.id and pyp.is_deleted = 0
+        left join pro_yt_product_specification as pyps on pyps.id= sysr.specification_id and pyps.is_deleted=0
+        left join pro_yt_product as pypr on pyps.product_id = pypr.id and pypr.is_deleted = 0
+        left join sys_user as su on sysr.create_user = su.user_id and su.is_deleted = 0
+        where sysr.is_deleted = 0
+        <if test="specificationId != null">
+            and sysr.specification_id = #{specificationId}
+        </if>
+        <if test="orderSubId != null">
+            and sysr.order_sub_id = #{orderSubId}
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            and (
+                sysr.order_code like concat('%',#{orderCode},'%')
+                or syo_by_order.code like concat('%',#{orderCode},'%')
+                or syo.code like concat('%',#{orderCode},'%')
+            )
+        </if>
+        <if test="purchaseId != null">
+            and sysr.purchase_id = #{purchaseId}
+        </if>
+        <if test="type != null">
+            and sysr.type = #{type}
+        </if>
+        <if test="storeId != null">
+            and sysr.store_id = #{storeId}
+        </if>
+        <if test="customerStoreId != null">
+            and sysr.customer_store_id = #{customerStoreId}
+        </if>
+        <if test="typeList != null and typeList.size() > 0" >
+            and sysr.type in
+            <foreach collection="typeList" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <!-- 子订单号查询 -->
+        <if test="orderSubCode != null and orderSubCode != ''">
+            and ifnull(sysr.order_sub_code, syos.sub_code) like concat('%', #{orderSubCode}, '%')
+        </if>
+        <!-- 采购单号查询 -->
+        <if test="purchaseCode != null and purchaseCode != ''">
+            and pyp.code like concat('%', #{purchaseCode}, '%')
+        </if>
+        <!-- 创建人查询 -->
+        <if test="createUserName != null and createUserName != ''">
+            and su.nick_name like concat('%', #{createUserName}, '%')
+        </if>
+        <!-- 客户名称查询 -->
+        <if test="customerName != null and customerName != ''">
+            and syc.name like concat('%', #{customerName}, '%')
+        </if>
+        <!-- 产品code查询 -->
+        <if test="productCode != null and productCode != ''">
+            and pypr.code like concat('%', #{productCode}, '%')
+        </if>
+        <!-- 规格名称查询 -->
+        <if test="specificationName != null and specificationName != ''">
+            and sysr.specification_id in (select product_specification_id from  pro_yt_product_specification_item where category_specification_item_id in (select id from pro_yt_category_specification_item where value LIKE CONCAT('%', #{specificationName}, '%')))
+        </if>
+        order by sysr.create_time desc
+    </select>
+</mapper>

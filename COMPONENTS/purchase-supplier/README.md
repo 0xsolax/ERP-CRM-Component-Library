@@ -12,7 +12,8 @@
 | :--- | :--- |
 | 状态 | `draft` |
 | 组件类型 | 待验证业务组件 |
-| 必选依赖 | `BASE/project-scaffold`、`auth-permission`、`product-material`、`order-management` |
+| 基础依赖 | `BASE/project-scaffold`、`auth-permission` |
+| 建议依赖 | `order-management`、`product-material` |
 | 可选依赖 | `customer-management`、`warehouse-delivery`、`finance`、`file-oss` |
 | 主要来源 | `RAW/PROJECTs/zhongsheng-AI`、`RAW/PROJECTs/qmy-java`、`RAW/PROJECTs/qmy-admin`、`RAW/docs/zhongsheng` |
 
@@ -43,18 +44,18 @@
 必须保持边界：
 
 - 报价阶段不强绑定供应商；采购阶段再按供应商聚合采购单。
-- 产品、规格、供应商规格对照依赖 `product-material`。
-- 订单商品项、客户、业务员、采购申请来源依赖 `order-management` 和 `customer-management`。
+- 产品、规格、供应商规格对照建议接入 `product-material`。
+- 订单商品项、业务员、采购申请来源建议接入 `order-management`；客户信息由 `customer-management` 或目标项目客户基座提供。
 - 入库、库存、在途、打包发货由 `warehouse-delivery` 承接。
 - 付款、应付、对账由 `finance` 承接。
 
 ## 快速接入
 
-1. 先接入认证权限、产品物料和订单组件。
+1. 先接入 P0 基座与认证权限。
 2. 判断目标项目只需要供应商 CRUD，还是需要完整采购申请到采购单链路。
 3. 简版供应商可参考 `supplier` 表和 `/api/supplier`。
-4. 复杂采购需重新设计 `pur_yt_supplier`、`pur_yt_apply_purchase`、`pur_yt_purchase`、`pur_yt_purchase_item`、库存预警、付款和跟进表。
-5. 接入 qmy-admin 采购页面前，先补齐产品、客户、组织用户、下载、上传、权限守卫等基座依赖。
+4. 如进入复杂采购流，建议先装配 `order-management` 与 `product-material`，再重新设计 `pur_yt_supplier`、`pur_yt_apply_purchase`、`pur_yt_purchase`、`pur_yt_purchase_item`、库存预警、付款和跟进表。
+5. 接入 qmy-admin 采购页面前，先补齐产品、客户、组织用户、下载、上传、权限守卫、请求封装、布局和共享组件等基座依赖。
 6. 补齐供应商/采购单/采购申请后端权限、数据范围、状态前置校验和操作记录。
 7. 按 `docs/acceptance/ACCEPTANCE.md` 做快照验收和目标项目装配验收。
 

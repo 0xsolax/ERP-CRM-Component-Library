@@ -25,6 +25,7 @@
 - [COMPONENT_quote-management](../COMPONENTS/quote-management/README.md)
 - [COMPONENT_order-management](../COMPONENTS/order-management/README.md)
 - [COMPONENT_purchase-supplier](../COMPONENTS/purchase-supplier/README.md)
+- [COMPONENT_warehouse-delivery](../COMPONENTS/warehouse-delivery/README.md)
 
 ## 来源项目
 

@@ -16,6 +16,9 @@
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/purchase` | 供应商、待采购、已采购、库存预警页面 | 复制到 `frontend/qmy-admin/` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/api/admin/purchase` | 采购 API 封装 | 复制到 `frontend/qmy-admin/` |
 | 前端 | `RAW/PROJECTs/qmy-admin/src/views/admin/router/async-modules/purchase.ts` | 采购路由和权限码 | 复制到 `frontend/qmy-admin/` |
+| 前端依赖 | `RAW/PROJECTs/qmy-admin/src/api/admin/product/index.ts`、`api/admin/sales/customer.ts`、`api/admin/auth/org.ts` | 采购页面直接调用的供应商下拉、客户列表、员工下拉 API | 裁剪后复制到 `frontend/qmy-admin/` |
+| 前端依赖 | `RAW/PROJECTs/qmy-admin/src/constant/yitang/purchase.ts`、`constant/yitang/sales.ts`、`constant/file-type.ts`、`interface/table.ts` | 采购状态、操作类型、上传类型和表格类型 | 复制到 `frontend/qmy-admin/` |
+| 前端共享依赖 | `layout/admin/index.vue`、`components/footer-actions`、`components/product-selector`、`views/admin/store/modules/tags`、`views/admin/store/modules/permission`、`utils/axios`、`utils/download.ts`、`utils/auth.ts`、`utils/validate.ts`、`utils/index.ts` | 页面直接导入，但属于 qmy-admin 基座/共享层 | 未复制，写入依赖边界 |
 | 调研/PRD | `RAW/PROJECTs/zhongsheng-AI/PRD_Detailed_V2.md`、`RAW/docs/zhongsheng` | 采购业务规则和岗位边界 | 复制到 `docs/source/` |
 
 ## 抽取范围
@@ -24,7 +27,7 @@
 
 - legacy `supplier` CRUD 后端和 SQL。
 - qmy-java 供应商、待采购、采购单、库存预警 controller/manager/entity/param/VO/mapper/enum。
-- qmy-admin 供应商、待采购、已采购、库存预警页面、API、路由和采购常量。
+- qmy-admin 供应商、待采购、已采购、库存预警页面、API、路由、采购常量和裁剪后的直接依赖 API/类型。
 - 采购导出模板 `yitang-purchaseExport.xlsx`。
 - PRD 与调研材料。
 
@@ -34,7 +37,7 @@
 - 财务付款、应付、对账、利润完整实现；归 `finance`。
 - 产品、规格、供应商规格维护的产品主数据部分；归 `product-material`。
 - 客户、订单、业务员主数据维护；归 `customer-management`、`order-management` 和认证组织基座。
-- qmy-admin 全局布局、请求封装、权限守卫、下载工具、上传组件、通用表格等通用能力。
+- qmy-admin 全局布局、请求封装、权限守卫、下载工具、上传组件、标签页 store、权限 store、通用工具和共享组件等通用能力。
 
 待验证：
 
@@ -46,7 +49,9 @@
 ## 清洗规则
 
 - 未复制源项目嵌套 `.git/`、`.DS_Store`、构建产物、依赖目录和环境配置。
-- 采购页面直接依赖的产品、客户、组织用户、常量、表格类型文件已作为依赖证据带出。
+- 采购页面直接依赖的产品、客户、组织用户 API 已裁剪为 `getSupplierSelect`、`getCustomerList`、`getAllEmployee`，避免把产品/客户/组织维护能力误收进采购组件。
+- 采购页面直接依赖的常量、上传类型、表格类型文件已作为依赖证据带出。
+- `layout/admin`、`footer-actions`、`product-selector`、tags/permission store、axios/download/auth/validate/utils 属于 qmy-admin 基座/共享层，未复制进本草稿组件，接入时必须由基座提供。
 - 仓储和财务只在契约中写边界，不复制完整实现。
 - 原始 `RAW/` 只读，不在抽取过程中修改。
 

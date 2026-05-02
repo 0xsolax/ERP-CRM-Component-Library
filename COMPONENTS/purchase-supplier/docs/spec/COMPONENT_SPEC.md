@@ -21,8 +21,9 @@
 
 依赖组件：
 
-- 必选：`BASE/project-scaffold`、`auth-permission`、`product-material`、`order-management`。
-- 可选：`customer-management`、`warehouse-delivery`、`finance`、`file-oss`。
+- 基础依赖：`BASE/project-scaffold`、`auth-permission`。
+- 建议依赖：完整采购申请/采购单链路建议接入 `order-management`、`product-material`。
+- 可选依赖：`customer-management`、`warehouse-delivery`、`finance`、`file-oss`。
 
 ## 后端规范
 
@@ -59,7 +60,7 @@
 ## 装配步骤
 
 1. 先确认目标项目只需要供应商 CRUD，还是需要完整采购申请/采购单链路。
-2. 先接入认证权限、产品物料、订单组件。
+2. 先接入 P0 基座与认证权限；如采用复杂采购流，再接入订单和产品物料组件。
 3. 设计供应商、采购申请、采购单、采购明细、库存预警、付款和跟进表。
 4. 接入供应商列表、详情、新增编辑、联系人、标签、跟进。
 5. 接入待采购、生成采购单、换供应商、追加和撤回。

@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtDeliveryBoxItemMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBoxItem">
+        <id column="id" property="id" />
+        <result column="delivery_box_id" property="deliveryBoxId" />
+        <result column="specification_id" property="specificationId" />
+        <result column="location_id" property="locationId" />
+        <result column="number" property="number" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, delivery_box_id, specification_id, location_id, number, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+    <update id="deleteByDeliveryBoxId">
+        update sto_yt_delivery_box_item set is_deleted=1 where delivery_box_id = #{id}
+    </update>
+    <update id="deleteByDeliveryId" parameterType="java.lang.Long">
+        update sto_yt_delivery_box_item set is_deleted=1 where delivery_box_id in(select id from sto_yt_delivery_box where delivery_id = #{id})
+    </update>
+
+    <!-- 根据发货箱ID查询包裹物品列表，包含产品code和库位名称 -->
+    <select id="getItemsByBoxId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBoxItem" parameterType="java.lang.Long">
+        SELECT
+            sum(sydbi.number) as number,
+            sydbi.specification_id,
+            pyp.code as productCode,
+            pyp.id as product_id,
+            sydbi.category_specification_item_id,
+            sydbi.category_specification_item_name,
+            (select name from sto_yt_location where id= sydbi.location_id) as locationName,
+            syo.code as orderNo
+        FROM sto_yt_delivery_box_item as sydbi
+        left join pro_yt_product_specification as pyps on sydbi.specification_id = pyps.id
+        left join pro_yt_product as pyp on pyp.id = pyps.product_id
+        left join sal_yt_order_sub_item as syosi on syosi.id = sydbi.order_item_id
+        left join sal_yt_order_sub as syos on syos.id = syosi.order_sub_id
+        left join sal_yt_order as syo on syo.id = syos.order_id
+        WHERE sydbi.delivery_box_id = #{deliveryBoxId}
+        AND sydbi.is_deleted = 0
+        group by sydbi.specification_id, sydbi.category_specification_item_id, sydbi.location_id, sydbi.category_specification_item_name, syo.id
+        ORDER BY max(sydbi.create_time)
+    </select>
+
+    <!-- 根据订单ID列表查询发货箱物品 -->
+    <select id="selectByOrderIds" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBoxItem" parameterType="java.util.List">
+        SELECT
+            sydbi.*,
+            pyp.code as productCode,
+            pyp.id as product_id,
+            (select name from sto_yt_location where id= sydbi.location_id) as locationName,
+            syos.order_id as orderId,
+            syos.id as orderSubId,
+            sdi.order_sub_item_id as orderSubItemId,
+            sdi.category_specification_item_id as categorySpecificationItemId,
+            sdi.category_specification_item_name as categorySpecificationItemName
+        FROM sto_yt_delivery_box_item as sydbi
+        left join pro_yt_product_specification as pyps on sydbi.specification_id = pyps.id
+        left join pro_yt_product as pyp on pyp.id = pyps.product_id
+        left join sto_yt_delivery_box as sydb on sydb.id = sydbi.delivery_box_id
+        left join sto_yt_delivery as syd on syd.id = sydb.delivery_id
+        left join sto_yt_delivery_item as sdi on sdi.delivery_id = syd.id and sdi.specification_id = sydbi.specification_id
+        left join sal_yt_order_sub as syos on syos.id = sdi.order_sub_id
+        WHERE syos.order_id IN
+        <foreach collection="list" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+        AND sydbi.is_deleted = 0
+        AND sdi.is_deleted = 0
+    </select>
+
+    <!-- 根据发货单ID查询打包后的物品 -->
+    <select id="selectByDeliveryId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBoxItem" parameterType="java.lang.Long">
+        SELECT
+            sydbi.*,
+            pyp.code as productCode,
+            pyp.id as product_id,
+            (select name from sto_yt_location where id= sydbi.location_id) as locationName,
+            sydbi.category_specification_item_id as categorySpecificationItemId,
+            sydbi.category_specification_item_name as categorySpecificationItemName
+        FROM sto_yt_delivery_box_item as sydbi
+        left join pro_yt_product_specification as pyps on sydbi.specification_id = pyps.id
+        left join pro_yt_product as pyp on pyp.id = pyps.product_id
+        left join sto_yt_delivery_box as sydb on sydb.id = sydbi.delivery_box_id
+        left join sto_yt_delivery as syd on syd.id = sydb.delivery_id
+        WHERE syd.id = #{deliveryId}
+        AND sydbi.is_deleted = 0
+    </select>
+
+    <!-- 根据发货单ID和订单ID查询打包后的物品 -->
+    <select id="selectByDeliveryIdAndOrderId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryBoxItem" parameterType="java.util.Map">
+        SELECT
+            sum(sydbi.number) as number
+ --           pyp.code as productCode,
+ --           pyp.id as product_id,
+   --         (select name from sto_yt_location where id= sydbi.location_id) as locationName,
+   --         syos.order_id as orderId,
+    --        syos.id as orderSubId,
+   --         syosi.order_sub_item_id as orderSubItemId,
+    --        syosi.category_specification_item_id as categorySpecificationItemId,
+    --        syosi.category_specification_item_name as categorySpecificationItemName
+        FROM sto_yt_delivery_box_item as sydbi
+        left join pro_yt_product_specification as pyps on sydbi.specification_id = pyps.id
+        left join pro_yt_product as pyp on pyp.id = pyps.product_id
+        left join sto_yt_delivery_box as sydb on sydb.id = sydbi.delivery_box_id
+        left join sto_yt_delivery as syd on syd.id = sydb.delivery_id
+        left join sal_yt_order_sub_item as syosi on syosi.id = sydbi.order_item_id
+        left join sal_yt_order_sub as syos on syos.id = syosi.order_sub_id
+        WHERE syd.id = #{deliveryId}
+        AND syos.order_id = #{orderId}
+        AND sydbi.is_deleted = 0
+        AND syosi.is_deleted = 0
+        group by sydbi.specification_id,sydbi.category_specification_item_id,sydbi.location_id,sydbi.category_specification_item_name
+
+    </select>
+
+    <!-- 根据发货单ID查询包裹中涉及的不同订单ID -->
+    <select id="selectDistinctOrderIdsByDeliveryId" resultType="java.lang.Long" parameterType="java.lang.Long">
+        SELECT DISTINCT syos.order_id
+        FROM sto_yt_delivery_box_item AS sydbi
+        LEFT JOIN sto_yt_delivery_box AS sydb ON sydb.id = sydbi.delivery_box_id
+        LEFT JOIN sal_yt_order_sub_item AS syosi ON syosi.id = sydbi.order_item_id
+        LEFT JOIN sal_yt_order_sub AS syos ON syos.id = syosi.order_sub_id
+        WHERE sydb.delivery_id = #{deliveryId}
+        AND sydbi.is_deleted = 0
+        AND syosi.is_deleted = 0
+    </select>
+
+</mapper>

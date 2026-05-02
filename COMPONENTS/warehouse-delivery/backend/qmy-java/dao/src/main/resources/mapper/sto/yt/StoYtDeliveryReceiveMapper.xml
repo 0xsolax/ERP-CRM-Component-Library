@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtDeliveryReceiveMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtDeliveryReceive">
+        <id column="id" property="id" />
+        <result column="delivery_id" property="deliveryId" />
+        <result column="amount" property="amount" />
+        <result column="currency" property="currency" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, delivery_id ,amount, currency, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据条件查询发货回款列表 -->
+    <select id="list" resultMap="BaseResultMap" parameterType="com.qiaomoyun.param.fin.yt.FinYtReceiveQueryParams">
+        SELECT
+            sdr.*,sd.receive_finish_time,
+            (select nick_name from sys_user where user_id = sdr.create_user ) as createUserName
+        FROM sto_yt_delivery_receive as sdr
+         LEFT JOIN sto_yt_delivery as sd ON sdr.delivery_id = sd.id
+        WHERE sdr.is_deleted = 0
+        <if test="deliveryId != null">
+            AND delivery_id = #{deliveryId}
+        </if>
+        <if test="startTime != null">
+            AND sdr.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null">
+            AND #{endTime} >= sdr.create_time
+        </if>
+        ORDER BY sdr.create_time DESC
+    </select>
+
+    <select id="getTotalReceiveByDeliveryId" resultType="java.math.BigDecimal" parameterType="java.lang.Long">
+        SELECT COALESCE(SUM(amount), 0)
+        FROM sto_yt_delivery_receive
+        WHERE delivery_id = #{deliveryId} AND is_deleted = 0
+    </select>
+    <select id="selectByDeliveryId" resultType="com.qiaomoyun.entity.sto.yt.StoYtDeliveryReceive">
+        select *
+        from sto_yt_delivery_receive
+        where delivery_id = #{deliveryId}
+        and is_deleted = 0
+        order by create_time desc
+    </select>
+
+</mapper>

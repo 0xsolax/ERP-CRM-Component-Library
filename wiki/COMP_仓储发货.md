@@ -5,67 +5,58 @@
 | 字段 | 内容 |
 | :--- | :--- |
 | 组件类型 | ERP / 仓储履约 |
-| 复用等级 | 待验证 |
-| 适用项目 | 需要库存、入库、打包、物流、发货的项目 |
-| 来源路径 | `RAW/PROJECTs/qmy-admin/src/views/admin/warehouse`、`RAW/PROJECTs/qmy-admin/src/views/admin/delivery`、`RAW/PROJECTs/qmy-admin/src/api/admin/warehouse/index.ts`、`RAW/docs/zhongsheng` |
+| 复用等级 | 草稿 |
+| 当前快照 | `COMPONENTS/warehouse-delivery` |
+| 适用项目 | 需要库存、入库、打包、物流、发货、出入库流水的项目 |
+| 关键来源 | `RAW/PROJECTs/qmy-admin/src/views/admin/warehouse`、`RAW/PROJECTs/qmy-admin/src/api/admin/warehouse/index.ts`、`RAW/PROJECTs/qmy-java/.../sto/yt`、`RAW/docs/zhongsheng` |
 
 ## 业务目标
 
-管理库存、出入库、箱规、物流公司、打包、发货和发货进度，为订单履约提供仓储执行能力。
+管理公共仓和客户独立仓的库存、在途、占用、入库、箱规、物流公司、打包、发货和库存流水，为订单履约和采购入库提供仓储执行能力。
 
-## 前端入口
+## 快照内容
 
-- 仓储：`RAW/PROJECTs/qmy-admin/src/views/admin/warehouse/shipping`、`inventory`、`inbound`、`logistics`、`packing`。
-- 发货：`RAW/PROJECTs/qmy-admin/src/views/admin/delivery/list`、`record`、`operate-record`。
-- API：`RAW/PROJECTs/qmy-admin/src/api/admin/warehouse/index.ts`。
+- 前端页面：实时库存、库存历史、占用详情、预警规则、入库列表、入库记录、新增入库、发货列表、打包、包裹、打印、物流公司、打包箱。
+- 前端 API：`/sto/yt/store/*`、`/sto/yt/store/order/*`、`/sto/yt/box/*`、`/sto/yt/transportCompany/*`、`/sto/yt/delivery/*`。
+- 后端代码：`StoYtStore`、`StoYtStoreOrder`、`StoYtDelivery`、`StoYtBox`、`StoYtTransportCompany`、`StoYtLocation` 的 controller/manager/entity/mapper。
+- 库存事件：`StoreChangeEvent`、`StoreEventListener`、`DeliveryEvent`、`DeliveryEventListener`。
+- 库存预警任务：`YtStoreWarningJob`。
+- 文档：API、数据、权限、验收证据和 schema notes。
 
-## 后端接口证据
+## 关键数据口径
 
-| 能力 | 方法 | 路径 | 来源 |
-| :--- | :--- | :--- | :--- |
-| 库存产品 | POST | `/sto/yt/store/product` | `qmy-admin` API |
-| 库存历史 | POST | `/sto/yt/store/history` | `qmy-admin` API |
-| 入库/批量入库 | POST | `/sto/yt/store/order/enter*` | `qmy-admin` API |
-| 箱规维护 | POST/GET | `/sto/yt/box/*` | `qmy-admin` API |
-| 物流公司 | POST/GET | `/sto/yt/transportCompany/*` | `qmy-admin` API |
-| 发货列表/详情 | POST | `/sto/yt/delivery/list`、`/detail` | `qmy-admin` API |
-| 扫码、确认发货 | POST | `/sto/yt/delivery/scan`、`/confirmDelivery` | `qmy-admin` API |
-| 保存/完成打包 | POST | `/sto/yt/delivery/savePackage`、`/completePackage` | `qmy-admin` API |
-
-## 数据结构
-
-本轮未在后端来源中确认仓储完整 SQL。可从前端 API 推断需要：
-
-| 对象 | 关键字段 | 说明 |
-| :--- | :--- | :--- |
-| 库存 | 产品/规格、库存数、占用数、库位 | 库存查询和预警 |
-| 入库单 | 订单、产品、数量、入库时间 | 入库履约 |
-| 箱规 | 箱型、尺寸、装箱数 | 打包和发货 |
-| 发货单 | 订单、包裹、物流、发货状态 | 发货执行 |
+| 领域 | 口径 |
+| :--- | :--- |
+| 公共仓 | 真实库存、可用库存、占用库存、真实在途、可用在途、占用在途 |
+| 客户独立仓 | 客户、产品、规格、库位、库存数、在途数 |
+| 入库 | 采购入库、独立入库、客户独立仓独立入库 |
+| 出库 | 独立出库、客户独立仓独立出库、发货扣减 |
+| 流水 | 创建订单、创建采购单、入库、出库、发货、退货、半成品确认、关闭订单释放占用 |
 
 ## 权限边界
 
-- 仓管岗位通常需要库存、入库、打包、发货权限。
-- 销售/采购/财务只应看到与自身流程有关的数据，老板视角可全局查看。
+- 前端路由使用 `sto:yt:store:list`、`sto:yt:order:list`、`sto:yt:order:addStore`、`sto:yt:delivery:list`、`sto:yt:transportCompany:list`、`sto:yt:box:list`。
+- qmy-java controller 中多个接口权限为空或注释，且未发现 `@RequiresDataPermissions`。
+- `GET /sto/yt/box/delete`、`GET /sto/yt/transportCompany/delete/{id}` 属于破坏性 GET，接入前必须收口。
 
-## 接入步骤
+## 接入顺序
 
-1. 先确认目标项目是否需要真实库存，还是只需要订单发货记录。
-2. 确认库存维度：产品、SKU、规格、批次、库位。
-3. 设计库存占用、入库、出库、发货状态。
-4. 对齐订单组件的发货触发点。
-5. 若需要扫码打包，单独设计包裹和箱规模型。
+1. 先接入产品、客户、订单、采购、认证权限基座。
+2. 确认库存维度和客户独立仓是否启用。
+3. 补正式 DDL、租户字段、索引、唯一键、库存流水审计。
+4. 补数据范围权限和状态变更幂等校验。
+5. 用真实订单、采购、入库、打包、发货链路做库存一致性回归。
 
 ## 验收清单
 
-- [ ] 库存列表可查询。
-- [ ] 入库动作可追踪。
-- [ ] 箱规或包裹信息可维护。
-- [ ] 发货能关联订单。
-- [ ] 发货完成后订单或物流状态同步。
+- [x] 库存、入库、箱规、物流、打包、发货前端 API 能力清单已完整整理。
+- [x] qmy-java 后端 controller/manager/entity/mapper 证据已带出。
+- [x] 后端 SQL/controller 缺口已列出：缺正式 DDL、权限闭环、破坏性 GET 收口、运行验收。
+- [x] 未确认库存扣减规则前保持 `status: draft`。
+- [ ] 正式接入时完成库存并发扣减和占用释放测试。
 
 ## 已知风险
 
-- 当前仅有 qmy-admin 前端 API 证据，缺少对应后端 SQL 和 controller 证据。
-- 仓储是高数据一致性模块，未确认库存扣减规则前不得标记为可直接复用。
-
+- qmy-java 有代码证据但没有完整迁移 SQL，不能直接上线。
+- 库存是高一致性模块，任何订单关闭、采购退货、发货退回都可能影响占用和流水。
+- `StoYtDeliveryManager` 与订单、客户、产品、财务、飞书等模块耦合明显，接入时需要拆清责任边界。

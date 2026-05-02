@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtStoreOrderMapper">
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtStoreOrder" autoMapping="true">
+        <result column="storeOrderIdList" property="storeOrderIdList" typeHandler="com.qiaomoyun.typeHandler.LongListTypeHandler"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, code, type, product_id, specification_id, supplier_id, purchase_id,
+        purchase_item_id, location_id, customer_id, total_number, enter_number,
+        remark, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from sto_yt_store_order
+        where is_deleted = 0
+    </select>
+
+    <select id="selectStoreOrderList" resultMap="BaseResultMap">
+        select
+            MIN(syso.id) as id,
+            syso.purchase_id as purchaseId,
+            syso.specification_id as specificationId,
+            (select description from pro_yt_product_specification where id=syso.specification_id) as specificationDesc,
+            syso.location_id as locationId,
+        pypi.category_specification_item_id as labelId,
+            SUM(syso.total_number) as totalNumber,
+            SUM(syso.enter_number) as enterNumber,
+            GROUP_CONCAT(syso.id) as storeOrderIdList,
+            pyp.code as purchaseCode,
+            pyp.remark as purchaseRemark,
+            MAX(pypi.remark) as purchaseItemRemark,
+            (select code from pro_yt_product where id=syso.product_id) as productCode,
+            (select name from pur_yt_supplier where id=syso.supplier_id) as supplierName,
+            (select name from sto_yt_location where id=syso.location_id) as locationName,
+        pypi.category_specification_item_name as labelName
+        from sto_yt_store_order as syso
+        left join pur_yt_purchase as pyp on pyp.id = syso.purchase_id
+        left join pur_yt_purchase_item as pypi on pypi.id = syso.purchase_item_id
+        left join sal_yt_order_sub_item as syosi on pypi.order_sub_item_id=syosi.id
+        left join sal_yt_order_sub as syos on syos.id = syosi.order_sub_id
+        left join sal_yt_order as syo on syo.id = syos.order_id
+        left join sal_yt_customer_store as sycs
+        on sycs.customer_id = syso.customer_id          -- 关联客户ID
+        and sycs.specification_id = syso.specification_id -- 关联规格ID
+        and sycs.is_deleted = 0                         -- 未删除
+        and sycs.status = 1                             -- 有效状态
+        where syso.is_deleted = 0
+
+        <!-- 动态查询条件 -->
+
+        <if test="storeOrderIdList != null and storeOrderIdList.size() > 0">
+            AND syso.id IN
+            <foreach collection="storeOrderIdList" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+
+        <if test="purchaseCode != null and purchaseCode != ''">
+            AND pyp.code LIKE CONCAT('%', #{purchaseCode}, '%')
+        </if>
+        <if test="orderCode != null and orderCode != ''">
+            AND syo.code LIKE CONCAT('%', #{orderCode}, '%')
+        </if>
+        <if test="specificationId != null">
+            AND syso.specification_id = #{specificationId}
+        </if>
+        <if test="customerId != null">
+            AND syso.customer_id = #{customerId}
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND syso.create_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND #{endTime} >= syso.create_time
+        </if>
+        <!-- 供应商名称筛选 -->
+        <if test="supplierName != null and supplierName != ''">
+            AND (select name from pur_yt_supplier where id=syso.supplier_id) LIKE CONCAT('%', #{supplierName}, '%')
+        </if>
+        <!-- 产品code筛选 -->
+        <if test="productCode != null and productCode != ''">
+            AND (select code from pro_yt_product where id=syso.product_id) LIKE CONCAT('%', #{productCode}, '%')
+        </if>
+        <!-- 规格名称筛选 -->
+        <if test="specificationName != null and specificationName != ''">
+            AND syso.specification_id IN (
+                select psi.product_specification_id
+                from pro_yt_product_specification_item psi
+                where psi.category_specification_item_id in (select id from pro_yt_category_specification_item where value  LIKE CONCAT('%', #{specificationName}, '%'))
+            )
+        </if>
+
+        group by syso.purchase_id, syso.specification_id, syso.location_id, pypi.category_specification_item_id,
+        pypi.category_specification_item_name,
+        syso.product_id, syso.supplier_id,sycs.id
+
+        <!-- 新增：按status过滤聚合后的数据 -->
+        <if test="status != null">
+            having
+            <if test="status==0">
+                -- 过滤掉totalNumber=enterNumber（已全量入库），只保留未完成入库的数据
+                SUM(syso.total_number) != SUM(syso.enter_number)
+            </if>
+            <if test="status==1">
+                -- 过滤掉totalNumber!=enterNumber（未全量入库），只保留已完成入库的数据
+                SUM(syso.total_number) = SUM(syso.enter_number)
+            </if>
+        </if>
+
+
+        order by max(syso.create_time) desc
+    </select>
+    <select id="selectByPurchaseItemId" resultType="com.qiaomoyun.entity.sto.yt.StoYtStoreOrder"
+            parameterType="java.lang.Long">
+        select *
+        from sto_yt_store_order as syso
+        where syso.purchase_item_id =#{purchaseItemId} and syso.is_deleted=0
+    </select>
+    <select id="selectOrderItemInfo" resultType="java.util.HashMap">
+        select syo.code as orderCode,
+               LEAST(
+                   GREATEST(syso.enter_number, 0),
+                   LEAST(COALESCE(pap.number, pypi.number), syso.total_number)
+               ) as enter_number
+               ,
+               LEAST(COALESCE(pap.number, pypi.number), syso.total_number) as totalNumber
+        from sto_yt_store_order as syso
+        left join pur_yt_purchase_item as pypi  on syso.purchase_item_id = pypi.id
+        left join pur_yt_apply_purchase as pap on pap.id = pypi.apply_purchase_id
+        left join sal_yt_order_sub_item as syosi on syosi.id = pypi.order_sub_item_id
+        left join sal_yt_order_sub as syos on syos.id = syosi.order_sub_id
+        left join sal_yt_order as syo on syo.id = syos.order_id
+        where syso.is_deleted=0 and pypi.is_deleted=0 and syosi.is_deleted=0
+        and syso.id = #{storeOrderId}
+        and syosi.status &lt; 4
+        and syosi.status &gt;= 1
+        and LEAST(COALESCE(pap.number, pypi.number), syso.total_number) > 0
+    </select>
+
+    <select id="selectByOrderSubItemIdInList" resultType="com.qiaomoyun.entity.sto.yt.StoYtStoreOrder">
+        SELECT syso.*
+        FROM sto_yt_store_order syso
+        INNER JOIN pur_yt_purchase_item pypi ON pypi.id = syso.purchase_item_id AND pypi.is_deleted = 0
+        WHERE syso.is_deleted = 0
+          AND pypi.order_sub_item_id = #{orderSubItemId}
+        <if test="storeOrderIds != null and storeOrderIds.size() > 0">
+          AND syso.id IN
+          <foreach collection="storeOrderIds" item="storeOrderId" open="(" separator="," close=")">
+            #{storeOrderId}
+          </foreach>
+        </if>
+          AND syso.total_number > syso.enter_number
+        ORDER BY syso.create_time ASC
+        LIMIT 1
+    </select>
+</mapper>

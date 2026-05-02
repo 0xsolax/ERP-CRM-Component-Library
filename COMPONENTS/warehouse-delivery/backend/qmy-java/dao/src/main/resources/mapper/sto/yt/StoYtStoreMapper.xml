@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtStoreMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtStore">
+        <id column="id" property="id" />
+        <result column="product_id" property="productId" />
+        <result column="specification_id" property="specificationId" />
+        <result column="real_store" property="realStore" />
+        <result column="enable_store" property="enableStore" />
+        <result column="occupy_store" property="occupyStore" />
+        <result column="real_transit" property="realTransit" />
+        <result column="enable_transit" property="enableTransit" />
+        <result column="occupy_transit" property="occupyTransit" />
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, product_id, specification_id, real_store, enable_store, occupy_store,
+        real_transit, enable_transit, occupy_transit, create_user, create_time,
+        update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <!-- 根据规格ID查询库存信息 -->
+    <select id="selectBySpecificationId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            sys.*,
+            (select location_id from pro_yt_product_specification where id = sys.specification_id) as location_id
+        FROM sto_yt_store as sys
+        WHERE specification_id = #{specificationId}
+        AND is_deleted = 0
+        LIMIT 1
+    </select>
+
+    <!-- 根据产品ID查询库存信息 -->
+    <select id="selectByProductId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        SELECT
+            sys.*
+        FROM sto_yt_store as sys
+        WHERE product_id = #{productId}
+        AND is_deleted = 0
+    </select>
+
+    <!-- 批量插入库存信息 -->
+    <insert id="batchInsert" parameterType="java.util.List">
+        INSERT INTO sto_yt_store (
+            produt_id, specification_id, real_store, enable_store, occupy_store,
+            real_transit, enable_transit, occupy_transit, create_user, create_time,
+            update_user, update_time, tenant_id, is_deleted
+        ) VALUES
+        <foreach collection="storeList" item="item" separator=",">
+            (#{item.produtId}, #{item.specificationId}, #{item.realStore}, #{item.enableStore},
+            #{item.occupyStore}, #{item.realTransit}, #{item.enableTransit}, #{item.occupyTransit},
+            #{item.createUser}, #{item.createTime}, #{item.updateUser}, #{item.updateTime},
+            #{item.tenantId}, #{item.isDeleted})
+        </foreach>
+    </insert>
+
+    <!-- 根据规格ID更新库存数量 -->
+    <update id="updateStoreBySpecificationId" parameterType="map">
+        UPDATE sto_yt_store
+        SET
+        <if test="realStore != null">real_store = #{realStore},</if>
+        <if test="enableStore != null">enable_store = #{enableStore},</if>
+        <if test="occupyStore != null">occupy_store = #{occupyStore},</if>
+        WHERE specification_id = #{specificationId}
+        AND is_deleted = 0
+    </update>
+
+    <!-- 自定义查询条件 -->
+    <select id="selectByMap" parameterType="java.util.Map" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sto_yt_store
+        WHERE is_deleted = 0
+        <if test="specificationId != null">
+            AND specification_id = #{specificationId}
+        </if>
+        <if test="productId != null">
+            AND produt_id = #{productId}
+        </if>
+    </select>
+</mapper>

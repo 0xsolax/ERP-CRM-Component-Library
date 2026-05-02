@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qiaomoyun.mapper.sto.yt.StoYtStoreOrderOperationMapper">
+    <resultMap id="BaseResultMap" type="com.qiaomoyun.entity.sto.yt.StoYtStoreOrderOperation">
+        <id column="id" property="id" />
+        <result column="store_order_id" property="storeOrderId" />
+        <result column="number" property="number" />
+        <result column="operation_detail" property="operationDetail" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result column="create_user" property="createUser" />
+        <result column="create_time" property="createTime" />
+        <result column="update_user" property="updateUser" />
+        <result column="update_time" property="updateTime" />
+        <result column="tenant_id" property="tenantId" />
+        <result column="is_deleted" property="isDeleted" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, store_order_id, number, operation_detail, create_user, create_time, update_user, update_time, tenant_id, is_deleted
+    </sql>
+
+    <select id="selectByStoreOrderId" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM sto_yt_store_order_operation
+        WHERE store_order_id = #{storeOrderId} AND is_deleted = 0
+        ORDER BY create_time DESC
+    </select>
+
+
+    <update id="deleteById" parameterType="java.lang.Long">
+        UPDATE sto_yt_store_order_operation SET
+        is_deleted = 1,
+        update_time = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectStoreOrderProgressList" resultMap="BaseResultMap">
+        SELECT
+        sysoo.*,
+        (select nick_name from sys_user where user_id =sysoo.create_user) as createUserName
+        FROM sto_yt_store_order_operation as sysoo
+        WHERE is_deleted = 0
+        <if test="storeOrderId != null ">
+            AND store_order_id =#{storeOrderId}
+        </if>
+        <if test="storeOrderIdList != null and storeOrderIdList.size() > 0">
+            AND store_order_id IN (
+                <foreach collection="storeOrderIdList" item="item" separator=",">
+                    #{item}
+                </foreach>
+            )
+        </if>
+        <!-- 动态查询条件 -->
+        <if test="orderCode != null and orderCode != ''">
+            AND store_order_id IN (
+                SELECT id FROM sto_yt_store_order
+                WHERE code LIKE CONCAT('%', #{orderCode}, '%') AND is_deleted = 0
+            )
+        </if>
+        <if test="orderType != null and orderType != ''">
+            AND store_order_id IN (
+                SELECT id FROM sto_yt_store_order
+                WHERE type = #{orderType} AND is_deleted = 0
+            )
+        </if>
+        <if test="specificationId != null">
+            AND store_order_id IN (
+                SELECT id FROM sto_yt_store_order
+                WHERE specification_id = #{specificationId} AND is_deleted = 0
+            )
+        </if>
+        <if test="customerId != null">
+            AND store_order_id IN (
+                SELECT id FROM sto_yt_store_order
+                WHERE customer_id = #{customerId} AND is_deleted = 0
+            )
+        </if>
+        <if test="startTime != null and startTime != ''">
+            AND create_time >= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            AND #{endTime} >= create_time
+        </if>
+
+        <!-- 默认按创建时间倒序 -->
+        ORDER BY create_time DESC
+    </select>
+</mapper>
