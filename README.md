@@ -37,11 +37,13 @@
 | `customer-management` | `reference` | [COMPONENTS/customer-management](COMPONENTS/customer-management/README.md) | 客户主档、联系人、地址、标签、跟进、数据权限和导入/同步边界 |
 | `quote-management` | `reference` | [COMPONENTS/quote-management](COMPONENTS/quote-management/README.md) | 基础报价 CRUD、SED 复杂报价、成本明细、审核、导出和转订单边界 |
 | `order-management` | `reference` | [COMPONENTS/order-management](COMPONENTS/order-management/README.md) | 基础订单 CRUD、YT 复杂订单、状态、采购申请、退货、发货、完结和关闭边界 |
+| `purchase-supplier` | `draft` | [COMPONENTS/purchase-supplier](COMPONENTS/purchase-supplier/README.md) | 供应商、待采购、采购单、库存预警、退货、导出和采购/仓储/财务边界 |
+| `warehouse-delivery` | `draft` | [COMPONENTS/warehouse-delivery](COMPONENTS/warehouse-delivery/README.md) | 库存、入库、箱规、物流、打包、发货、库存流水和跨组件边界 |
 
-### 第一批待沉淀组件
+### 第一批待验证组件
 
-- `purchase-supplier`
-- `warehouse-delivery`
+- `purchase-supplier`：已抽取为 `draft`，待补正式 DDL、权限闭环、状态机和运行验收。
+- `warehouse-delivery`：已抽取为 `draft`，待补正式 DDL、数据范围权限、库存扣减规则和运行验收。
 
 ## 使用方式
 
@@ -103,16 +105,16 @@
 | P1 认证权限组件 | 已完成 | 抽取并修正 JWT 安全基线 |
 | P1 基础数据组件 | 已完成 | 抽取并修正空请求体、nodeKey 和路由权限边界 |
 | P1 文件 OSS 组件 | 已完成 | 抽取 OSS STS、文件记录、上传组件和旧上传控制器对比 |
-| P2 业务组件 | 进行中 | 产品物料、客户、报价、订单已完成，后续继续采购供应商、仓储发货 |
-| P3 待验证组件 | 待执行 | 采购供应商、仓储发货 |
-| P4 装配演练 | 待执行 | 用组件组合模拟新项目装配 |
+| P2 业务组件 | 已完成首轮 | 产品物料、客户、报价、订单为 `reference`；采购供应商、仓储发货已抽取为 `draft` |
+| P3 待验证组件 | 进行中 | 采购供应商、仓储发货待补正式 DDL、权限闭环、状态机和运行验收 |
+| P4 装配演练 | 已完成首轮 | SOL-52 已完成客户 -> 报价 -> 订单 + 文件上传人工装配演练，缺口已记录 |
 
 ## 后续更新方式
 
 后续每完成一个阶段，更新本 README 的：
 
 - 当前资产
-- 第一批待沉淀组件
+- 第一批待验证组件
 - 当前状态
 - 已知限制或维护规则
 

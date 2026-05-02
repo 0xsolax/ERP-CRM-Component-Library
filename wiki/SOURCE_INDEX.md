@@ -11,7 +11,8 @@
 | `RAW/PROJECTs/zhongsheng-AI` | 中盛 ERP 旧实现与 PRD | 客户、报价、订单、产品、物料、供应商、财务、上传、调研需求 | 已 ingest 到项目页与组件卡 |
 | `RAW/PROJECTs/zhongsheng-backend` | 中盛新版 Spring Boot 多模块后端 | 协议契约、权限、菜单、基础数据、产品、物料、OSS | 已 ingest 到项目页与组件卡 |
 | `RAW/docs/zhongsheng` | 调研会议记录和需求点 | 业务意图、岗位职责、流程痛点、报价与客户管理需求 | 已 ingest 到项目页与组件卡 |
-| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 客户管理 SOL-47、报价管理 SOL-48、订单管理 SOL-49 已局部深挖，其他模块待后续 ingest | 局部 ingest |
+| `RAW/PROJECTs/qmy-java` | Java 历史项目 | 客户管理 SOL-47、报价管理 SOL-48、订单管理 SOL-49、采购供应商 SOL-50、仓储发货 SOL-51 已局部深挖，其他模块待后续 ingest | 局部 ingest |
+| `RAW/PROJECTs/qmy-zhongsheng-ai` | 中圣专用 ERP/CRM 单仓 | 中圣业务迁移后的当前实现、GUIDE、验收报告和脚本证据 | 已建立项目页，组件级深挖按后续任务处理 |
 | `RAW/PROJECTs/jewelry-design` | 前端项目 | 暂未深挖 | 待后续 ingest |
 
 ## 关键来源路径
@@ -284,6 +285,19 @@
 - `pdoc/report/REPORT_0502_SOL52装配演练报告.md`
 - `pdoc/report/REPORT_0502_SOL52装配缺口清单.md`
 
+### 中圣专用单仓
+
+- `RAW/PROJECTs/qmy-zhongsheng-ai/README.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/AGENTS.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/docs/guide/GUIDE_项目接手引导.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/docs/guide/GUIDE_文档索引.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/pdoc/report/REPORT_0501_SOL53父级完成情况复核.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/pdoc/report/REPORT_0501_SOL63总体验收与回归.md`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core`
+- `RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/docs/sql`
+
 ### 调研资料
 
 - `RAW/docs/zhongsheng/第一次调研（2026.02.11）/第一次会议.md`
@@ -293,6 +307,7 @@
 
 ## Manifest 策略
 
-- `wiki/source_manifest.tsv` 记录当前 `RAW/` 下非 `.DS_Store`、非嵌套 `.git/` 内部文件的 `path`、`sha256`、`size_bytes`、`mtime`。
+- `wiki/source_manifest.tsv` 记录当前 `RAW/` 下可作为知识来源的文件 `path`、`sha256`、`size_bytes`、`mtime`，当前覆盖 3598 个来源文件。
 - `.DS_Store` 是操作系统文件，不作为知识来源。
 - 复制进 `RAW/PROJECTs/` 的历史项目可能包含嵌套 Git 元数据；这些对象只表达 Git 仓库状态，不表达业务或接口知识，本轮不纳入 manifest。
+- `node_modules/`、Maven `target/`、`.next/`、`coverage/`、`.local-run/` 是依赖、构建或运行产物，不作为知识来源；`qmy-admin/build/` 是源码内构建脚本目录，继续保留在 manifest。

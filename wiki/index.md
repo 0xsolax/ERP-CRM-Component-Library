@@ -30,6 +30,7 @@
 ## 来源项目
 
 - [PROJECT_qmy-admin](PROJECT_qmy-admin.md)
+- [PROJECT_qmy-zhongsheng-ai](PROJECT_qmy-zhongsheng-ai.md)
 - [PROJECT_project-scaffold](PROJECT_project-scaffold.md)
 - [PROJECT_zhongsheng-AI](PROJECT_zhongsheng-AI.md)
 - [PROJECT_zhongsheng-backend](PROJECT_zhongsheng-backend.md)

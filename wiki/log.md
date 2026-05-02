@@ -2,6 +2,10 @@
 
 ## 2026-05-02
 
+- 完成 SOL-40 收口后的 wiki 状态复核：确认 `wiki/index.md` 覆盖现有 21 个 wiki 页面，组件 `component.yaml` 指向的真实组件卡均存在。
+- 修正根 `README.md` 与 `wiki/SOURCE_INDEX.md` 的现状漂移：`purchase-supplier`、`warehouse-delivery` 已是 `draft` 组件，不再列为待沉淀；`qmy-java` 深挖范围补到 SOL-50、SOL-51。
+- 刷新 `wiki/source_manifest.tsv`：排除依赖、构建与运行产物后，当前覆盖 3598 个 raw 来源文件；新增主体为 `RAW/PROJECTs/qmy-zhongsheng-ai`。
+- 新增 `wiki/PROJECT_qmy-zhongsheng-ai.md`，将中圣专用单仓登记为项目级来源，并明确服务级验收与真实环境闭环的边界。
 - 启动并完成 Multica `SOL-52` 装配演练：用 `customer-management`、`quote-management`、`order-management`、`file-oss` 验证客户 -> 报价 -> 订单 + 文件上传的人工装配路径。
 - `SOL-52` 结论：组件库能指导复制代码、补表、接接口和识别缺口；实际复杂装配还必须显式纳入 `base-data`、`product-material`，并补报价/订单正式 DDL、数据范围和状态机。
 - 新增 `wiki/SYNTH_SOL52客户报价订单文件装配演练.md`，并同步四张组件卡、`wiki/SOURCE_INDEX.md`、`wiki/index.md` 与本地 pdoc 报告。
