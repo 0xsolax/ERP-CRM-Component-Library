@@ -26,6 +26,9 @@
 - [COMPONENT_order-management](../COMPONENTS/order-management/README.md)
 - [COMPONENT_purchase-supplier](../COMPONENTS/purchase-supplier/README.md)
 - [COMPONENT_warehouse-delivery](../COMPONENTS/warehouse-delivery/README.md)
+- [COMPONENT_document-action](../COMPONENTS/document-action/README.md)
+- [COMPONENT_production-management](../COMPONENTS/production-management/README.md)
+- [COMPONENT_supplier-inquiry](../COMPONENTS/supplier-inquiry/README.md)
 
 ## 来源项目
 
@@ -40,6 +43,7 @@
 
 - [SYNTH_工厂工具箱组件化方向](SYNTH_工厂工具箱组件化方向.md)
 - [SYNTH_SOL52客户报价订单文件装配演练](SYNTH_SOL52客户报价订单文件装配演练.md)
+- [SYNTH_qmy中圣近期整理进展](SYNTH_qmy中圣近期整理进展.md)
 
 ## 第一批组件卡
 
@@ -52,6 +56,9 @@
 - [COMP_采购供应商](COMP_采购供应商.md)
 - [COMP_仓储发货](COMP_仓储发货.md)
 - [COMP_文件上传与OSS](COMP_文件上传与OSS.md)
+- [COMP_公共单据动作与审计日志](COMP_公共单据动作与审计日志.md)
+- [COMP_生产单管理](COMP_生产单管理.md)
+- [COMP_供应商询价台账](COMP_供应商询价台账.md)
 
 ## v1 装配方式
 

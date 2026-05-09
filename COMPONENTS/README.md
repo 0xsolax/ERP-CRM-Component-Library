@@ -54,6 +54,9 @@ COMPONENTS/<component-name>/
 - [order-management](order-management/README.md) - `reference`，已抽取基础订单 CRUD、YT 复杂订单、子订单、商品项、状态、审核、采购申请、退货、发货、完结、关闭和跨组件边界
 - [purchase-supplier](purchase-supplier/README.md) - `draft`，已抽取供应商 CRUD、YT 供应商、待采购、采购单、库存预警、采购退货、导出和采购/仓储/财务边界
 - [warehouse-delivery](warehouse-delivery/README.md) - `draft`，已抽取库存、入库、箱规、物流、打包、发货、库存流水和订单/采购/财务边界
+- [document-action](document-action/README.md) - `reference`，已抽取公共单据动作日志、锁定、解锁、重新确认、负责人改派和系统操作日志
+- [production-management](production-management/README.md) - `reference`，已抽取生产组、生产总单、产品行进度、分批安排、交货和生产单导出
+- [supplier-inquiry](supplier-inquiry/README.md) - `reference`，已抽取供应商询价台账、供应商/对象历史、快捷新增和编辑日志边界
 
 ## 使用顺序
 

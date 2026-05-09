@@ -39,6 +39,9 @@
 | `order-management` | `reference` | [COMPONENTS/order-management](COMPONENTS/order-management/README.md) | 基础订单 CRUD、YT 复杂订单、状态、采购申请、退货、发货、完结和关闭边界 |
 | `purchase-supplier` | `draft` | [COMPONENTS/purchase-supplier](COMPONENTS/purchase-supplier/README.md) | 供应商、待采购、采购单、库存预警、退货、导出和采购/仓储/财务边界 |
 | `warehouse-delivery` | `draft` | [COMPONENTS/warehouse-delivery](COMPONENTS/warehouse-delivery/README.md) | 库存、入库、箱规、物流、打包、发货、库存流水和跨组件边界 |
+| `document-action` | `reference` | [COMPONENTS/document-action](COMPONENTS/document-action/README.md) | 公共单据日志、锁定、解锁、重新确认、负责人改派和系统操作日志 |
+| `production-management` | `reference` | [COMPONENTS/production-management](COMPONENTS/production-management/README.md) | 生产组、生产总单、产品行进度、分批安排、交货和生产单导出 |
+| `supplier-inquiry` | `reference` | [COMPONENTS/supplier-inquiry](COMPONENTS/supplier-inquiry/README.md) | 供应商询价台账、历史价格、对象历史、编辑日志和采购前比价资料 |
 
 ### 第一批待验证组件
 
@@ -108,6 +111,7 @@
 | P2 业务组件 | 已完成首轮 | 产品物料、客户、报价、订单为 `reference`；采购供应商、仓储发货已抽取为 `draft` |
 | P3 待验证组件 | 进行中 | 采购供应商、仓储发货待补正式 DDL、权限闭环、状态机和运行验收 |
 | P4 装配演练 | 已完成首轮 | SOL-52 已完成客户 -> 报价 -> 订单 + 文件上传人工装配演练，缺口已记录 |
+| P5 qmy 当前实现补充抽取 | 已启动 | 从 `solazhu-finance-0509` 抽取公共单据动作、生产单管理、供应商询价台账三个新组件 |
 
 ## 后续更新方式
 

@@ -1,0 +1,65 @@
+name: production-management
+display_name: 生产单管理
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/qmy-zhongsheng-ai/docs/guide/GUIDE_生产单管理.md
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/production
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/production
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/docs/sql/init-production.sql
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/production
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/production
+  wiki_pages:
+    - wiki/COMP_生产单管理.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+    - product-material
+    - order-management
+    - document-action
+  optional:
+    - purchase-supplier
+    - file-oss
+entrypoints:
+  backend:
+    controllers:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/production/controller/ProductionController.java
+    services:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/production/service
+    dto:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/production
+    resources:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/resources/excel/production-order-template.xls
+  frontend:
+    views:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/production
+    api:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/production
+    router:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/router/async-modules/production.ts
+  db:
+    schema:
+      - db/qmy-zhongsheng-ai/init-production.sql
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - application-local.yml
+    - secrets
+notes:
+  - 当前组件来自 qmy-zhongsheng-ai 的生产总单实现，包含生产组、生产总单、产品行进度、分批安排、交货和生产单导出。
+  - 生产总单与订单、采购、公共单据动作紧密耦合，目标项目接入时必须先确认主链编号和单据解锁策略。
+  - 财务、库存扣减、完整排产和客户签收交货台账不属于本组件已完成范围。

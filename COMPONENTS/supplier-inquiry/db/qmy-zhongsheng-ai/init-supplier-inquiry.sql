@@ -1,0 +1,40 @@
+-- 供应商询价台账初始化脚本
+-- 用途：采购前供应商材料/配件/产品询价历史记录，不回写采购单或主档价格
+
+CREATE TABLE IF NOT EXISTS `supplier_inquiry`
+(
+  `id` BIGINT NOT NULL COMMENT '主键 ID',
+  `supplier_id` BIGINT NOT NULL COMMENT '供应商 ID',
+  `supplier_code` VARCHAR(64) DEFAULT NULL COMMENT '供应商编号快照',
+  `supplier_name` VARCHAR(255) NOT NULL COMMENT '供应商名称快照',
+  `target_type` VARCHAR(32) NOT NULL COMMENT '询价对象类型，系统预置或用户自定义',
+  `target_id` BIGINT DEFAULT NULL COMMENT '询价对象 ID，手工对象为空',
+  `target_code` VARCHAR(64) DEFAULT NULL COMMENT '询价对象编号快照',
+  `target_name` VARCHAR(255) NOT NULL COMMENT '询价对象名称快照',
+  `specification` VARCHAR(255) DEFAULT NULL COMMENT '规格',
+  `unit` VARCHAR(64) DEFAULT NULL COMMENT '单位',
+  `price` DECIMAL(18,4) NOT NULL COMMENT '报价单价',
+  `currency` VARCHAR(16) NOT NULL DEFAULT 'RMB' COMMENT '币种',
+  `tax_rate` DECIMAL(8,4) DEFAULT 0.0000 COMMENT '税率',
+  `moq` DECIMAL(18,4) DEFAULT NULL COMMENT '起订量',
+  `delivery_days` VARCHAR(100) DEFAULT NULL COMMENT '交期天数或交期说明',
+  `quote_date` DATE NOT NULL COMMENT '报价日期',
+  `valid_until` DATE DEFAULT NULL COMMENT '有效期',
+  `contact_name` VARCHAR(100) DEFAULT NULL COMMENT '联系人',
+  `contact_phone` VARCHAR(64) DEFAULT NULL COMMENT '联系方式',
+  `owner_id` BIGINT DEFAULT NULL COMMENT '录入人 ID',
+  `owner_name` VARCHAR(100) DEFAULT NULL COMMENT '录入人名称快照',
+  `remark` VARCHAR(1000) DEFAULT NULL COMMENT '备注',
+  `modification_log_json` LONGTEXT DEFAULT NULL COMMENT '编辑日志 JSON',
+  `create_user` BIGINT NOT NULL DEFAULT -1 COMMENT '创建人 ID',
+  `update_user` BIGINT NOT NULL DEFAULT -1 COMMENT '修改人 ID',
+  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `is_deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '逻辑删除标记',
+  `deleted_time` DATETIME DEFAULT NULL COMMENT '删除时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_supplier_inquiry_supplier` (`supplier_id`, `is_deleted`),
+  KEY `idx_supplier_inquiry_target` (`target_type`, `target_id`, `is_deleted`),
+  KEY `idx_supplier_inquiry_quote_date` (`quote_date`, `is_deleted`),
+  KEY `idx_supplier_inquiry_currency` (`currency`, `is_deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='供应商询价台账';

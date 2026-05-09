@@ -1,0 +1,64 @@
+name: document-action
+display_name: 公共单据动作与审计日志
+status: reference
+type: business-support
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/qmy-zhongsheng-ai/docs/guide/GUIDE_公共单据动作.md
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/document
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/system
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/docs/sql/init-document-action.sql
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/components/document-action-log-drawer
+  wiki_pages:
+    - wiki/COMP_公共单据动作与审计日志.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+  optional:
+    - quote-management
+    - order-management
+    - purchase-supplier
+    - production-management
+entrypoints:
+  backend:
+    controllers:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/document/controller/DocumentActionController.java
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/system/controller/SystemOperationLogController.java
+    services:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/document/service
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/system/service
+    dto:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/document
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/system
+  frontend:
+    components:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/components/document-action-log-drawer
+    api:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/document
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/system/operation-log.ts
+    views:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/system/operation-log
+  db:
+    schema:
+      - db/qmy-zhongsheng-ai/init-document-action.sql
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - application-local.yml
+notes:
+  - 本组件是报价、订单、采购、生产等业务单据共用的动作日志、锁定、解锁、重新确认和负责人改派层。
+  - 它不是完整工作流引擎，也不包含多级审批。
+  - 业务单据接入时必须实现对应 documentType 的可见性和状态适配。

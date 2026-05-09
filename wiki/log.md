@@ -1,5 +1,15 @@
 # 维护日志
 
+## 2026-05-09
+
+- 基于 `RAW/PROJECTs/qmy-zhongsheng-ai` 当前 `solazhu-finance-0509` 分支补抽 3 个新组件快照：`document-action`、`production-management`、`supplier-inquiry`。
+- 新增 `wiki/COMP_公共单据动作与审计日志.md`、`wiki/COMP_生产单管理.md`、`wiki/COMP_供应商询价台账.md`，并同步 `README.md`、`COMPONENTS/README.md` 与 `wiki/index.md` 入口。
+- 本轮判断 `DESIGN_0509_财务模块.md` 仍是设计草案，财务未升级为可复用组件；`form-config` 暂记为基座/前端表格配置候选，不混入业务组件卡。
+- 执行 wiki-maintainer 复核：`wiki/source_manifest.tsv` 从 3598 个来源更新到 3644 个来源，新增 435、修改 210、删除 389，变化全部集中在 `RAW/PROJECTs/qmy-zhongsheng-ai`。
+- 更新 `wiki/PROJECT_qmy-zhongsheng-ai.md`，补充无前缀入口、观察页面、供应商询价台账、统一业务编号、导出模板、产品快捷新增和财务设计草案等近期主题。
+- 新增 `wiki/SYNTH_qmy中圣近期整理进展.md`，将 2026-05-04 到 2026-05-09 的新增文档沉淀为项目级主题索引。
+- 更新 `wiki/SOURCE_INDEX.md` 与 `wiki/index.md`，登记新增 GUIDE、DESIGN、REPORT 和 Browser 回归证据目录；截图和 JSON 证据只做来源登记，不深度改写为业务事实。
+
 ## 2026-05-02
 
 - 完成 SOL-40 收口后的 wiki 状态复核：确认 `wiki/index.md` 覆盖现有 21 个 wiki 页面，组件 `component.yaml` 指向的真实组件卡均存在。

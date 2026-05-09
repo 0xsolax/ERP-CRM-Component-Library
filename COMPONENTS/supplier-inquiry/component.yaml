@@ -1,0 +1,60 @@
+name: supplier-inquiry
+display_name: 供应商询价台账
+status: reference
+type: business
+version: 0.1.0
+owner: unassigned
+source_layer:
+  raw_paths:
+    - RAW/PROJECTs/qmy-zhongsheng-ai/docs/guide/GUIDE_供应商询价台账.md
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/supplier
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/supplier
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-backend/docs/sql/init-supplier-inquiry.sql
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/supplier-inquiry
+    - RAW/PROJECTs/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/supplier-inquiry
+  wiki_pages:
+    - wiki/COMP_供应商询价台账.md
+dependencies:
+  required:
+    - BASE/project-scaffold
+    - auth-permission
+    - purchase-supplier
+    - product-material
+  optional:
+    - base-data
+entrypoints:
+  backend:
+    controllers:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/supplier/controller/SupplierInquiryController.java
+    services:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-core/src/main/java/com/qmy/zhongsheng/core/supplier/service
+    dto:
+      - backend/qmy-zhongsheng-ai/zhongsheng-backend/zhongsheng-api/src/main/java/com/qmy/zhongsheng/api/dto/supplier
+  frontend:
+    views:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/supplier-inquiry
+    api:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/api/zs/supplier-inquiry
+    router:
+      - frontend/qmy-zhongsheng-ai/zhongsheng-admin/src/views/zs/router/async-modules/purchase.ts
+  db:
+    schema:
+      - db/qmy-zhongsheng-ai/init-supplier-inquiry.sql
+contracts:
+  api: docs/contracts/API_CONTRACT.md
+  data: docs/contracts/DATA_CONTRACT.md
+  permission: docs/contracts/PERMISSION_CONTRACT.md
+acceptance:
+  checklist: docs/acceptance/ACCEPTANCE.md
+snapshot_policy:
+  include_source_docs: true
+  exclude:
+    - .git/
+    - .DS_Store
+    - target/
+    - node_modules/
+    - application-local.yml
+notes:
+  - 本组件是采购前价格台账，不自动生成采购单，不回写主档价格。
+  - 供应商快捷新增依赖供应商主档能力，询价对象可为材料、面料、包材、伞架、产品或手工对象。
+  - 当前可作为采购询价历史与人工比价参考组件，正式比价单和采用报价到采购单仍是后续扩展。
